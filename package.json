@@ -1,0 +1,44 @@
+{
+  "name": "firebase-function",
+  "version": "1.0.0",
+  "description": "Manages backend api with firebase functions.",
+  "main": "lib/index.js",
+  "types": "lin/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --fix --ext .js,.ts .",
+    "test": "mocha --reporter spec -r ts-node/register --timeout 3600000 --reporter-option maxDiffSize=0",
+    "testAll": "npm run test test/*.test.ts test/**/*.test.ts",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run testAll && npm run lint",
+    "preversion": "npm run lint"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:stevenkellner/firebase-function.git"
+  },
+  "author": "Steven Kellner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stevenkellner/firebase-function/issues"
+  },
+  "homepage": "https://github.com/stevenkellner/firebase-function",
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "chai": "^4.3.7",
+    "eslint": "^8.34.0",
+    "eslint-config-standard-with-typescript": "^34.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
