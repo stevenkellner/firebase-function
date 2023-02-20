@@ -5,11 +5,12 @@ import { DatabaseType } from './DatabaseType';
 import { HttpsError } from './HttpsError';
 import { Logger } from './logger/Logger';
 import { Result, type Result as ResultSuccessFailure } from './Result';
+import { type ValidReturnType } from './ValidReturnType';
 
 /**
  * Firebase function with parameters and a execute method to get the result.
  */
-export interface FirebaseFunction<Parameters, ReturnType> {
+export interface FirebaseFunction<Parameters, ReturnType extends ValidReturnType> {
     /**
      * Parameters of the firebase function.
      */
@@ -26,12 +27,12 @@ export namespace FirebaseFunction {
     /**
      * The parameters type of the firebase function
      */
-    export type Parameters<T extends FirebaseFunction<unknown, unknown>> = T extends FirebaseFunction<infer Parameters, unknown> ? Parameters : never;
+    export type Parameters<T extends FirebaseFunction<unknown, ValidReturnType>> = T extends FirebaseFunction<infer Parameters, ValidReturnType> ? Parameters : never;
 
     /**
      * The return type of the firebase funtion.
      */
-    export type ReturnType<T extends FirebaseFunction<unknown, unknown>> = T extends FirebaseFunction<unknown, infer ReturnType> ? ReturnType : never;
+    export type ReturnType<T extends FirebaseFunction<unknown, ValidReturnType>> = T extends FirebaseFunction<unknown, infer ReturnType> ? ReturnType : never;
 
     /**
      * Error thrown by the firebase function.
