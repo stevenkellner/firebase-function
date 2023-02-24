@@ -1,9 +1,9 @@
 {
   "name": "firebase-function",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Manages backend api with firebase functions.",
   "main": "lib/index.js",
-  "types": "lin/index.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "lint": "eslint --fix --ext .js,.ts .",
@@ -28,6 +28,14 @@
     "url": "https://github.com/stevenkellner/firebase-function/issues"
   },
   "homepage": "https://github.com/stevenkellner/firebase-function",
+  "dependencies": {
+    "aes-ts": "^0.0.0-alpha.0",
+    "crypto": "^1.0.1",
+    "firebase": "^9.17.1",
+    "firebase-admin": "^11.5.0",
+    "firebase-functions": "^4.2.1",
+    "sha512-crypt-ts": "^0.1.27"
+  },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/chai": "^4.3.4",
@@ -59,12 +67,5 @@
       "text"
     ],
     "report-dir": "coverage"
-  },
-  "dependencies": {
-    "aes-ts": "^0.0.0-alpha.0",
-    "crypto": "^1.0.1",
-    "firebase-admin": "^11.5.0",
-    "firebase-functions": "^4.2.1",
-    "sha512-crypt-ts": "^0.1.27"
   }
 }

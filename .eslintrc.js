@@ -54,6 +54,7 @@ module.exports = {
     'object-shorthand': ['error', 'never'],
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/no-confusing-void-expression': 'off',
-    '@typescript-eslint/consistent-type-assertions': 'off'
+    '@typescript-eslint/consistent-type-assertions': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off'
   }
 }
