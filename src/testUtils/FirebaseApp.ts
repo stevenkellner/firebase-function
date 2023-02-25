@@ -105,14 +105,14 @@ export class FirebaseDatabase {
         return crypter.decryptDecode<T>(value);
     }
 
-    public async set(path: string, value: FirebaseDatabase.ValueType) {
+    public async set<T extends FirebaseDatabase.ValueType>(path: string, value: T) {
         const reference = ref(this.database, path === '' ? undefined : path);
         await set(reference, value);
     }
 
-    public async setEncrypted(path: string, value: FirebaseDatabase.ValueType) {
+    public async setEncrypted<T extends FirebaseDatabase.ValueType>(path: string, value: T) {
         const crypter = new Crypter(this.cryptionKeys);
-        await this.set(path, crypter.encodeEncrypt(value));
+        await this.set<string>(path, crypter.encodeEncrypt(value));
     }
 
     public async exists(path: string): Promise<boolean> {
