@@ -1,5 +1,5 @@
 import { HttpsError } from '../HttpsError';
-import { type Logger } from '../logger/Logger';
+import { type ILogger } from '../logger';
 import { type ParameterBuilder } from './ParameterBuilder';
 import { type ParameterContainer } from './ParameterContainer';
 import { type TypeOfName } from './TypeOf';
@@ -13,7 +13,7 @@ export class ParameterParser<Parameters extends Record<string, unknown>> {
 
     public constructor(
         private readonly paramterBuilders: ParameterBuilders<Parameters>,
-        private readonly logger: Logger
+        private readonly logger: ILogger
     ) {}
 
     public get parameters(): Parameters {

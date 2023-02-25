@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { Crypter } from '../src/crypter/Crypter';
 import { FixedLength } from '../src/crypter/FixedLength';
 import { type DatabaseType } from '../src/DatabaseType';
-import { Logger } from '../src/logger/Logger';
+import { Logger } from '../src/logger';
 import { ParameterBuilder } from '../src/parameter/ParameterBuilder';
 import { ParameterContainer } from '../src/parameter/ParameterContainer';
 

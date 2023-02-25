@@ -1,20 +1,22 @@
 import { StringBuilder } from '../StringBuilder';
+import { type ILogger } from './ILogger';
 import { type LoggingProperty } from './LoggingProperty';
 import { LogLevel } from './LogLevel';
+import { type VerboseType } from './VerboseType';
 
-export class Logger {
+export class Logger implements ILogger {
     private constructor(
-        private readonly verbose: Logger.VerboseType,
+        private readonly verbose: VerboseType,
         private readonly properties: LoggingProperty[],
         private readonly currentIndent: number = 0
     ) {}
 
     public static start(
-        verbose: Logger.VerboseType,
+        verbose: VerboseType,
         functionName: string,
         details?: Record<string, unknown>,
         logLevel: LogLevel = 'debug'
-    ): Logger {
+    ): ILogger {
         const property: LoggingProperty = {
             functionName: functionName,
             logLevel: logLevel,
@@ -24,7 +26,7 @@ export class Logger {
         return new Logger(verbose, [property]);
     }
 
-    public get nextIndent(): Logger {
+    public get nextIndent(): ILogger {
         return new Logger(this.verbose, this.properties, this.currentIndent + 1);
     }
 
@@ -62,14 +64,10 @@ export class Logger {
         return builder.toString();
     }
 
-    public get joinedMessages(): string {
+    public get completeLog(): string {
         const builder = new StringBuilder();
         for (const property of this.properties)
             builder.append(this.propertyString(property));
         return builder.toString();
     }
-}
-
-export namespace Logger {
-    export type VerboseType = 'none' | 'verbose' | 'colored' | 'coloredVerbose';
 }

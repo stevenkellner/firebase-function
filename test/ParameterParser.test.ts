@@ -4,7 +4,7 @@ import { Crypter } from '../src/crypter/Crypter';
 import { FixedLength } from '../src/crypter/FixedLength';
 import { DatabaseType } from '../src/DatabaseType';
 import { HttpsError } from '../src/HttpsError';
-import { Logger } from '../src/logger/Logger';
+import { Logger, type ILogger } from '../src/logger';
 import { ParameterBuilder } from '../src/parameter/ParameterBuilder';
 import { ParameterContainer } from '../src/parameter/ParameterContainer';
 import { ParameterParser, type ParameterBuilders } from '../src/parameter/ParameterParser';
@@ -26,7 +26,7 @@ class StringClassType {
 }
 
 namespace StringClassType {
-    export function fromString(value: string, logger: Logger): StringClassType {
+    export function fromString(value: string, logger: ILogger): StringClassType {
         if (value !== 'v1' && value !== 'v2' && value !== 'v3')
             throw HttpsError('internal', '', logger);
         return new StringClassType(value);
@@ -47,7 +47,7 @@ class ObjectClassType {
 }
 
 namespace ObjectClassType {
-    export function fromObject(value: object | null, logger: Logger): ObjectClassType {
+    export function fromObject(value: object | null, logger: ILogger): ObjectClassType {
         if (value === null)
             throw HttpsError('internal', '', logger);
         if (!('v1' in value) || typeof value.v1 !== 'string')

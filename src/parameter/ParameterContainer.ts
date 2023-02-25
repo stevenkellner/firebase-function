@@ -1,14 +1,14 @@
 import { Crypter } from '../crypter/Crypter';
 import { DatabaseType } from '../DatabaseType';
 import { HttpsError } from '../HttpsError';
-import { type Logger } from '../logger/Logger';
+import { type ILogger } from '../logger';
 import { type ParameterBuilder } from './ParameterBuilder';
 import { type TypeOfName, type TypeFrom } from './TypeOf';
 
 export class ParameterContainer {
     private readonly data: unknown;
 
-    public constructor(data: unknown, getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys, logger: Logger) {
+    public constructor(data: unknown, getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys, logger: ILogger) {
         logger.log('ParameterContainer.constructor', { data: data });
 
         // Check if parameters are hand over
@@ -28,7 +28,7 @@ export class ParameterContainer {
         this.data = crypter.decryptDecode(data.parameters);
     }
 
-    public optionalParameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: Logger): T | undefined {
+    public optionalParameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: ILogger): T | undefined {
         logger.log('ParameterContainer.optionalParameter', { key: key, expectedTypes: builder.expectedTypes });
 
         // Return undefined if the parameter doesn't exist
@@ -50,7 +50,7 @@ export class ParameterContainer {
         return builder.build(parameter as TypeFrom<TypeName>, logger.nextIndent);
     }
 
-    public parameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: Logger): T {
+    public parameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: ILogger): T {
         logger.log('ParameterContainer.parameter', { key: key, expectedTypes: builder.expectedTypes });
 
         // Get parameter that is possible optional

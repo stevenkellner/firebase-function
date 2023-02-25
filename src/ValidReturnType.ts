@@ -1,1 +1,1 @@
-export type ValidReturnType = boolean | string | number | null | undefined | ValidReturnType[] | { [key: string]: ValidReturnType };
+export type ValidReturnType = boolean | string | number | null | undefined | void | ValidReturnType[] | { [key: string]: ValidReturnType };

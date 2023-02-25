@@ -8,6 +8,8 @@ export interface CryptedScheme<T extends Scheme> {
 
 export type SchemeType = Scheme | CryptedScheme<Scheme> | CryptedScheme<Scheme>;
 
+export type DatabaseSchemeType<T extends SchemeType> = T;
+
 export type GetCryptedScheme<T extends SchemeType> = T extends CryptedScheme<infer Scheme> ? Scheme : never;
 
 export type IsCryptedScheme<T extends SchemeType> = T extends CryptedScheme<Scheme> ? true : never;

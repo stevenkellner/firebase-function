@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { Logger } from '../src/logger/Logger';
+import { Logger, type ILogger } from '../src/logger';
 import { ParameterBuilder } from '../src/parameter/ParameterBuilder';
 
 describe('Parameter builder', () => {
     const logger = Logger.start('coloredVerbose', 'Parameter builder tests');
 
     it('multiple types', () => {
-        const builder = new ParameterBuilder(['string', 'number'], (value: string | number, logger: Logger) => value.toString());
+        const builder = new ParameterBuilder(['string', 'number'], (value: string | number, logger: ILogger) => value.toString());
         expect(builder.expectedTypes).to.be.deep.equal(['string', 'number']);
         expect(builder.build('asdf', logger.nextIndent)).to.be.equal('asdf');
         expect(builder.build(1, logger.nextIndent)).to.be.equal('1');
@@ -74,20 +74,20 @@ describe('Parameter builder', () => {
 
     describe('guard', () => {
         it('undefined', () => {
-            const builder = ParameterBuilder.guard('undefined', ((value: undefined, logger: Logger) => value === undefined) as (value: undefined, logger: Logger) => value is undefined);
+            const builder = ParameterBuilder.guard('undefined', ((value: undefined, logger: ILogger) => value === undefined) as (value: undefined, logger: ILogger) => value is undefined);
             expect(builder.expectedTypes).be.be.deep.equal(['undefined']);
             expect(builder.build(undefined, logger.nextIndent)).to.be.undefined;
         });
 
         it('boolean', () => {
-            const builder = ParameterBuilder.guard('boolean', ((value: boolean, logger: Logger) => value) as (value: boolean, logger: Logger) => value is true);
+            const builder = ParameterBuilder.guard('boolean', ((value: boolean, logger: ILogger) => value) as (value: boolean, logger: ILogger) => value is true);
             expect(builder.expectedTypes).be.be.deep.equal(['boolean']);
             expect(builder.build(true, logger.nextIndent)).to.be.equal(true);
             expect(() => builder.build(false, logger.nextIndent)).to.throw();
         });
 
         it('string', () => {
-            const builder = ParameterBuilder.guard('string', ((value: string, logger: Logger) => value === 'a' || value === 'b') as (value: string, logger: Logger) => value is 'a' | 'b');
+            const builder = ParameterBuilder.guard('string', ((value: string, logger: ILogger) => value === 'a' || value === 'b') as (value: string, logger: ILogger) => value is 'a' | 'b');
             expect(builder.expectedTypes).be.be.deep.equal(['string']);
             expect(builder.build('a', logger.nextIndent)).to.be.equal('a');
             expect(builder.build('b', logger.nextIndent)).to.be.equal('b');
@@ -96,7 +96,7 @@ describe('Parameter builder', () => {
         });
 
         it('number', () => {
-            const builder = ParameterBuilder.guard('number', ((value: number, logger: Logger) => value === 1 || value === 2) as (value: number, logger: Logger) => value is 1 | 2);
+            const builder = ParameterBuilder.guard('number', ((value: number, logger: ILogger) => value === 1 || value === 2) as (value: number, logger: ILogger) => value is 1 | 2);
             expect(builder.expectedTypes).be.be.deep.equal(['number']);
             expect(builder.build(1, logger.nextIndent)).to.be.equal(1);
             expect(builder.build(2, logger.nextIndent)).to.be.equal(2);
@@ -104,7 +104,7 @@ describe('Parameter builder', () => {
         });
 
         it('bigint', () => {
-            const builder = ParameterBuilder.guard('bigint', ((value: bigint, logger: Logger) => value === 1n || value === 2n) as (value: bigint, logger: Logger) => value is 1n | 2n);
+            const builder = ParameterBuilder.guard('bigint', ((value: bigint, logger: ILogger) => value === 1n || value === 2n) as (value: bigint, logger: ILogger) => value is 1n | 2n);
             expect(builder.expectedTypes).be.be.deep.equal(['bigint']);
             expect(builder.build(1n, logger.nextIndent)).to.be.equal(1n);
             expect(builder.build(2n, logger.nextIndent)).to.be.equal(2n);
@@ -112,7 +112,7 @@ describe('Parameter builder', () => {
         });
 
         it('object', () => {
-            const builder = ParameterBuilder.guard('object', ((value: object | null, logger: Logger) => value !== null && 'v' in value && typeof value.v === 'string') as (value: object | null, logger: Logger) => value is { v: string });
+            const builder = ParameterBuilder.guard('object', ((value: object | null, logger: ILogger) => value !== null && 'v' in value && typeof value.v === 'string') as (value: object | null, logger: ILogger) => value is { v: string });
             expect(builder.expectedTypes).be.be.deep.equal(['object']);
             expect(builder.build({ v: 'asdf' }, logger.nextIndent)).to.be.deep.equal({ v: 'asdf' });
             expect(() => builder.build(null, logger.nextIndent)).to.throw();
@@ -123,41 +123,41 @@ describe('Parameter builder', () => {
 
     describe('build', () => {
         it('undefined', () => {
-            const builder = ParameterBuilder.build('undefined', (value: undefined, logger: Logger) => 'asdf');
+            const builder = ParameterBuilder.build('undefined', (value: undefined, logger: ILogger) => 'asdf');
             expect(builder.expectedTypes).to.be.deep.equal(['undefined']);
             expect(builder.build(undefined, logger.nextIndent)).to.be.equal('asdf');
         });
 
         it('boolean', () => {
-            const builder = ParameterBuilder.build('boolean', (value: boolean, logger: Logger) => value ? 'a' : 'b');
+            const builder = ParameterBuilder.build('boolean', (value: boolean, logger: ILogger) => value ? 'a' : 'b');
             expect(builder.expectedTypes).to.be.deep.equal(['boolean']);
             expect(builder.build(true, logger.nextIndent)).to.be.equal('a');
             expect(builder.build(false, logger.nextIndent)).to.be.equal('b');
         });
 
         it('string', () => {
-            const builder = ParameterBuilder.build('string', (value: string, logger: Logger) => value + 'asdf');
+            const builder = ParameterBuilder.build('string', (value: string, logger: ILogger) => value + 'asdf');
             expect(builder.expectedTypes).to.be.deep.equal(['string']);
             expect(builder.build('', logger.nextIndent)).to.be.equal('asdf');
             expect(builder.build('ölkj', logger.nextIndent)).to.be.equal('ölkjasdf');
         });
 
         it('number', () => {
-            const builder = ParameterBuilder.build('number', (value: number, logger: Logger) => value.toString());
+            const builder = ParameterBuilder.build('number', (value: number, logger: ILogger) => value.toString());
             expect(builder.expectedTypes).to.be.deep.equal(['number']);
             expect(builder.build(0, logger.nextIndent)).to.be.equal('0');
             expect(builder.build(-1.5, logger.nextIndent)).to.be.equal('-1.5');
         });
 
         it('bigint', () => {
-            const builder = ParameterBuilder.build('bigint', (value: bigint, logger: Logger) => value.toString());
+            const builder = ParameterBuilder.build('bigint', (value: bigint, logger: ILogger) => value.toString());
             expect(builder.expectedTypes).to.be.deep.equal(['bigint']);
             expect(builder.build(0n, logger.nextIndent)).to.be.equal('0');
             expect(builder.build(-15n, logger.nextIndent)).to.be.equal('-15');
         });
 
         it('object', () => {
-            const builder = ParameterBuilder.build('object', (value: object | null, logger: Logger) => value === null ? null : 'asdf');
+            const builder = ParameterBuilder.build('object', (value: object | null, logger: ILogger) => value === null ? null : 'asdf');
             expect(builder.expectedTypes).to.be.deep.equal(['object']);
             expect(builder.build(null, logger.nextIndent)).to.be.null;
             expect(builder.build({}, logger.nextIndent)).to.be.equal('asdf');

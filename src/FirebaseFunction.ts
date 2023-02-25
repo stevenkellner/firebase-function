@@ -3,7 +3,7 @@ import { type AuthData, type FunctionsErrorCode } from 'firebase-functions/lib/c
 import { Crypter } from './crypter/Crypter';
 import { DatabaseType } from './DatabaseType';
 import { HttpsError } from './HttpsError';
-import { Logger } from './logger/Logger';
+import { type ILogger, Logger, type VerboseType, DummyLogger } from './logger';
 import { Result, type Result as ResultSuccessFailure } from './Result';
 import { type ValidReturnType } from './ValidReturnType';
 
@@ -55,21 +55,37 @@ export namespace FirebaseFunction {
     export function create<
         FFunction extends FirebaseFunction<unknown, FirebaseFunction.ReturnType<FFunction>>
     >(
-        createFirebaseFunction: (data: unknown, auth: AuthData | undefined) => FFunction,
+        createFirebaseFunction: (data: unknown, auth: AuthData | undefined, logger: ILogger) => FFunction,
         getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys
     ): functions.HttpsFunction & functions.Runnable<unknown> {
         return functions
             .region('europe-west1')
             .https
-            .onCall(async(data, context) => {
+            .onCall(async(data: unknown, context) => {
+                const initialLogger = new DummyLogger();
+                if (typeof data !== 'object' || data === null)
+                    throw HttpsError('invalid-argument', 'Function parameter data has to be an object.', initialLogger);
+
                 // Get database
-                const logger = Logger.start('none', 'createFunction', undefined, 'notice');
-                if (typeof data.databaseType !== 'string')
-                    throw HttpsError('invalid-argument', 'Couldn\'t get database type.', logger);
-                const databaseType = DatabaseType.fromString(data.databaseType, logger.nextIndent);
+                if (!('databaseType' in data) || typeof data.databaseType !== 'string')
+                    throw HttpsError('invalid-argument', 'Couldn\'t get database type from function parameter data.', initialLogger);
+                const databaseType = DatabaseType.fromString(data.databaseType, initialLogger.nextIndent);
+
+                // Get logger verbose type
+                let loggerVerboseType: VerboseType = 'none';
+                if ('verbose' in data && (data.verbose === 'none' || data.verbose === 'verbose' || data.verbose === 'colored' || data.verbose === 'coloredVerbose')) {
+                    if (databaseType.value === 'release' && data.verbose === 'verbose')
+                        loggerVerboseType = 'none';
+                    else if (databaseType.value === 'release' && data.verbose === 'coloredVerbose')
+                        loggerVerboseType = 'colored';
+                    else
+                        loggerVerboseType = data.verbose;
+                }
+
+                const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { data: data, context: context }, 'notice');
 
                 // Get result of function call
-                const result = await executeFunction(createFirebaseFunction(data, context.auth));
+                const result = await executeFunction(createFirebaseFunction(data, context.auth, logger.nextIndent));
 
                 // Encrypt result
                 const crypter = new Crypter(getCryptionKeys(databaseType));

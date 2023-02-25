@@ -2,7 +2,7 @@ import { Crypter } from '../crypter';
 import { DatabaseType } from '../DatabaseType';
 import { type FirebaseFunction } from '../FirebaseFunction';
 import { getFunctions, httpsCallable, type Functions } from 'firebase/functions';
-import { type Logger } from '../logger';
+import { type VerboseType } from '../logger';
 import { type FirebaseOptions, initializeApp } from 'firebase/app';
 import { getDatabase, onValue, ref, set, type Database } from 'firebase/database';
 import { getAuth, signInWithEmailAndPassword, type UserCredential, type Auth, signOut, type User } from 'firebase/auth';
@@ -54,7 +54,7 @@ export class FirebaseFunctions {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
         const callableFunction = httpsCallable<{
-            verbose: Logger.VerboseType;
+            verbose: VerboseType;
             databaseType: DatabaseType.Value;
             parameters: string;
         }, string>(this.functions, functionName);
@@ -74,7 +74,7 @@ export class FirebaseDatabase {
     ) {}
 
     public async getOptional<T>(path: string): Promise<T | null> {
-        const reference = ref(this.database, path);
+        const reference = ref(this.database, path === '' ? undefined : path);
         return await new Promise<T | null>(resolve => {
             onValue(reference, snapshot => {
                 if (!snapshot.exists())
@@ -106,7 +106,7 @@ export class FirebaseDatabase {
     }
 
     public async set(path: string, value: FirebaseDatabase.ValueType) {
-        const reference = ref(this.database, path);
+        const reference = ref(this.database, path === '' ? undefined : path);
         await set(reference, value);
     }
 
@@ -129,7 +129,7 @@ export class FirebaseAuth {
         private readonly auth: Auth
     ) {}
 
-    public getCurrentUser(): User | null {
+    public get currentUser(): User | null {
         return this.auth.currentUser;
     }
 
@@ -138,7 +138,7 @@ export class FirebaseAuth {
     }
 
     public async signOut() {
-        if (this.getCurrentUser !== null)
+        if (this.currentUser !== null)
             await signOut(this.auth);
     }
 }
