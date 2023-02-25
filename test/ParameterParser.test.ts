@@ -69,11 +69,11 @@ describe('ParameterParser', () => {
     function testParameterParser<Parameters extends Record<string, unknown>>(
         parameterToParse: unknown,
         builders: ParameterBuilders<Parameters>,
-        expectedParameters: Parameters
+        expectedParameters: Parameters & { databaseType: DatabaseType }
     ) {
         const crypter = new Crypter(cryptionKeys);
         const parameterContainer = new ParameterContainer({
-            databaseType: 'testing',
+            databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt(parameterToParse)
         }, (databaseType: DatabaseType) => cryptionKeys, logger.nextIndent);
         const parameterParser = new ParameterParser<Parameters>(builders, logger.nextIndent);
@@ -93,7 +93,9 @@ describe('ParameterParser', () => {
     });
 
     it('empty parameter', () => {
-        testParameterParser<Record<string, never>>({}, {}, {});
+        testParameterParser<Record<string, unknown>>({}, {}, {
+            databaseType: new DatabaseType('testing')
+        });
     });
 
     it('only primitive types and object', () => {
@@ -118,7 +120,8 @@ describe('ParameterParser', () => {
             value3: {
                 subValue1: 'ghjk',
                 subValue2: 98
-            }
+            },
+            databaseType: new DatabaseType('testing')
         });
     });
 
@@ -141,7 +144,8 @@ describe('ParameterParser', () => {
         }, {
             value1: new StringClassType('v1'),
             value2: new NumberClassType(12.50),
-            value3: new ObjectClassType('a', 3)
+            value3: new ObjectClassType('a', 3),
+            databaseType: new DatabaseType('testing')
         });
     });
 
@@ -157,7 +161,8 @@ describe('ParameterParser', () => {
             value2: ParameterBuilder.build('string', StringClassType.fromString)
         }, {
             value1: 23.9,
-            value2: new StringClassType('v3')
+            value2: new StringClassType('v3'),
+            databaseType: new DatabaseType('testing')
         });
     });
 
@@ -170,7 +175,8 @@ describe('ParameterParser', () => {
             }, {
                 value1: ParameterBuilder.build('string', StringClassType.fromString)
             }, {
-                value1: new StringClassType('v1')
+                value1: new StringClassType('v1'),
+                databaseType: new DatabaseType('testing')
             });
             expect(true).to.be.false;
         } catch (error) {
@@ -203,7 +209,8 @@ describe('ParameterParser', () => {
         }, {
             value: ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')
         }, {
-            value: 'b'
+            value: 'b',
+            databaseType: new DatabaseType('testing')
         });
     });
 
@@ -243,7 +250,8 @@ describe('ParameterParser', () => {
             value3a: new DatabaseType('testing'),
             value3b: undefined,
             value4a: undefined,
-            value4b: undefined
+            value4b: undefined,
+            databaseType: new DatabaseType('testing')
         });
     });
 
@@ -256,7 +264,8 @@ describe('ParameterParser', () => {
             }, {
                 value: new ParameterBuilder(['number'], v => v.toString())
             }, {
-                value: 'asdf'
+                value: 'asdf',
+                databaseType: new DatabaseType('testing')
             });
         }, 'invalid-argument');
     });
@@ -270,7 +279,8 @@ describe('ParameterParser', () => {
             }, {
                 value: new ParameterBuilder(['number'], v => v.toString())
             }, {
-                value: 'asdf'
+                value: 'asdf',
+                databaseType: new DatabaseType('testing')
             });
         }, 'invalid-argument');
     });
@@ -284,7 +294,8 @@ describe('ParameterParser', () => {
             }, {
                 value: ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')
             }, {
-                value: 'a'
+                value: 'a',
+                databaseType: new DatabaseType('testing')
             });
         }, 'invalid-argument');
     });

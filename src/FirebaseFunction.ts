@@ -55,7 +55,7 @@ export namespace FirebaseFunction {
     export function create<
         FFunction extends FirebaseFunction<unknown, FirebaseFunction.ReturnType<FFunction>>
     >(
-        createFirebaseFunction: (data: unknown, auth: AuthData | undefined, logger: ILogger) => FFunction,
+        createFirebaseFunction: (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FFunction,
         getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys
     ): functions.HttpsFunction & functions.Runnable<unknown> {
         return functions
@@ -85,7 +85,10 @@ export namespace FirebaseFunction {
                 const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { data: data, context: context }, 'notice');
 
                 // Get result of function call
-                const result = await executeFunction(createFirebaseFunction(data, context.auth, logger.nextIndent));
+                const result = await executeFunction(createFirebaseFunction({
+                    ...data,
+                    databaseType: databaseType
+                }, context.auth, logger.nextIndent));
 
                 // Encrypt result
                 const crypter = new Crypter(getCryptionKeys(databaseType));

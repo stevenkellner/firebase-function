@@ -1,5 +1,5 @@
 import { Crypter } from '../crypter/Crypter';
-import { DatabaseType } from '../DatabaseType';
+import { type DatabaseType } from '../DatabaseType';
 import { HttpsError } from '../HttpsError';
 import { type ILogger } from '../logger';
 import { type ParameterBuilder } from './ParameterBuilder';
@@ -8,24 +8,18 @@ import { type TypeOfName, type TypeFrom } from './TypeOf';
 export class ParameterContainer {
     private readonly data: unknown;
 
-    public constructor(data: unknown, getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys, logger: ILogger) {
+    public readonly databaseType: DatabaseType;
+
+    public constructor(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys, logger: ILogger) {
         logger.log('ParameterContainer.constructor', { data: data });
 
-        // Check if parameters are hand over
-        if (data === undefined || data === null || typeof data !== 'object')
-            throw HttpsError('invalid-argument', 'No parameters hand over by the firebase function.', logger);
-
-        // Check if database type is valid
-        if (!('databaseType' in data) || typeof data.databaseType !== 'string')
-            throw HttpsError('invalid-argument', 'Missing database type in firebase function parameters.', logger);
-
-        const databaseType = DatabaseType.fromString(data.databaseType, logger.nextIndent);
-        const crypter = new Crypter(getCryptionKeys(databaseType));
+        const crypter = new Crypter(getCryptionKeys(data.databaseType));
 
         // Get and decrypt parameters
         if (!('parameters' in data) || typeof data.parameters !== 'string')
             throw HttpsError('invalid-argument', 'Missing parameters in firebase function parameters.', logger);
         this.data = crypter.decryptDecode(data.parameters);
+        this.databaseType = data.databaseType;
     }
 
     public optionalParameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: ILogger): T | undefined {

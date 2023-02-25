@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { Crypter } from '../src/crypter/Crypter';
 import { FixedLength } from '../src/crypter/FixedLength';
-import { type DatabaseType } from '../src/DatabaseType';
+import { DatabaseType } from '../src/DatabaseType';
 import { Logger } from '../src/logger';
 import { ParameterBuilder } from '../src/parameter/ParameterBuilder';
 import { ParameterContainer } from '../src/parameter/ParameterContainer';
@@ -14,34 +14,16 @@ describe('Parameter container', () => {
     };
     const logger = Logger.start('coloredVerbose', 'paramter container test');
 
-    function createParameterContainer(data: unknown): ParameterContainer {
+    function createParameterContainer(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }): ParameterContainer {
         return new ParameterContainer(data, (databaseType: DatabaseType) => cryptionKeys, logger.nextIndent);
     }
 
-    it('data invalid', () => {
-        expect(() => createParameterContainer(undefined)).to.throw();
-        expect(() => createParameterContainer(null)).to.throw();
-        expect(() => createParameterContainer('asdf')).to.throw();
-        expect(() => createParameterContainer(12)).to.throw();
-    });
-
-    it('database type invalid', () => {
-        expect(() => createParameterContainer({})).to.throw();
-        expect(() => createParameterContainer({
-            databaseType: 5
-        })).to.throw();
-        expect(() => createParameterContainer({
-            databaseType: 'asdf'
-        })).to.throw();
-    });
-
     it('parameters invalid', () => {
-        expect(() => createParameterContainer({})).to.throw();
         expect(() => createParameterContainer({
-            databaseType: 'testing'
+            databaseType: new DatabaseType('testing')
         })).to.throw();
         expect(() => createParameterContainer({
-            databaseType: 'testing',
+            databaseType: new DatabaseType('testing'),
             parameters: 0
         })).to.throw();
     });
@@ -49,7 +31,7 @@ describe('Parameter container', () => {
     it('get optional parameter invalid / undefined', () => {
         const crypter = new Crypter(cryptionKeys);
         const parameterContainer = createParameterContainer({
-            databaseType: 'testing',
+            databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt({
                 value1: undefined,
                 value2: null,
@@ -65,7 +47,7 @@ describe('Parameter container', () => {
     it('get optional parameter', () => {
         const crypter = new Crypter(cryptionKeys);
         const parameterContainer = createParameterContainer({
-            databaseType: 'testing',
+            databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt({
                 value1: true,
                 value2: 'asdf',
@@ -84,7 +66,7 @@ describe('Parameter container', () => {
     it('get undefined parameter', () => {
         const crypter = new Crypter(cryptionKeys);
         const parameterContainer = createParameterContainer({
-            databaseType: 'testing',
+            databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt({
                 value0: undefined
             })
@@ -95,7 +77,7 @@ describe('Parameter container', () => {
     it('get parameter', () => {
         const crypter = new Crypter(cryptionKeys);
         const parameterContainer = createParameterContainer({
-            databaseType: 'testing',
+            databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt({
                 value0: undefined,
                 value1: true,

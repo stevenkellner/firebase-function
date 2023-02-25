@@ -3,6 +3,7 @@ import { type ILogger } from './ILogger';
 import { type LoggingProperty } from './LoggingProperty';
 import { LogLevel } from './LogLevel';
 import { type VerboseType } from './VerboseType';
+import { stringify } from 'flatted';
 
 export class Logger implements ILogger {
     private constructor(
@@ -57,7 +58,7 @@ export class Logger implements ILogger {
 
     private detailString(indent: number, key: string, detail: unknown): string {
         const builder = new StringBuilder();
-        const jsonLines = JSON.stringify(detail, undefined, '  ')?.split('\n') ?? [''];
+        const jsonLines = stringify(detail, undefined, '  ')?.split('\n') ?? [''];
         builder.appendLine(`${' '.repeat(2 * indent)}| ${`${key}: \x1b[40m\x1b[2m${jsonLines.shift() ?? ''}\x1b[0m`}`);
         for (const line of jsonLines)
             builder.appendLine(`${' '.repeat(2 * indent)}| ${' '.repeat(key.length + 2)}\x1b[40m\x1b[2m${line}\x1b[0m`);

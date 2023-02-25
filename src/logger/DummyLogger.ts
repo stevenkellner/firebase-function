@@ -2,7 +2,9 @@ import { type ILogger } from './ILogger';
 import { type LogLevel } from './LogLevel';
 
 export class DummyLogger implements ILogger {
-    public readonly nextIndent: ILogger = new DummyLogger();
+    public get nextIndent(): ILogger {
+        return this;
+    }
 
     public log(
         functionName: string,
