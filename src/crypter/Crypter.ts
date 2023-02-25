@@ -70,8 +70,8 @@ export namespace Crypter {
         vernamKey: FixedLength<Uint8Array, 32>;
     }
 
-    export function sha512(value: string): string {
-        const hashedValue = crypt_sha512.base64(value);
+    export function sha512(value: string, key?: string): string {
+        const hashedValue = key === undefined ? crypt_sha512.base64(value) : crypt_sha512.base64Hmac(key, value);
         return hashedValue.replaceAll('/', '_');
     }
 }
