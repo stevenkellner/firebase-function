@@ -7,3 +7,4 @@ export * from './FirebaseFunction';
 export * from './FirebaseSchedule';
 export * from './HttpsError';
 export * from './Result';
+export * from './utils';

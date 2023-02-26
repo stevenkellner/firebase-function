@@ -1,5 +1,6 @@
 import type * as admin from 'firebase-admin';
 import { Crypter } from '../crypter';
+import { type ArrayElement } from '../utils';
 import { type GetCryptedScheme, type IsCryptedScheme, type SchemeType } from './SchemeType';
 
 export class DatabaseSnapshot<Scheme extends SchemeType> {
@@ -40,5 +41,36 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
 
     public get exists(): boolean {
         return this.snapshot.exists();
+    }
+
+    public forEach(action: (snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => boolean | void): boolean {
+        return this.snapshot.forEach(snapshot => {
+            return action(new DatabaseSnapshot<ArrayElement<Scheme>>(snapshot, this.cryptionKeys));
+        });
+    }
+
+    public map<U>(transform: (snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => U): U[] {
+        const result: U[] = [];
+        this.forEach(snapshot => {
+            result.push(transform(snapshot));
+        });
+        return result;
+    }
+
+    public flatMap<U>(transform: (snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => U | undefined | null): U[] {
+        const result: U[] = [];
+        this.forEach(snapshot => {
+            const value = transform(snapshot);
+            if (value !== undefined && value !== null)
+                result.push(value);
+        });
+        return result;
+    }
+
+    public reduce<T>(initialValue: T, transform: (value: T, snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => T): T {
+        this.forEach(snapshot => {
+            initialValue = transform(initialValue, snapshot);
+        });
+        return initialValue;
     }
 }
