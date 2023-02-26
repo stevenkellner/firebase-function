@@ -6,6 +6,7 @@ import { type VerboseType } from '../logger';
 import { type FirebaseOptions, initializeApp } from 'firebase/app';
 import { getDatabase, onValue, ref, set, type Database } from 'firebase/database';
 import { getAuth, signInWithEmailAndPassword, type UserCredential, type Auth, signOut, type User } from 'firebase/auth';
+import { type CallSecret } from '../CallSecret';
 
 export class FirebaseApp {
     private readonly _functions: Functions;
@@ -15,6 +16,7 @@ export class FirebaseApp {
     public constructor(
         options: FirebaseOptions,
         private readonly cryptionKeys: Crypter.Keys,
+        private readonly callSecretKey: string,
         config?: FirebaseApp.Config
     ) {
         const app = initializeApp(options, config?.name);
@@ -24,7 +26,7 @@ export class FirebaseApp {
     }
 
     public get functions(): FirebaseFunctions {
-        return new FirebaseFunctions(this._functions, this.cryptionKeys);
+        return new FirebaseFunctions(this._functions, this.cryptionKeys, this.callSecretKey);
     }
 
     public get database(): FirebaseDatabase {
@@ -47,20 +49,27 @@ export namespace FirebaseApp {
 export class FirebaseFunctions {
     public constructor(
         private readonly functions: Functions,
-        private readonly cryptionKeys: Crypter.Keys
+        private readonly cryptionKeys: Crypter.Keys,
+        private readonly callSecretKey: string
     ) {}
 
     public async call<Params, ResultType>(functionName: string, parameters: Params): Promise<FirebaseFunction.Result<ResultType>> {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
+        const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString();
         const callableFunction = httpsCallable<{
             verbose: VerboseType;
             databaseType: DatabaseType.Value;
+            callSecret: CallSecret.Flatten;
             parameters: string;
         }, string>(this.functions, functionName);
         const httpsCallableResult = await callableFunction({
             verbose: 'coloredVerbose',
             databaseType: databaseType.value,
+            callSecret: {
+                expiresAt: expiresAtIsoDate,
+                hashedData: Crypter.sha512(expiresAtIsoDate, this.callSecretKey)
+            },
             parameters: crypter.encodeEncrypt(parameters)
         });
         return await crypter.decryptDecode(httpsCallableResult.data);

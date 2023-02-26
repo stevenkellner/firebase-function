@@ -1,1 +1,3 @@
-export type ArrayElement<T> = T extends Array<infer E> ? E : never;
+export type ObjectValue<T> =
+    T extends Record<PropertyKey, infer V> ? V :
+        T extends Array<infer E> ? E : never;

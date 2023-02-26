@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import { type AuthData, type FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
+import { CallSecret } from './CallSecret';
 import { Crypter } from './crypter/Crypter';
 import { DatabaseType } from './DatabaseType';
 import { HttpsError } from './HttpsError';
@@ -56,7 +57,8 @@ export namespace FirebaseFunction {
         FFunction extends FirebaseFunction<unknown, FirebaseFunction.ReturnType<FFunction>>
     >(
         createFirebaseFunction: (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FFunction,
-        getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys
+        getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys,
+        getCallSecretKey: (databaseType: DatabaseType) => string
     ): functions.HttpsFunction & functions.Runnable<unknown> {
         return functions
             .region('europe-west1')
@@ -83,6 +85,12 @@ export namespace FirebaseFunction {
                 }
 
                 const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { data: data, context: context }, 'notice');
+
+                // Check call secret
+                if (!('callSecret' in data) || typeof data.callSecret !== 'object')
+                    throw HttpsError('invalid-argument', 'Couldn\'t get call secret from function parameter data.', logger);
+                const callSecret = CallSecret.fromObject(data.callSecret, logger.nextIndent);
+                CallSecret.checkCallSecret(callSecret, getCallSecretKey(databaseType), logger.nextIndent);
 
                 // Get result of function call
                 const result = await executeFunction(createFirebaseFunction({

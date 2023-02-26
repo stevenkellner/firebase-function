@@ -1,6 +1,6 @@
 import type * as admin from 'firebase-admin';
 import { Crypter } from '../crypter';
-import { type ArrayElement } from '../utils';
+import { type ObjectValue } from '../utils';
 import { type GetCryptedScheme, type IsCryptedScheme, type SchemeType } from './SchemeType';
 
 export class DatabaseSnapshot<Scheme extends SchemeType> {
@@ -43,13 +43,13 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         return this.snapshot.exists();
     }
 
-    public forEach(action: (snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => boolean | void): boolean {
+    public forEach(action: (snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => boolean | void): boolean {
         return this.snapshot.forEach(snapshot => {
-            return action(new DatabaseSnapshot<ArrayElement<Scheme>>(snapshot, this.cryptionKeys));
+            return action(new DatabaseSnapshot<ObjectValue<Scheme>>(snapshot, this.cryptionKeys));
         });
     }
 
-    public map<U>(transform: (snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => U): U[] {
+    public map<U>(transform: (snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => U): U[] {
         const result: U[] = [];
         this.forEach(snapshot => {
             result.push(transform(snapshot));
@@ -57,7 +57,7 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         return result;
     }
 
-    public flatMap<U>(transform: (snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => U | undefined | null): U[] {
+    public flatMap<U>(transform: (snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => U | undefined | null): U[] {
         const result: U[] = [];
         this.forEach(snapshot => {
             const value = transform(snapshot);
@@ -67,7 +67,7 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         return result;
     }
 
-    public reduce<T>(initialValue: T, transform: (value: T, snapshot: DatabaseSnapshot<ArrayElement<Scheme>>) => T): T {
+    public reduce<T>(initialValue: T, transform: (value: T, snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => T): T {
         this.forEach(snapshot => {
             initialValue = transform(initialValue, snapshot);
         });
