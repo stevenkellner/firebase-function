@@ -42,4 +42,19 @@ export namespace ParameterBuilder {
             return builder.build(value, logger.nextIndent);
         });
     }
+
+    export function array<TypeName extends TypeOfName, T>(builder: ParameterBuilder<TypeName, T>, length?: number): ParameterBuilder<'object', T[]> {
+        return new ParameterBuilder<'object', T[]>(['object'], (value: object | null, logger: ILogger) => {
+            logger.log('ParameterBuilder.array', { expectedTypes: builder.expectedTypes, value: value });
+            if (value === null || !Array.isArray(value))
+                throw HttpsError('invalid-argument', 'Value is not an array.', logger);
+            if (length !== undefined && value.length !== length)
+                throw HttpsError('invalid-argument', `Value array has not the expectd length ${length}.`, logger);
+            return value.map(element => {
+                if (!(builder.expectedTypes as TypeOfName[]).includes(typeof element))
+                    throw HttpsError('invalid-argument', `Array element has an invalid type, expected: ${builder.expectedTypes}`, logger);
+                return builder.build(element as TypeFrom<TypeName>, logger.nextIndent);
+            });
+        });
+    }
 }

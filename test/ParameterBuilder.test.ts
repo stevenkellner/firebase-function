@@ -185,4 +185,37 @@ describe('Parameter builder', () => {
             expect(builder.build(0, logger.nextIndent)).to.be.equal(0);
         });
     });
+
+    describe('array', () => {
+        it('undefined', () => {
+            const builder1 = ParameterBuilder.array(ParameterBuilder.value('undefined'));
+            const builder2 = ParameterBuilder.array(ParameterBuilder.value('undefined'), 2);
+            expect(() => builder1.build(null, logger.nextIndent)).to.throw();
+            expect(() => builder1.build({ v: 'asdf' }, logger.nextIndent)).to.throw();
+            expect(() => builder2.build([], logger.nextIndent)).to.throw();
+            expect(() => builder2.build([undefined], logger.nextIndent)).to.throw();
+            expect(() => builder1.build([0, 1, 2], logger.nextIndent)).to.throw();
+            expect(builder1.build([], logger.nextIndent)).to.be.deep.equal([]);
+            expect(builder1.build([undefined], logger.nextIndent)).to.be.deep.equal([undefined]);
+            expect(builder2.build([undefined, undefined], logger.nextIndent)).to.be.deep.equal([undefined, undefined]);
+        });
+
+        it('number', () => {
+            const builder = ParameterBuilder.array(ParameterBuilder.value('number'));
+            expect(builder.build([], logger.nextIndent)).to.be.deep.equal([]);
+            expect(builder.build([0, 1, 2], logger.nextIndent)).to.be.deep.equal([0, 1, 2]);
+        });
+
+        it('build', () => {
+            const builder = ParameterBuilder.array(ParameterBuilder.build('number', value => value.toString()));
+            expect(builder.build([], logger.nextIndent)).to.be.deep.equal([]);
+            expect(builder.build([0, 1, 2], logger.nextIndent)).to.be.deep.equal(['0', '1', '2']);
+        });
+
+        it('optional', () => {
+            const builder = ParameterBuilder.array(ParameterBuilder.optional(ParameterBuilder.value('string')));
+            expect(builder.build([], logger.nextIndent)).to.be.deep.equal([]);
+            expect(builder.build(['0', undefined, '1', undefined, undefined, '2'], logger.nextIndent)).to.be.deep.equal(['0', undefined, '1', undefined, undefined, '2']);
+        });
+    });
 });

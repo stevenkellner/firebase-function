@@ -38,7 +38,7 @@ export class ParameterContainer {
 
         // Check expected type
         if (!(builder.expectedTypes as TypeOfName[]).includes(typeof parameter))
-            throw HttpsError('invalid-argument', `Parameter ${key.toString()} has a invalid type, expected: ${builder.expectedTypes}`, logger);
+            throw HttpsError('invalid-argument', `Parameter ${key.toString()} has an invalid type, expected: ${builder.expectedTypes}`, logger);
 
         // Build and return parameter
         return builder.build(parameter as TypeFrom<TypeName>, logger.nextIndent);
