@@ -7,6 +7,7 @@ import { type FirebaseOptions, initializeApp } from 'firebase/app';
 import { getDatabase, onValue, ref, set, type Database } from 'firebase/database';
 import { getAuth, signInWithEmailAndPassword, type UserCredential, type Auth, signOut, type User } from 'firebase/auth';
 import { type CallSecret } from '../CallSecret';
+import { type FunctionType } from '../FunctionType';
 
 export class FirebaseApp {
     private readonly _functions: Functions;
@@ -53,7 +54,9 @@ export class FirebaseFunctions {
         private readonly callSecretKey: string
     ) {}
 
-    public async call<Params, ResultType>(functionName: string, parameters: Params): Promise<FirebaseFunction.Result<ResultType>> {
+    public async call<
+        FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>, unknown>>
+    >(functionName: string, parameters: FirebaseFunction.FlattenParameters<FFunction>): Promise<FirebaseFunction.Result<FirebaseFunction.ReturnType<FFunction>>> {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
         const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString();

@@ -3,6 +3,7 @@ import { type AuthData, type FunctionsErrorCode } from 'firebase-functions/lib/c
 import { CallSecret } from './CallSecret';
 import { Crypter } from './crypter/Crypter';
 import { DatabaseType } from './DatabaseType';
+import { type FunctionType } from './FunctionType';
 import { HttpsError } from './HttpsError';
 import { type ILogger, Logger, type VerboseType, DummyLogger } from './logger';
 import { Result, type Result as ResultSuccessFailure } from './Result';
@@ -11,29 +12,25 @@ import { type ValidReturnType } from './ValidReturnType';
 /**
  * Firebase function with parameters and a execute method to get the result.
  */
-export interface FirebaseFunction<Parameters, ReturnType extends ValidReturnType> {
+export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> {
     /**
      * Parameters of the firebase function.
      */
-    parameters: Parameters;
+    parameters: FunctionType.Parameters<FFunctionType>;
 
     /**
      * Executes the firebase function.
      * @returns Result of the firebase function.
      */
-    executeFunction(): Promise<ReturnType>;
+    executeFunction(): Promise<FunctionType.ReturnType<FFunctionType>>;
 }
 
 export namespace FirebaseFunction {
-    /**
-     * The parameters type of the firebase function
-     */
-    export type Parameters<T extends FirebaseFunction<unknown, ValidReturnType>> = T extends FirebaseFunction<infer Parameters, ValidReturnType> ? Parameters : never;
+    export type Parameters<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.Parameters<FFunctionType> : never;
 
-    /**
-     * The return type of the firebase funtion.
-     */
-    export type ReturnType<T extends FirebaseFunction<unknown, ValidReturnType>> = T extends FirebaseFunction<unknown, infer ReturnType> ? ReturnType : never;
+    export type ReturnType<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.ReturnType<FFunctionType> : never;
+
+    export type FlattenParameters<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.FlattenParameters<FFunctionType> : never;
 
     /**
      * Error thrown by the firebase function.
@@ -50,11 +47,9 @@ export namespace FirebaseFunction {
      * Result type of the firease function.
      */
     export type Result<T> = ResultSuccessFailure<T, FirebaseFunction.Error>;
-}
 
-export namespace FirebaseFunction {
     export function create<
-        FFunction extends FirebaseFunction<unknown, FirebaseFunction.ReturnType<FFunction>>
+        FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>>>
     >(
         createFirebaseFunction: (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FFunction,
         getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys,
@@ -106,7 +101,7 @@ export namespace FirebaseFunction {
 }
 
 export async function executeFunction<
-    FFunction extends FirebaseFunction<unknown, FirebaseFunction.ReturnType<FFunction>>
+    FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>, unknown>>
 >(firebaseFunction: FFunction): Promise<FirebaseFunction.Result<FirebaseFunction.ReturnType<FFunction>>> {
     try {
         return await mapReturnTypeToResult(firebaseFunction.executeFunction());
