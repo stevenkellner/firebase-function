@@ -13,17 +13,13 @@ import { type ValidReturnType } from './ValidReturnType';
  * Firebase function with parameters and a execute method to get the result.
  */
 export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> {
-    /**
-     * Parameters of the firebase function.
-     */
+
     parameters: FunctionType.Parameters<FFunctionType>;
 
-    /**
-     * Executes the firebase function.
-     * @returns Result of the firebase function.
-     */
     executeFunction(): Promise<FunctionType.ReturnType<FFunctionType>>;
 }
+
+export type FirebaseFunctionType<FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>>>> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FFunction;
 
 export namespace FirebaseFunction {
     export type Parameters<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.Parameters<FFunctionType> : never;
@@ -51,7 +47,7 @@ export namespace FirebaseFunction {
     export function create<
         FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>>>
     >(
-        createFirebaseFunction: (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FFunction,
+        FirebaseFunction: FirebaseFunctionType<FFunction>,
         getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys,
         getCallSecretKey: (databaseType: DatabaseType) => string
     ): functions.HttpsFunction & functions.Runnable<unknown> {
@@ -88,7 +84,7 @@ export namespace FirebaseFunction {
                 CallSecret.checkCallSecret(callSecret, getCallSecretKey(databaseType), logger.nextIndent);
 
                 // Get result of function call
-                const result = await executeFunction(createFirebaseFunction({
+                const result = await executeFunction(new FirebaseFunction({
                     ...data,
                     databaseType: databaseType
                 }, context.auth, logger.nextIndent));
