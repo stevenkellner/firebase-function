@@ -57,7 +57,7 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         return result;
     }
 
-    public flatMap<U>(transform: (snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => U | undefined | null): U[] {
+    public compactMap<U>(transform: (snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => U | undefined | null): U[] {
         const result: U[] = [];
         this.forEach(snapshot => {
             const value = transform(snapshot);

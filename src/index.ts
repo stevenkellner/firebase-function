@@ -2,6 +2,7 @@ export * from './crypter';
 export * from './database';
 export * from './logger';
 export * from './parameter';
+export * from './websiteExtractor';
 export * from './DatabaseType';
 export * from './FirebaseFunction';
 export * from './FirebaseSchedule';
