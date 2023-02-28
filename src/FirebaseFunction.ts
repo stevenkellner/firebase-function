@@ -9,9 +9,8 @@ import { type ILogger, Logger, type VerboseType, DummyLogger } from './logger';
 import { Result, type Result as ResultSuccessFailure } from './Result';
 import { type ValidReturnType } from './ValidReturnType';
 
-/**
- * Firebase function with parameters and a execute method to get the result.
- */
+export type FirebaseFunctionType<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FirebaseFunction<FFunctionType>;
+
 export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> {
 
     parameters: FunctionType.Parameters<FFunctionType>;
@@ -19,18 +18,7 @@ export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, Va
     executeFunction(): Promise<FunctionType.ReturnType<FFunctionType>>;
 }
 
-export type FirebaseFunctionType<FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>>>> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FFunction;
-
 export namespace FirebaseFunction {
-    export type Parameters<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.Parameters<FFunctionType> : never;
-
-    export type ReturnType<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.ReturnType<FFunctionType> : never;
-
-    export type FlattenParameters<T extends FirebaseFunction<FunctionType<unknown, ValidReturnType, unknown>>> = T extends FirebaseFunction<infer FFunctionType> ? FunctionType.FlattenParameters<FFunctionType> : never;
-
-    /**
-     * Error thrown by the firebase function.
-     */
     export interface Error {
         name: 'FirebaseFunctionError';
         code: FunctionsErrorCode;
@@ -39,15 +27,12 @@ export namespace FirebaseFunction {
         stack?: string;
     }
 
-    /**
-     * Result type of the firease function.
-     */
     export type Result<T> = ResultSuccessFailure<T, FirebaseFunction.Error>;
 
     export function create<
-        FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>>>
+        FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>
     >(
-        FirebaseFunction: FirebaseFunctionType<FFunction>,
+        FirebaseFunction: FirebaseFunctionType<FFunctionType>,
         getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys,
         getCallSecretKey: (databaseType: DatabaseType) => string
     ): functions.HttpsFunction & functions.Runnable<unknown> {
@@ -97,8 +82,8 @@ export namespace FirebaseFunction {
 }
 
 export async function executeFunction<
-    FFunction extends FirebaseFunction<FunctionType<unknown, FirebaseFunction.ReturnType<FFunction>, unknown>>
->(firebaseFunction: FFunction): Promise<FirebaseFunction.Result<FirebaseFunction.ReturnType<FFunction>>> {
+    FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>
+>(firebaseFunction: FirebaseFunction<FFunctionType>): Promise<FirebaseFunction.Result<FunctionType.ReturnType<FFunctionType>>> {
     try {
         return await mapReturnTypeToResult(firebaseFunction.executeFunction());
     } catch (error) {
