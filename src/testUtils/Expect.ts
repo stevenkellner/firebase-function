@@ -75,19 +75,19 @@ export class ExpectResult<T> {
         private readonly result: FirebaseFunction.Result<T>
     ) {}
 
-    public get success(): Expect<T> {
+    public get success(): ExpectToBe<T> | ExpectToBeDeep<T> {
         expect<'failure' | 'success'>(this.result.state).to.be.equal('success');
         assert(this.result.state === 'success');
-        return new Expect<T>(this.result.value);
+        return typeof this.result.value === 'object' ? new ExpectToBeDeep<T>(this.result.value) : new ExpectToBe<T>(this.result.value);
     }
 
-    public get failure(): Expect<{
+    public get failure(): ExpectToBeDeep<{
         code: FunctionsErrorCode;
         message: string;
     }> {
         expect<'failure' | 'success'>(this.result.state).to.be.equal('failure');
         assert(this.result.state === 'failure');
-        return new Expect({
+        return new ExpectToBeDeep({
             code: this.result.error.code,
             message: this.result.error.message
         });

@@ -32,6 +32,8 @@ export class FirebaseDatabase<Scheme extends SchemeType> {
                 if (!snapshot.exists())
                     throw new Error('No data in snapshot.');
                 resolve(snapshot.val());
+            }, {
+                onlyOnce: true
             });
         });
     }
@@ -51,6 +53,8 @@ export class FirebaseDatabase<Scheme extends SchemeType> {
         return await new Promise<boolean>(resolve => {
             onValue(reference, snapshot => {
                 resolve(snapshot.exists());
+            }, {
+                onlyOnce: true
             });
         });
     }
