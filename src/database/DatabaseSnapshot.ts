@@ -10,7 +10,7 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
     ) {}
 
     public child<Key extends true extends IsCryptedScheme<Scheme> ? never : (keyof Scheme & string)>(key: Key): DatabaseSnapshot<Scheme extends Record<string, SchemeType> ? Scheme[Key] : never> {
-        return new DatabaseSnapshot(this.snapshot.child(key), this.cryptionKeys);
+        return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')), this.cryptionKeys);
     }
 
     public value(crypted: true): true extends IsCryptedScheme<Scheme> ? GetCryptedScheme<Scheme> : never;
@@ -24,7 +24,7 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
     }
 
     public hasChild(path: string): boolean {
-        return this.snapshot.hasChild(path);
+        return this.snapshot.hasChild(path.replaceAll('/', '_'));
     }
 
     public get hasChildren(): boolean {
@@ -53,6 +53,15 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         const result: U[] = [];
         this.forEach(snapshot => {
             result.push(transform(snapshot));
+        });
+        return result;
+    }
+
+    public flatMap<U>(transform: (snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => U[]): U[] {
+        const result: U[] = [];
+        this.forEach(snapshot => {
+            for (const value of transform(snapshot))
+                result.push(value);
         });
         return result;
     }

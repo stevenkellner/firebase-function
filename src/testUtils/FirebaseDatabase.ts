@@ -10,7 +10,7 @@ export class FirebaseDatabase<Scheme extends SchemeType> {
     ) {}
 
     public child<Key extends true extends IsCryptedScheme<Scheme> ? never : (keyof Scheme & string)>(key: Key): FirebaseDatabase<Scheme extends Record<string, SchemeType> ? Scheme[Key] : never> {
-        return new FirebaseDatabase(this.database, this.cryptionKeys, this.path === undefined ? key : `${this.path}/${key}`);
+        return new FirebaseDatabase(this.database, this.cryptionKeys, this.path === undefined ? key.replaceAll('/', '_') : `${this.path}/${key.replaceAll('/', '_')}`);
     }
 
     public async set(value: GetCryptedScheme<Scheme>, crypted: true): Promise<void>;

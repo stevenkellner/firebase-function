@@ -14,7 +14,7 @@ export class DatabaseReference<Scheme extends SchemeType> {
     }
 
     public child<Key extends true extends IsCryptedScheme<Scheme> ? never : (keyof Scheme & string)>(key: Key): DatabaseReference<Scheme extends Record<string, SchemeType> ? Scheme[Key] : never> {
-        return new DatabaseReference(this.reference.child(key), this.cryptionKeys);
+        return new DatabaseReference(this.reference.child(key.replaceAll('/', '_')), this.cryptionKeys);
     }
 
     public async set(value: GetCryptedScheme<Scheme>, crypted: true): Promise<void>;
