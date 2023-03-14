@@ -15,7 +15,13 @@ describe('Parameter container', () => {
     const logger = Logger.start('coloredVerbose', 'paramter container test');
 
     function createParameterContainer(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }): ParameterContainer {
-        return new ParameterContainer(data, (databaseType: DatabaseType) => cryptionKeys, logger.nextIndent);
+        return new ParameterContainer(data, (databaseType: DatabaseType) => {
+            return {
+                cryptionKeys: cryptionKeys,
+                callSecretKey: '',
+                databaseUrl: ''
+            };
+        }, logger.nextIndent);
     }
 
     it('parameters invalid', () => {

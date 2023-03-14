@@ -75,7 +75,13 @@ describe('ParameterParser', () => {
         const parameterContainer = new ParameterContainer({
             databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt(parameterToParse)
-        }, (databaseType: DatabaseType) => cryptionKeys, logger.nextIndent);
+        }, (databaseType: DatabaseType) => {
+            return {
+                cryptionKeys: cryptionKeys,
+                callSecretKey: '',
+                databaseUrl: ''
+            };
+        }, logger.nextIndent);
         const parameterParser = new ParameterParser<Parameters>(builders, logger.nextIndent);
         parameterParser.parseParameters(parameterContainer);
         expect(parameterParser.parameters).to.be.deep.equal(expectedParameters);

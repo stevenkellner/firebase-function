@@ -2,7 +2,7 @@ import { httpsCallable, type Functions } from 'firebase/functions';
 import { type CallSecret } from '../CallSecret';
 import { Crypter } from '../crypter';
 import { DatabaseType } from '../DatabaseType';
-import { type FirebaseFunction, type FirebaseFunctionType } from '../FirebaseFunction';
+import { type FirebaseFunction } from '../FirebaseFunction';
 import { type FunctionType } from '../FunctionType';
 import { type FirebaseFunctionDescriptor, type FirebaseFunctionsType } from '../FirebaseFunctionsType';
 import { type ValidReturnType } from '../ValidReturnType';
@@ -17,11 +17,11 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
         private readonly functionName?: string
     ) {}
 
-    public function<Key extends (FFunctions extends () => FirebaseFunctionType<FunctionType<unknown, ValidReturnType, unknown>> ? never : (keyof FFunctions & string))>(key: Key): FirebaseFunctions<FFunctions extends () => FirebaseFunctionType<FunctionType<unknown, ValidReturnType, unknown>> ? never : FFunctions[Key]> {
+    public function<Key extends (FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? never : (keyof FFunctions & string))>(key: Key): FirebaseFunctions<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? never : FFunctions[Key]> {
         return new FirebaseFunctions(this.functions, this.cryptionKeys, this.callSecretKey, this.functionName === undefined ? key : `${this.functionName}-${key}`);
     }
 
-    public async call(parameters: FFunctions extends () => FirebaseFunctionType<FunctionType<unknown, ValidReturnType, unknown>> ? FunctionType.FlattenParameters<FirebaseFunctionDescriptor.FunctionType<FFunctions>> : never): Promise<ExpectResult<FFunctions extends () => FirebaseFunctionType<FunctionType<unknown, ValidReturnType, unknown>> ? FunctionType.ReturnType<FirebaseFunctionDescriptor.FunctionType<FFunctions>> : never>> {
+    public async call(parameters: FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.FlattenParameters<FFunctions> : never): Promise<ExpectResult<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.ReturnType<FFunctions> : never>> {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
         const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString();
@@ -40,7 +40,7 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
             },
             parameters: crypter.encodeEncrypt(parameters)
         });
-        const result: FirebaseFunction.Result<FFunctions extends () => FirebaseFunctionType<FunctionType<unknown, ValidReturnType, unknown>> ? FunctionType.ReturnType<FirebaseFunctionDescriptor.FunctionType<FFunctions>> : never> = await crypter.decryptDecode(httpsCallableResult.data);
+        const result: FirebaseFunction.Result<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.ReturnType<FFunctions> : never> = await crypter.decryptDecode(httpsCallableResult.data);
         return expectResult(result);
     }
 }

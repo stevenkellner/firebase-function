@@ -13,10 +13,10 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')), this.cryptionKeys);
     }
 
-    public value(crypted: true): true extends IsCryptedScheme<Scheme> ? GetCryptedScheme<Scheme> : never;
+    public value(crypted: 'decrypt'): true extends IsCryptedScheme<Scheme> ? GetCryptedScheme<Scheme> : never;
     public value(): true extends IsCryptedScheme<Scheme> ? never : Scheme;
-    public value(crypted: boolean = false): Scheme | GetCryptedScheme<Scheme> {
-        if (crypted) {
+    public value(crypted: 'plain' | 'decrypt' = 'plain'): Scheme | GetCryptedScheme<Scheme> {
+        if (crypted === 'decrypt') {
             const crypter = new Crypter(this.cryptionKeys);
             return crypter.decryptDecode<GetCryptedScheme<Scheme>>(this.snapshot.val());
         }

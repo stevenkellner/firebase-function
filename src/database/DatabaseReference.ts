@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { Crypter } from '../crypter';
+import { type PrivateKeys } from '../PrivateKeys';
 import { DatabaseSnapshot } from './DatabaseSnapshot';
 import { type IsCryptedScheme, type SchemeType, type GetCryptedScheme } from './SchemeType';
 
@@ -17,10 +18,10 @@ export class DatabaseReference<Scheme extends SchemeType> {
         return new DatabaseReference(this.reference.child(key.replaceAll('/', '_')), this.cryptionKeys);
     }
 
-    public async set(value: GetCryptedScheme<Scheme>, crypted: true): Promise<void>;
+    public async set(value: GetCryptedScheme<Scheme>, crypted: 'encrypt'): Promise<void>;
     public async set(value: true extends IsCryptedScheme<Scheme> ? never : Scheme): Promise<void>;
-    public async set(value: Scheme | GetCryptedScheme<Scheme>, crypted: boolean = false): Promise<void> {
-        if (crypted) {
+    public async set(value: Scheme | GetCryptedScheme<Scheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
+        if (crypted === 'encrypt') {
             const crypter = new Crypter(this.cryptionKeys);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value = crypter.encodeEncrypt(value) as any;
@@ -46,8 +47,8 @@ export class DatabaseReference<Scheme extends SchemeType> {
 }
 
 export namespace DatabaseReference {
-    export function base<Scheme extends SchemeType>(databaseUrl: string | undefined, cryptionKeys: Crypter.Keys): DatabaseReference<Scheme> {
-        const reference = admin.app().database(databaseUrl).ref();
-        return new DatabaseReference(reference, cryptionKeys);
+    export function base<Scheme extends SchemeType>(privateKey: PrivateKeys): DatabaseReference<Scheme> {
+        const reference = admin.app().database(privateKey.databaseUrl).ref();
+        return new DatabaseReference(reference, privateKey.cryptionKeys);
     }
 }

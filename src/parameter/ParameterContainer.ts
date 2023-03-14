@@ -2,6 +2,7 @@ import { Crypter } from '../crypter/Crypter';
 import { type DatabaseType } from '../DatabaseType';
 import { HttpsError } from '../HttpsError';
 import { type ILogger } from '../logger';
+import { type PrivateKeys } from '../PrivateKeys';
 import { type ParameterBuilder } from './ParameterBuilder';
 import { type TypeOfName, type TypeFrom } from './TypeOf';
 
@@ -10,10 +11,10 @@ export class ParameterContainer {
 
     public readonly databaseType: DatabaseType;
 
-    public constructor(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys, logger: ILogger) {
+    public constructor(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys, logger: ILogger) {
         logger.log('ParameterContainer.constructor', { data: data });
 
-        const crypter = new Crypter(getCryptionKeys(data.databaseType));
+        const crypter = new Crypter(getPrivateKeys(data.databaseType).cryptionKeys);
 
         // Get and decrypt parameters
         if (!('parameters' in data) || typeof data.parameters !== 'string')

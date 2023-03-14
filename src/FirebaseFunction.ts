@@ -6,6 +6,7 @@ import { DatabaseType } from './DatabaseType';
 import { type FunctionType } from './FunctionType';
 import { HttpsError } from './HttpsError';
 import { type ILogger, Logger, type VerboseType, DummyLogger } from './logger';
+import { type PrivateKeys } from './PrivateKeys';
 import { Result, type Result as ResultSuccessFailure } from './Result';
 import { type ValidReturnType } from './ValidReturnType';
 
@@ -33,8 +34,7 @@ export namespace FirebaseFunction {
         FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>
     >(
         FirebaseFunction: FirebaseFunctionType<FFunctionType>,
-        getCryptionKeys: (databaseType: DatabaseType) => Crypter.Keys,
-        getCallSecretKey: (databaseType: DatabaseType) => string
+        getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
     ): functions.HttpsFunction & functions.Runnable<unknown> {
         return functions
             .region('europe-west1')
@@ -66,7 +66,7 @@ export namespace FirebaseFunction {
                 if (!('callSecret' in data) || typeof data.callSecret !== 'object')
                     throw HttpsError('invalid-argument', 'Couldn\'t get call secret from function parameter data.', logger);
                 const callSecret = CallSecret.fromObject(data.callSecret, logger.nextIndent);
-                CallSecret.checkCallSecret(callSecret, getCallSecretKey(databaseType), logger.nextIndent);
+                CallSecret.checkCallSecret(callSecret, getPrivateKeys(databaseType).callSecretKey, logger.nextIndent);
 
                 // Get result of function call
                 const result = await executeFunction(new FirebaseFunction({
@@ -75,7 +75,7 @@ export namespace FirebaseFunction {
                 }, context.auth, logger.nextIndent));
 
                 // Encrypt result
-                const crypter = new Crypter(getCryptionKeys(databaseType));
+                const crypter = new Crypter(getPrivateKeys(databaseType).cryptionKeys);
                 return crypter.encodeEncrypt(result);
             });
     }
