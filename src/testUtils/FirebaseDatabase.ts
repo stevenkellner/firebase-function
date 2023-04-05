@@ -1,4 +1,4 @@
-import { onValue, ref, set, type Database } from 'firebase/database';
+import { onValue, ref, set, remove, type Database } from 'firebase/database';
 import { Crypter } from '../crypter';
 import { type GetCryptedScheme, type IsCryptedScheme, type SchemeType } from '../database';
 
@@ -57,5 +57,10 @@ export class FirebaseDatabase<Scheme extends SchemeType> {
                 onlyOnce: true
             });
         });
+    }
+
+    public async remove(): Promise<void> {
+        const reference = ref(this.database, this.path);
+        await remove(reference);
     }
 }
