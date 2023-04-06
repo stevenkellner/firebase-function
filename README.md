@@ -12,11 +12,12 @@ Used to manage a backend api with firebase functions by creating a single fireba
     - [Return type](#return-type)
     - [Security / Private Keys](#security--private-keys)
     - [Error Handling](#error-handling)
+    - [Call your Functions](#call-your-functions)
 - [Realtime Database](#realtime-database)
     - [Define a Scheme](#define-a-scheme)
     - [Accessing the Database](#accessing-the-database)
 - [Test your Functions](#test-your-functions)
-    - [Call your Functions](#call-your-functions)
+    - [Call your Functions](#call-your-functions-1)
     - [Realtime Database](#realtime-database-1)
     - [Authentication](#authentication)
 
@@ -217,6 +218,42 @@ Make sure to **not** add the private keys to your version control system like `g
 ## Error Handling
 
 Errors are handled as a `HttpsError` which takes a `FunctionsErrorCode` and a message as input. If you throw any other error, your frontend will just receive an `unknown` error code.
+
+## Call your Functions
+
+To call your functions from your frontend, pass this parameters
+
+- `verbose` The verbose level of the logger.
+- `databaseType` Database type of the function.
+- `callSecret`
+    - `expiresAt` Iso date when the call secret expires.
+    - `hashedData` Sha512 hashed `expiresAtIsoDate` with call secret key as key.
+- `parameters` Encrypted parameters.
+
+and decrypt the return value, like in this example:
+
+```typescript
+const crypter = new Crypter(this.cryptionKeys);
+const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString(); // One minute
+const callableFunction = functions.httpsCallable<{
+    verbose: VerboseType;
+    databaseType: DatabaseType.Value;
+    callSecret: CallSecret.Flatten;
+    parameters: string;
+}, string>(functionName);
+const httpsCallableResult = await callableFunction({
+    verbose: 'verbose',
+    databaseType: databaseType,
+    callSecret: {
+        expiresAt: expiresAtIsoDate,
+        hashedData: Crypter.sha512(expiresAtIsoDate, this.callSecretKey)
+    },
+    parameters: crypter.encodeEncrypt(parameters)
+});
+const result = await crypter.decryptDecode(httpsCallableResult.data);        
+```
+
+For now it's only possible to call the firebase functions with typescript / javascript and swift as this are the only languages I have implemented the crypter. If you would like to use a different language, feel free to implement the crypter yourself. For that see the crypter in `/src/crypter/Crypter.ts`. 
 
 # Realtime Database
 
