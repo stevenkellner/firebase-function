@@ -5,7 +5,7 @@ import { Crypter } from './crypter/Crypter';
 import { DatabaseType } from './DatabaseType';
 import { type FunctionType } from './FunctionType';
 import { HttpsError } from './HttpsError';
-import { type ILogger, Logger, type VerboseType, DummyLogger } from './logger';
+import { type ILogger, Logger, VerboseType, DummyLogger } from './logger';
 import { type PrivateKeys } from './PrivateKeys';
 import { Result, type Result as ResultSuccessFailure } from './Result';
 import { type ValidReturnType } from './ValidReturnType';
@@ -50,15 +50,9 @@ export namespace FirebaseFunction {
                 const databaseType = DatabaseType.fromString(data.databaseType, initialLogger.nextIndent);
 
                 // Get logger verbose type
-                let loggerVerboseType: VerboseType = 'none';
-                if ('verbose' in data && (data.verbose === 'none' || data.verbose === 'verbose' || data.verbose === 'colored' || data.verbose === 'coloredVerbose')) {
-                    if (databaseType.value === 'release' && data.verbose === 'verbose')
-                        loggerVerboseType = 'none';
-                    else if (databaseType.value === 'release' && data.verbose === 'coloredVerbose')
-                        loggerVerboseType = 'colored';
-                    else
-                        loggerVerboseType = data.verbose;
-                }
+                if (!('verbose' in data) || typeof data.verbose !== 'string')
+                    throw HttpsError('invalid-argument', 'Couldn\'t get verbose type from function parameter data.', initialLogger);
+                const loggerVerboseType = VerboseType.fromString(data.verbose, databaseType, initialLogger.nextIndent);
 
                 const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { data: data, context: context }, 'notice');
 

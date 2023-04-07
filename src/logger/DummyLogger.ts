@@ -9,7 +9,7 @@ export class DummyLogger implements ILogger {
     public log(
         functionName: string,
         details?: Record<string, unknown>,
-        logLevel: LogLevel = 'debug'
+        logLevel: LogLevel.Value = 'debug'
     ) {}
 
     public readonly completeLog: string = '';

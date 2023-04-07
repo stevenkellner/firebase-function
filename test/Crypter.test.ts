@@ -265,5 +265,6 @@ describe('Crypter', () => {
 
     it('hash', () => {
         expect(Crypter.sha512('lkjdasflnc')).to.be.equal('rbswGhojGpzw7EoB61dz3LpecUiFV7y0QHhO7xLHbgtPHhjsKxH6nbUg2p6B5CpSAa1hMzJKBfM8twldRbKj1g');
+        expect(Crypter.sha512('lkjdasflnc', 'oimli')).to.be.equal('5NRfmNX8NnSCP2jrQIrhmkpo+wpz27FQDyU4_4lheOiJ8etSQ+spWak39WgaF8lzd8qwHzlkrfixZIZlf_1hSQ');
     });
 });
