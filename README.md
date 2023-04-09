@@ -238,7 +238,7 @@ const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString(); /
 const callableFunction = functions.httpsCallable<{
     verbose: VerboseType;
     databaseType: DatabaseType.Value;
-    callSecret: CallSecret.Flatten;
+    callSecret: CallSecret;
     parameters: string;
 }, string>(functionName);
 const httpsCallableResult = await callableFunction({

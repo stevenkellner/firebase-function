@@ -54,7 +54,7 @@ export namespace FirebaseFunction {
                     throw HttpsError('invalid-argument', 'Couldn\'t get verbose type from function parameter data.', initialLogger);
                 const loggerVerboseType = VerboseType.fromString(data.verbose, databaseType, initialLogger.nextIndent);
 
-                const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { data: data, context: context }, 'notice');
+                const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { auth: context.auth }, 'notice');
 
                 // Check call secret
                 if (!('callSecret' in data) || typeof data.callSecret !== 'object')
@@ -77,7 +77,7 @@ export namespace FirebaseFunction {
 
 export async function executeFunction<
     FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>
->(firebaseFunction: FirebaseFunction<FFunctionType>): Promise<FirebaseFunction.Result<FunctionType.ReturnType<FFunctionType>>> {
+>(firebaseFunction: FirebaseFunction<FFunctionType>): Promise<FirebaseFunction.Result<FunctionType.ReturnType<FFunctionType> extends undefined ? null : FunctionType.ReturnType<FFunctionType>>> {
     try {
         return await mapReturnTypeToResult(firebaseFunction.executeFunction());
     } catch (error) {
@@ -93,9 +93,9 @@ export async function executeFunction<
  * @param { Promise<T> } promise Promise to get result from.
  * @return { Promise<Result<T, Error>> } Return promise.
  */
-export async function mapReturnTypeToResult<T>(promise: Promise<T>): Promise<FirebaseFunction.Result<T>> {
+export async function mapReturnTypeToResult<T>(promise: Promise<T>): Promise<FirebaseFunction.Result<T extends undefined ? null : T>> {
     return await promise
-        .then(value => Result.success<T>(value))
+        .then(value => Result.success<T extends undefined ? null : T>((value ?? null) as T extends undefined ? null : T))
         .catch(reason => Result.failure<FirebaseFunction.Error>(convertToFunctionResultError(reason)));
 }
 

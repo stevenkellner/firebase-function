@@ -26,9 +26,9 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
         const crypter = new Crypter(this.cryptionKeys);
         const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString();
         const callableFunction = httpsCallable<{
-            verbose: VerboseType;
+            verbose: VerboseType.Value;
             databaseType: DatabaseType.Value;
-            callSecret: CallSecret.Flatten;
+            callSecret: CallSecret;
             parameters: string;
         }, string>(this.functions, this.functionName ?? '');
         const httpsCallableResult = await callableFunction({

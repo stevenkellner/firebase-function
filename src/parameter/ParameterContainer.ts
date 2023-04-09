@@ -12,8 +12,6 @@ export class ParameterContainer {
     public readonly databaseType: DatabaseType;
 
     public constructor(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys, logger: ILogger) {
-        logger.log('ParameterContainer.constructor', { data: data });
-
         const crypter = new Crypter(getPrivateKeys(data.databaseType).cryptionKeys);
 
         // Get and decrypt parameters

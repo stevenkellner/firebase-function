@@ -1,6 +1,7 @@
 import { StringBuilder } from '../StringBuilder';
 import { type LogLevel } from './LogLevel';
 import { type VerboseType } from './VerboseType';
+import { inspect } from 'util';
 
 export class LoggingProperty {
     public constructor(
@@ -11,7 +12,7 @@ export class LoggingProperty {
     ) {}
 
     private prefix(start: boolean = false): string {
-        return '|   '.repeat(this.indent) + (start ? '⎧ ' : '| ');
+        return '|   '.repeat(this.indent) + (start ? '> ' : '| ');
     }
 
     public completeLog(verbose: VerboseType): string {
@@ -28,7 +29,7 @@ export class LoggingProperty {
 
     private detailString(key: string, detail: unknown, verbose: VerboseType): string {
         const builder = new StringBuilder();
-        const jsonLines = JSON.stringify(detail, undefined, 4).split('\n');
+        const jsonLines = inspect(detail, { compact: true, depth: null, maxArrayLength: 25, maxStringLength: 250, breakLength: Number.POSITIVE_INFINITY }).split('\n') ?? [''];
         const coloredText = (value: string): string => {
             if (verbose.isColored)
                 return `\x1b[2m${value}\x1b[0m`;

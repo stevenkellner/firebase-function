@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { Logger, type ILogger } from '../src/logger';
+import { Logger, type ILogger, VerboseType } from '../src/logger';
 import { ParameterBuilder } from '../src/parameter/ParameterBuilder';
 
 describe('Parameter builder', () => {
-    const logger = Logger.start('coloredVerbose', 'Parameter builder tests');
+    const logger = Logger.start(new VerboseType('coloredVerbose'), 'Parameter builder tests');
 
     it('multiple types', () => {
         const builder = new ParameterBuilder(['string', 'number'], (value: string | number, logger: ILogger) => value.toString());

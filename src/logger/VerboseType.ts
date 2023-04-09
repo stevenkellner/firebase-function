@@ -4,7 +4,7 @@ import { type ILogger } from './ILogger';
 
 export class VerboseType {
     public constructor(
-        private readonly value: 'none' | 'verbose' | 'colored' | 'coloredVerbose'
+        private readonly value: VerboseType.Value
     ) {}
 
     public get isVerbose(): boolean {
@@ -17,6 +17,8 @@ export class VerboseType {
 }
 
 export namespace VerboseType {
+    export type Value = 'none' | 'verbose' | 'colored' | 'coloredVerbose';
+
     export function fromString(value: string, databaseType: DatabaseType, logger: ILogger): VerboseType {
         logger.log('VerboseType.fromObject', { value: value, databaseType: databaseType });
 
