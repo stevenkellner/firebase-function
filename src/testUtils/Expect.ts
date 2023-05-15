@@ -48,15 +48,15 @@ export class ExpectTo<T> {
 
 export class ExpectToBe<T> {
     public constructor(
-        private readonly _value: T
+        public readonly value: T
     ) {}
 
     public get deep(): ExpectToBeDeep<T> {
-        return new ExpectToBeDeep<T>(this._value);
+        return new ExpectToBeDeep<T>(this.value);
     }
 
     public equal(value: T, message?: string): Chai.Assertion {
-        return chai_expect(this._value).to.be.equal(value, message);
+        return chai_expect(this.value).to.be.equal(value, message);
     }
 
     public unsorted(value: T extends Array<infer Element> ? Element[] : never, message?: string) {
@@ -66,22 +66,22 @@ export class ExpectToBe<T> {
 
 export class ExpectToBeDeep<T> {
     public constructor(
-        private readonly _value: T
+        public readonly value: T
     ) {}
 
     public equal(value: T, message?: string): Chai.Assertion {
-        return chai_expect(this._value).to.be.deep.equal(value, message);
+        return chai_expect(this.value).to.be.deep.equal(value, message);
     }
 
     public unsorted(value: T extends Array<infer Element> ? Element[] : never, message?: string) {
-        assert(Array.isArray(this._value));
-        chai_expect(this._value.length).to.be.equal(value.length);
+        assert(Array.isArray(this.value));
+        chai_expect(this.value.length).to.be.equal(value.length);
         for (const element of value) {
             // eslint-disable-next-line eqeqeq
-            const index = this._value.findIndex(e => this.deepEqual(e, element));
+            const index = this.value.findIndex(e => this.deepEqual(e, element));
             if (index === -1)
                 assert.fail(message ?? `Couldn't find element: ${JSON.stringify(element)}`);
-            this._value.splice(index, 1);
+            this.value.splice(index, 1);
         }
     }
 
