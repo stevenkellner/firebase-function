@@ -1,6 +1,6 @@
 {
   "name": "firebase-function",
-  "version": "1.4.37",
+  "version": "1.4.48",
   "description": "Manages backend api with firebase functions.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -37,6 +37,7 @@
     "firebase-admin": "^11.8.0",
     "firebase-functions": "^4.4.0",
     "flatted": "^3.2.7",
+    "js-base64": "^3.7.5",
     "sha512-crypt-ts": "^0.1.27"
   },
   "devDependencies": {

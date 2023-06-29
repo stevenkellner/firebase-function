@@ -1,12 +1,13 @@
 import { expect } from 'chai';
 import { PseudoRandom } from '../src/crypter/PseudoRandom';
 import { BytesToBitIterator } from '../src/crypter/BytesToBitIterator';
-import { bits, xor, bitIteratorToBytes, addPadding, removePadding, unishortString } from '../src/crypter/utils';
+import { bits, xor, bitIteratorToBytes, addPadding, removePadding } from '../src/crypter/utils';
 import { RandomBitIterator } from '../src/crypter/RandomBitIterator';
 import { CombineIterator } from '../src/crypter/CombineIterator';
 import { Crypter } from '../src/crypter/Crypter';
 import { FixedLength } from '../src/crypter/FixedLength';
 import * as crypterTestData from './dataset/crypterTestData.json';
+import { Base64 } from 'js-base64';
 
 describe('Crypter', () => {
     describe('PseudoRandom', () => {
@@ -219,7 +220,7 @@ describe('Crypter', () => {
         });
 
         it('decrypt decode', () => {
-            const encrypted = unishortString(Uint8Array.from(crypterTestData.encodedEncrypted));
+            const encrypted = Base64.fromUint8Array(Uint8Array.from(crypterTestData.encodedEncrypted), true);
             const decrypted = crypter.decryptDecode(encrypted);
             expect(decrypted).to.be.equal(crypterTestData.decryptedDecoded);
         });

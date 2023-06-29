@@ -2,9 +2,10 @@ import { RandomBitIterator } from './RandomBitIterator';
 import { type FixedLength } from './FixedLength';
 import { BytesToBitIterator } from './BytesToBitIterator';
 import { CombineIterator } from './CombineIterator';
-import { bitIteratorToBytes, randomBytes, xor, unishortBytes, unishortString, addPadding, removePadding } from './utils';
+import { bitIteratorToBytes, randomBytes, xor, addPadding, removePadding, unishortBytes, unishortString } from './utils';
 import { CBCEncryptor, CBCDecryptor } from 'aes-ts';
 import { sha512 as crypt_sha512 } from 'sha512-crypt-ts';
+import { Base64 } from 'js-base64';
 
 export class Crypter {
     public constructor(
@@ -46,20 +47,22 @@ export class Crypter {
         return this.decryptVernamCipher(aesDecrypted);
     }
 
+    public encodeEncrypt(data: unknown): string {
+        const decodedData = JSON.stringify(data);
+        const dataBytes = unishortBytes(decodedData ?? '');
+        const encryptedData = this.encryptVernamAndAes(dataBytes);
+        return Base64.fromUint8Array(encryptedData, true);
+    }
+
     public decryptDecode(data: ''): undefined;
     public decryptDecode<T = unknown>(data: string): T;
     public decryptDecode<T = unknown>(data: string): T | undefined {
-        if (data === '') return undefined;
-        const dataBytes = unishortBytes(data);
+        if (data === '')
+            return undefined;
+        const dataBytes = Base64.toUint8Array(data);
         const decryptedData = this.decryptAesAndVernam(dataBytes);
-        return JSON.parse(unishortString(decryptedData));
-    }
-
-    public encodeEncrypt(data: unknown): string {
-        const encodedData = JSON.stringify(data);
-        const dataBytes = unishortBytes(encodedData ?? '');
-        const encryptedData = this.encryptVernamAndAes(dataBytes);
-        return unishortString(encryptedData);
+        const decodedData = unishortString(decryptedData);
+        return JSON.parse(decodedData);
     }
 }
 

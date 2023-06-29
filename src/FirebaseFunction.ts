@@ -10,11 +10,13 @@ import { type PrivateKeys } from './PrivateKeys';
 import { Result, type Result as ResultSuccessFailure } from './Result';
 import { type ValidReturnType } from './ValidReturnType';
 
-export type FirebaseFunctionType<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FirebaseFunction<FFunctionType>;
+export type FirebaseFunctionType<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>, ResponseContext = never> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FirebaseFunction<FFunctionType, ResponseContext>;
 
-export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> {
+export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>, ResponseContext = never> {
 
     parameters: FunctionType.Parameters<FFunctionType>;
+
+    responseContext?: ResponseContext;
 
     executeFunction(): Promise<FunctionType.ReturnType<FFunctionType>>;
 }
@@ -63,25 +65,41 @@ export namespace FirebaseFunction {
                 CallSecret.checkCallSecret(callSecret, getPrivateKeys(databaseType).callSecretKey, logger.nextIndent);
 
                 // Get result of function call
-                const result = await executeFunction(new FirebaseFunction({
+                const response = await executeFunction(new FirebaseFunction({
                     ...data,
                     databaseType: databaseType
                 }, context.auth, logger.nextIndent));
 
                 // Encrypt result
                 const crypter = new Crypter(getPrivateKeys(databaseType).cryptionKeys);
-                return crypter.encodeEncrypt(result);
+                const e1 = crypter.encodeEncrypt(response.result);
+                return {
+                    result: e1,
+                    context: {
+                        e1: e1,
+                        cl: response.result,
+                        en: [0, 1, 2, 3, 4, 5].map(() => crypter.encodeEncrypt(response.result)),
+                        c: response.context
+                    }
+                };
             });
     }
 }
 
 export async function executeFunction<
-    FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>
->(firebaseFunction: FirebaseFunction<FFunctionType>): Promise<FirebaseFunction.Result<FunctionType.ReturnType<FFunctionType> extends undefined ? null : FunctionType.ReturnType<FFunctionType>>> {
+    FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>,
+    ResponseContext
+>(firebaseFunction: FirebaseFunction<FFunctionType, ResponseContext>): Promise<{ result: FirebaseFunction.Result<FunctionType.ReturnType<FFunctionType> extends undefined ? null : FunctionType.ReturnType<FFunctionType>>; context: ResponseContext | null }> {
     try {
-        return await mapReturnTypeToResult(firebaseFunction.executeFunction());
+        return {
+            result: await mapReturnTypeToResult(firebaseFunction.executeFunction()),
+            context: firebaseFunction.responseContext ?? null
+        };
     } catch (error) {
-        return Result.failure<FirebaseFunction.Error>(convertToFunctionResultError(error));
+        return {
+            result: Result.failure<FirebaseFunction.Error>(convertToFunctionResultError(error)),
+            context: firebaseFunction.responseContext ?? null
+        };
     }
 }
 

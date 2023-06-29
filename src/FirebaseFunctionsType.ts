@@ -24,6 +24,20 @@ export type FirebaseFunctionsType = FirebaseFunctionDescriptor<FunctionType<unkn
 export type FirebaseRunnableFunctions = (functions.HttpsFunction & functions.Runnable<unknown>) | { [key: string]: FirebaseRunnableFunctions };
 
 export function createFirebaseFunctions(
+    getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys,
+    firebaseFunctions: Record<string, FirebaseFunctionsType>,
+    debugFirebaseFunctions: Record<string, FirebaseFunctionsType> = {}
+): FirebaseRunnableFunctions {
+    return {
+        debug: createFirebaseFunctionsType(debugFirebaseFunctions, getPrivateKeys),
+        ...createFirebaseFunctionsType(firebaseFunctions, getPrivateKeys)
+    };
+}
+
+function createFirebaseFunctionsType(firebaseFunctions: FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>>, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys): (functions.HttpsFunction & functions.Runnable<unknown>);
+function createFirebaseFunctionsType(firebaseFunctions: Record<string, FirebaseFunctionsType>, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys): Record<string, FirebaseRunnableFunctions>;
+function createFirebaseFunctionsType(firebaseFunctions: FirebaseFunctionsType, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys): FirebaseRunnableFunctions;
+function createFirebaseFunctionsType(
     firebaseFunctions: FirebaseFunctionsType,
     getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
 ): FirebaseRunnableFunctions {
@@ -31,6 +45,6 @@ export function createFirebaseFunctions(
         return FirebaseFunction.create(firebaseFunctions(), getPrivateKeys);
     const firebaseRunnableFunctions: Record<string, FirebaseRunnableFunctions> = {};
     for (const entry of Object.entries(firebaseFunctions))
-        firebaseRunnableFunctions[entry[0]] = createFirebaseFunctions(entry[1], getPrivateKeys);
+        firebaseRunnableFunctions[entry[0]] = createFirebaseFunctionsType(entry[1], getPrivateKeys);
     return firebaseRunnableFunctions;
 }

@@ -25,12 +25,16 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
         const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString();
+        const functionName = this.functionName !== undefined ? `debug-${this.functionName}` : '';
         const callableFunction = httpsCallable<{
             verbose: VerboseType.Value;
             databaseType: DatabaseType.Value;
             callSecret: CallSecret;
             parameters: string;
-        }, string>(this.functions, this.functionName ?? '');
+        }, {
+            result: string;
+            context: unknown;
+        }>(this.functions, functionName);
         const httpsCallableResult = await callableFunction({
             verbose: 'coloredVerbose',
             databaseType: databaseType.value,
@@ -40,7 +44,7 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
             },
             parameters: crypter.encodeEncrypt(parameters)
         });
-        const result: FirebaseFunction.Result<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.ReturnType<FFunctions> : never> = await crypter.decryptDecode(httpsCallableResult.data);
+        const result: FirebaseFunction.Result<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.ReturnType<FFunctions> : never> = await crypter.decryptDecode(httpsCallableResult.data.result);
         return expectResult(result);
     }
 }
