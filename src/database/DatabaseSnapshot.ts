@@ -82,4 +82,11 @@ export class DatabaseSnapshot<Scheme extends SchemeType> {
         });
         return initialValue;
     }
+
+    public reduceInto<T>(initialValue: T, transform: (value: T, snapshot: DatabaseSnapshot<ObjectValue<Scheme>>) => void): T {
+        this.forEach(snapshot => {
+            transform(initialValue, snapshot);
+        });
+        return initialValue;
+    }
 }

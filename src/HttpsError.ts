@@ -6,5 +6,6 @@ export function HttpsError(
     message: string,
     logger: ILogger
 ): functions.https.HttpsError {
+    console.log(`HttpsError (${code}): ${message}`);
     return new functions.https.HttpsError(code, message, logger.completeLog);
 }

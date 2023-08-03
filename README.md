@@ -226,15 +226,15 @@ To call your functions from your frontend, pass this parameters
 - `verbose` The verbose level of the logger.
 - `databaseType` Database type of the function.
 - `callSecret`
-    - `expiresAt` Iso date when the call secret expires.
-    - `hashedData` Sha512 hashed `expiresAtIsoDate` with call secret key as key.
+    - `expiresAt` Utc date when the call secret expires.
+    - `hashedData` Sha512 hashed `expiresAtUtcDate` with call secret key as key.
 - `parameters` Encrypted parameters.
 
 and decrypt the return value, like in this example:
 
 ```typescript
 const crypter = new Crypter(this.cryptionKeys);
-const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString(); // One minute
+const expiresAtUtcDate = UtcDate.now.advanced({ minute: 1 });
 const callableFunction = functions.httpsCallable<{
     verbose: VerboseType;
     databaseType: DatabaseType.Value;
@@ -245,8 +245,8 @@ const httpsCallableResult = await callableFunction({
     verbose: 'verbose',
     databaseType: databaseType,
     callSecret: {
-        expiresAt: expiresAtIsoDate,
-        hashedData: Crypter.sha512(expiresAtIsoDate, this.callSecretKey)
+        expiresAt: expiresAtUtcDate.encoded,
+        hashedData: Crypter.sha512(expiresAtUtcDate.encoded, this.callSecretKey)
     },
     parameters: crypter.encodeEncrypt(parameters)
 });

@@ -10,4 +10,5 @@ export * from './HttpsError';
 export * from './Result';
 export * from './FunctionType';
 export * from './FirebaseFunctionsType';
+export * from './UtcDate';
 export * from './utils';

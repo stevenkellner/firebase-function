@@ -72,15 +72,9 @@ export namespace FirebaseFunction {
 
                 // Encrypt result
                 const crypter = new Crypter(getPrivateKeys(databaseType).cryptionKeys);
-                const e1 = crypter.encodeEncrypt(response.result);
                 return {
-                    result: e1,
-                    context: {
-                        e1: e1,
-                        cl: response.result,
-                        en: [0, 1, 2, 3, 4, 5].map(() => crypter.encodeEncrypt(response.result)),
-                        c: response.context
-                    }
+                    result: crypter.encodeEncrypt(response.result),
+                    context: response.context
                 };
             });
     }

@@ -42,17 +42,13 @@ export function randomBytes(length: number): Uint8Array {
 }
 
 export function unishortString(bytes: Uint8Array): string {
-    let string = '';
-    for (const byte of bytes)
-        string += String.fromCharCode(byte);
-    return string;
+    const decoder = new TextDecoder();
+    return decoder.decode(bytes);
 }
 
 export function unishortBytes(string: string): Uint8Array {
-    const bytes: number[] = [];
-    for (let index = 0; index < string.length; index++)
-        bytes.push(string.charCodeAt(index));
-    return Uint8Array.from(bytes);
+    const encoder = new TextEncoder();
+    return encoder.encode(string);
 }
 
 export function addPadding(bytes: Uint8Array): Uint8Array {

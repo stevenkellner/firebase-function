@@ -119,7 +119,12 @@ export class HtmlNodeList {
 
     public compactMap<U>(callbackFn: (node: HtmlNode, index: number) => U | null | undefined): U[] | null {
         if (this.nodes === null) return null;
-        return this.nodes.map(node => new HtmlNode(node)).flatMap((node, index) => callbackFn(node, index) ?? []);
+        return this.nodes.map(node => new HtmlNode(node)).flatMap((node, index) => {
+            const value = callbackFn(node, index);
+            if (value === null || value === undefined)
+                return [];
+            return { wrapped: value };
+        }).map(value => value.wrapped);
     }
 
     public forEach(callbackFn: (node: HtmlNode, index: number) => void): void {

@@ -8,6 +8,7 @@ import { type FirebaseFunctionDescriptor, type FirebaseFunctionsType } from '../
 import { type ValidReturnType } from '../ValidReturnType';
 import { type VerboseType } from '../logger';
 import { type ExpectResult, expectResult } from './Expect';
+import { UtcDate } from '../UtcDate';
 
 export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
     public constructor(
@@ -24,7 +25,7 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
     public async call(parameters: FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.FlattenParameters<FFunctions> : never): Promise<ExpectResult<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.ReturnType<FFunctions> : never>> {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
-        const expiresAtIsoDate = new Date(new Date().getTime() + 60000).toISOString();
+        const expiresAtUtcDate = UtcDate.now.advanced({ minute: 1 });
         const functionName = this.functionName !== undefined ? `debug-${this.functionName}` : '';
         const callableFunction = httpsCallable<{
             verbose: VerboseType.Value;
@@ -39,8 +40,8 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
             verbose: 'coloredVerbose',
             databaseType: databaseType.value,
             callSecret: {
-                expiresAt: expiresAtIsoDate,
-                hashedData: Crypter.sha512(expiresAtIsoDate, this.callSecretKey)
+                expiresAt: expiresAtUtcDate.encoded,
+                hashedData: Crypter.sha512(expiresAtUtcDate.encoded, this.callSecretKey)
             },
             parameters: crypter.encodeEncrypt(parameters)
         });
