@@ -1,21 +1,16 @@
 import * as functions from 'firebase-functions';
+import { type DatabaseType } from './DatabaseType';
 
-/**
- * Firebase schedule with a execute method.
- */
+export type FirebaseScheduleConstructor = new (databaseType: DatabaseType) => FirebaseSchedule;
+
 export interface FirebaseSchedule {
-    /**
-     * Executes the firebase schedule.
-     */
     executeFunction(): Promise<void>;
 }
 
 export namespace FirebaseSchedule {
-    export function create<
-        FSchedule extends FirebaseSchedule
-    >(
+    export function create(
         schedule: string,
-        createFirebaseSchedule: (context: functions.EventContext<Record<string, string>>) => FSchedule
+        createFirebaseSchedule: (context: functions.EventContext<Record<string, string>>) => FirebaseSchedule
     ): functions.CloudFunction<unknown> {
         return functions
             .region('europe-west1')

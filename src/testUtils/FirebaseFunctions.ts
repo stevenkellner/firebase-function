@@ -4,7 +4,7 @@ import { Crypter } from '../crypter';
 import { DatabaseType } from '../DatabaseType';
 import { type FirebaseFunction } from '../FirebaseFunction';
 import { type FunctionType } from '../FunctionType';
-import { type FirebaseFunctionDescriptor, type FirebaseFunctionsType } from '../FirebaseFunctionsType';
+import { type FirebaseFunctionDescriptor, type FirebaseFunctions as FirebaseFunctionsType } from '../FirebaseFunctions';
 import { type ValidReturnType } from '../ValidReturnType';
 import { type VerboseType } from '../logger';
 import { type ExpectResult, expectResult } from './Expect';
@@ -18,7 +18,7 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
         private readonly functionName?: string
     ) {}
 
-    public function<Key extends (FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? never : (keyof FFunctions & string))>(key: Key): FirebaseFunctions<FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? never : FFunctions[Key]> {
+    public function<Key extends (FFunctions extends Record<string, FirebaseFunctionsType> ? (keyof FFunctions & string) : never)>(key: Key): FirebaseFunctions<FFunctions extends Record<string, FirebaseFunctionsType> ? FFunctions[Key] : never> {
         return new FirebaseFunctions(this.functions, this.cryptionKeys, this.callSecretKey, this.functionName === undefined ? key : `${this.functionName}-${key}`);
     }
 

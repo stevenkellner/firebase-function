@@ -1,6 +1,6 @@
 {
   "name": "firebase-function",
-  "version": "1.4.59",
+  "version": "1.4.60",
   "description": "Manages backend api with firebase functions.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

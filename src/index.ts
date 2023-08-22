@@ -9,6 +9,6 @@ export * from './FirebaseSchedule';
 export * from './HttpsError';
 export * from './Result';
 export * from './FunctionType';
-export * from './FirebaseFunctionsType';
+export * from './FirebaseFunctions';
 export * from './UtcDate';
 export * from './utils';

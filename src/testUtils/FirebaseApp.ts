@@ -2,14 +2,14 @@ import { type Crypter } from '../crypter';
 import { type FirebaseOptions, initializeApp } from 'firebase/app';
 import { getDatabase, type Database } from 'firebase/database';
 import { getAuth, type Auth } from 'firebase/auth';
-import { FirebaseFunctions } from './FirebaseFunctions';
+import { FirebaseFunctions as FirebaseFunctionsTester } from './FirebaseFunctions';
 import { FirebaseDatabase } from './FirebaseDatabase';
 import { FirebaseAuth } from './FirebaseAuth';
 import { type Functions, getFunctions } from 'firebase/functions';
 import { type SchemeType } from '../database';
-import { type FirebaseFunctionsType } from '../FirebaseFunctionsType';
+import { type FirebaseFunctions } from '../FirebaseFunctions';
 
-export class FirebaseApp<FFunctions extends FirebaseFunctionsType, DatabaseScheme extends SchemeType> {
+export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme extends SchemeType> {
     private readonly _functions: Functions;
     private readonly _database: Database;
     private readonly _auth: Auth;
@@ -26,8 +26,8 @@ export class FirebaseApp<FFunctions extends FirebaseFunctionsType, DatabaseSchem
         this._auth = getAuth(app);
     }
 
-    public get functions(): FirebaseFunctions<FFunctions> {
-        return new FirebaseFunctions(this._functions, this.cryptionKeys, this.callSecretKey);
+    public get functions(): FirebaseFunctionsTester<FFunctions> {
+        return new FirebaseFunctionsTester(this._functions, this.cryptionKeys, this.callSecretKey);
     }
 
     public get database(): FirebaseDatabase<DatabaseScheme> {

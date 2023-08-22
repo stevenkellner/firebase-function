@@ -10,7 +10,7 @@ import { type PrivateKeys } from './PrivateKeys';
 import { Result, type Result as ResultSuccessFailure } from './Result';
 import { type ValidReturnType } from './ValidReturnType';
 
-export type FirebaseFunctionType<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>, ResponseContext = never> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FirebaseFunction<FFunctionType, ResponseContext>;
+export type FirebaseFunctionConstructor<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>, ResponseContext = never> = new (data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, auth: AuthData | undefined, logger: ILogger) => FirebaseFunction<FFunctionType, ResponseContext>;
 
 export interface FirebaseFunction<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>, ResponseContext = never> {
 
@@ -35,7 +35,7 @@ export namespace FirebaseFunction {
     export function create<
         FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>
     >(
-        FirebaseFunction: FirebaseFunctionType<FFunctionType>,
+        FirebaseFunction: FirebaseFunctionConstructor<FFunctionType>,
         getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
     ): functions.HttpsFunction & functions.Runnable<unknown> {
         return functions
