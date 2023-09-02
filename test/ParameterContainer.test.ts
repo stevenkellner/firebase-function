@@ -34,7 +34,7 @@ describe('Parameter container', () => {
         })).to.throw();
     });
 
-    it('get optional parameter invalid / undefined', () => {
+    it('get invalid parameter', () => {
         const crypter = new Crypter(cryptionKeys);
         const parameterContainer = createParameterContainer({
             databaseType: new DatabaseType('testing'),
@@ -44,40 +44,10 @@ describe('Parameter container', () => {
                 value3: 'asdf'
             })
         });
-        expect(parameterContainer.optionalParameter('value0', ParameterBuilder.value('number'), logger.nextIndent)).to.be.undefined;
-        expect(parameterContainer.optionalParameter('value1', ParameterBuilder.value('number'), logger.nextIndent)).to.be.undefined;
-        expect(parameterContainer.optionalParameter('value2', ParameterBuilder.value('number'), logger.nextIndent)).to.be.undefined;
-        expect(() => parameterContainer.optionalParameter('value3', ParameterBuilder.value('number'), logger.nextIndent)).to.throw();
-    });
-
-    it('get optional parameter', () => {
-        const crypter = new Crypter(cryptionKeys);
-        const parameterContainer = createParameterContainer({
-            databaseType: new DatabaseType('testing'),
-            parameters: crypter.encodeEncrypt({
-                value1: true,
-                value2: 'asdf',
-                value3: 12,
-                value5: { v: 'asdf' },
-                value6: null
-            })
-        });
-        expect(parameterContainer.optionalParameter('value1', ParameterBuilder.value('boolean'), logger.nextIndent)).to.be.true;
-        expect(parameterContainer.optionalParameter('value2', ParameterBuilder.value('string'), logger.nextIndent)).to.be.equal('asdf');
-        expect(parameterContainer.optionalParameter('value3', ParameterBuilder.value('number'), logger.nextIndent)).to.be.equal(12);
-        expect(parameterContainer.optionalParameter('value5', ParameterBuilder.value('object'), logger.nextIndent)).to.be.deep.equal({ v: 'asdf' });
-        expect(parameterContainer.optionalParameter('value6', ParameterBuilder.value('undefined'), logger.nextIndent)).to.be.undefined;
-    });
-
-    it('get undefined parameter', () => {
-        const crypter = new Crypter(cryptionKeys);
-        const parameterContainer = createParameterContainer({
-            databaseType: new DatabaseType('testing'),
-            parameters: crypter.encodeEncrypt({
-                value0: undefined
-            })
-        });
         expect(() => parameterContainer.parameter('value0', ParameterBuilder.value('number'), logger.nextIndent)).to.throw();
+        expect(() => parameterContainer.parameter('value1', ParameterBuilder.value('number'), logger.nextIndent)).to.throw();
+        expect(() => parameterContainer.parameter('value2', ParameterBuilder.value('number'), logger.nextIndent)).to.throw();
+        expect(() => parameterContainer.parameter('value3', ParameterBuilder.value('number'), logger.nextIndent)).to.throw();
     });
 
     it('get parameter', () => {
@@ -98,6 +68,6 @@ describe('Parameter container', () => {
         expect(parameterContainer.parameter('value2', ParameterBuilder.value('string'), logger.nextIndent)).to.be.equal('asdf');
         expect(parameterContainer.parameter('value3', ParameterBuilder.value('number'), logger.nextIndent)).to.be.equal(12);
         expect(parameterContainer.parameter('value5', ParameterBuilder.value('object'), logger.nextIndent)).to.be.deep.equal({ v: 'asdf' });
-        expect(parameterContainer.parameter('value6', ParameterBuilder.value('undefined'), logger.nextIndent)).to.be.undefined;
+        expect(parameterContainer.parameter('value6', ParameterBuilder.value('object'), logger.nextIndent)).to.be.null;
     });
 });

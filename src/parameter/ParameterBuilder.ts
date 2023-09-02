@@ -43,6 +43,18 @@ export namespace ParameterBuilder {
         });
     }
 
+    export function nullable<TypeName extends TypeOfName, T>(builder: ParameterBuilder<TypeName, T>): ParameterBuilder<TypeName | 'object', T | null> {
+        const expectedTypes: Array<TypeName | 'object'> = (builder.expectedTypes as TypeOfName[]).includes('object') ? builder.expectedTypes : ['object', ...builder.expectedTypes];
+        return new ParameterBuilder<TypeName | 'object', T | null>(expectedTypes, (value: TypeFrom<TypeName> | object | null, logger: ILogger) => {
+            logger.log('ParameterBuilder.nullable', { expectedTypes: builder.expectedTypes, value: value });
+            if (value === null)
+                return null;
+            if (typeof value === 'object' && !(builder.expectedTypes as TypeOfName[]).includes('object'))
+                throw HttpsError('invalid-argument', `Type of value is object, but expected null or ${builder.expectedTypes}`, logger);
+            return builder.build(value as TypeFrom<TypeName>, logger.nextIndent);
+        });
+    }
+
     export function array<TypeName extends TypeOfName, T>(builder: ParameterBuilder<TypeName, T>, length?: number): ParameterBuilder<'object', T[]> {
         return new ParameterBuilder<'object', T[]>(['object'], (value: object | null, logger: ILogger) => {
             logger.log('ParameterBuilder.array', { expectedTypes: builder.expectedTypes, value: value });

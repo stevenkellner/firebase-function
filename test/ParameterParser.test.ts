@@ -229,7 +229,6 @@ describe('ParameterParser', () => {
             value3a: DatabaseType | undefined;
             value3b: DatabaseType | undefined;
             value4a: undefined;
-            value4b: undefined;
         }>({
             value1a: 12,
             value1b: undefined,
@@ -237,8 +236,7 @@ describe('ParameterParser', () => {
             value2b: undefined,
             value3a: 'testing',
             value3b: undefined,
-            value4a: undefined,
-            value4b: null
+            value4a: undefined
         }, {
             value1a: ParameterBuilder.optional(ParameterBuilder.value('number')),
             value1b: ParameterBuilder.optional(ParameterBuilder.value('number')),
@@ -246,8 +244,7 @@ describe('ParameterParser', () => {
             value2b: ParameterBuilder.optional(ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
             value3a: ParameterBuilder.optional(ParameterBuilder.build('string', DatabaseType.fromString)),
             value3b: ParameterBuilder.optional(ParameterBuilder.build('string', DatabaseType.fromString)),
-            value4a: ParameterBuilder.optional(ParameterBuilder.build('undefined', (value: undefined) => value)),
-            value4b: ParameterBuilder.optional(ParameterBuilder.build('undefined', (value: undefined) => value))
+            value4a: ParameterBuilder.optional(ParameterBuilder.build('undefined', (value: undefined) => value))
         }, {
             value1a: 12,
             value1b: undefined,
@@ -256,7 +253,6 @@ describe('ParameterParser', () => {
             value3a: new DatabaseType('testing'),
             value3b: undefined,
             value4a: undefined,
-            value4b: undefined,
             databaseType: new DatabaseType('testing')
         });
     });

@@ -186,6 +186,40 @@ describe('Parameter builder', () => {
         });
     });
 
+    describe('nullable', () => {
+        it('undefined', () => {
+            const builder = ParameterBuilder.nullable(ParameterBuilder.value('undefined'));
+            expect(builder.expectedTypes).to.be.deep.equal(['object', 'undefined']);
+            expect(builder.build(undefined, logger.nextIndent)).to.be.undefined;
+            expect(builder.build(null, logger.nextIndent)).to.be.null;
+            expect(() => builder.build({ v: 0 }, logger.nextIndent)).to.throw();
+        });
+
+        it('number', () => {
+            const builder = ParameterBuilder.nullable(ParameterBuilder.value('number'));
+            expect(builder.expectedTypes).to.be.deep.equal(['object', 'number']);
+            expect(builder.build(1, logger.nextIndent)).to.be.equal(1);
+            expect(builder.build(null, logger.nextIndent)).to.be.null;
+            expect(() => builder.build({ v: 0 }, logger.nextIndent)).to.throw();
+        });
+
+        it('object', () => {
+            const builder = ParameterBuilder.nullable(ParameterBuilder.value('object'));
+            expect(builder.expectedTypes).to.be.deep.equal(['object']);
+            expect(builder.build(null, logger.nextIndent)).to.be.null;
+            expect(builder.build({ v: 0 }, logger.nextIndent)).to.be.deep.equal({ v: 0 });
+        });
+
+        it('multiple nullable', () => {
+            const builder = ParameterBuilder.nullable(ParameterBuilder.nullable(ParameterBuilder.nullable(ParameterBuilder.value('number'))));
+            expect(builder.expectedTypes).to.be.deep.equal(['object', 'number']);
+            expect(builder.expectedTypes).to.be.deep.equal(['object', 'number']);
+            expect(builder.build(1, logger.nextIndent)).to.be.equal(1);
+            expect(builder.build(null, logger.nextIndent)).to.be.null;
+            expect(() => builder.build({ v: 0 }, logger.nextIndent)).to.throw();
+        });
+    });
+
     describe('array', () => {
         it('undefined', () => {
             const builder1 = ParameterBuilder.array(ParameterBuilder.value('undefined'));

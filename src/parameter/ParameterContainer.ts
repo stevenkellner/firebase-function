@@ -21,42 +21,22 @@ export class ParameterContainer {
         this.databaseType = data.databaseType;
     }
 
-    public optionalParameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: ILogger): T | undefined {
-        logger.log('ParameterContainer.optionalParameter', { key: key, expectedTypes: builder.expectedTypes });
-
-        // Return undefined if the parameter doesn't exist
-        if (this.data === undefined || this.data === null || typeof this.data !== 'object' || !(key in this.data))
-            return undefined;
-
-        // Get the parameter from the firebase function data
-        const parameter = (this.data as Record<PropertyKey, unknown>)[key];
-
-        // Return undefined if the parameter is undefined or null
-        if (parameter === undefined || parameter === null)
-            return undefined;
-
-        // Check expected type
-        if (!(builder.expectedTypes as TypeOfName[]).includes(typeof parameter))
-            throw HttpsError('invalid-argument', `Parameter ${key.toString()} has an invalid type, expected: ${builder.expectedTypes}`, logger);
-
-        // Build and return parameter
-        return builder.build(parameter as TypeFrom<TypeName>, logger.nextIndent);
-    }
-
     public parameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: ParameterBuilder<TypeName, T>, logger: ILogger): T {
         logger.log('ParameterContainer.parameter', { key: key, expectedTypes: builder.expectedTypes });
 
-        // Get parameter that is possible optional
-        const parameter = this.optionalParameter(key, builder, logger.nextIndent);
+        // Throw error if the data is invalid
+        if (typeof this.data !== 'object' || this.data === null)
+            throw HttpsError('invalid-argument', `Couldn't get ${key.toString()} from invalid parameters.`, logger);
 
-        // Check if the parameter is undefined
-        if (parameter === undefined) {
-            if (!(builder.expectedTypes as TypeOfName[]).includes('undefined'))
-                throw HttpsError('invalid-argument', `Parameter ${key.toString()} cannot be undefined.`, logger);
-            return builder.build(parameter as undefined as TypeFrom<TypeName>, logger.nextIndent);
-        }
+        // Throw error if key couldn't be found
+        if (!(key in this.data) && !(builder.expectedTypes as TypeOfName[]).includes('undefined'))
+            throw HttpsError('invalid-argument', `No ${key.toString()} in parameters.`, logger);
+        const parameter = (this.data as Record<PropertyKey, unknown>)[key];
 
-        // Return parameter
-        return parameter;
+        // Throw error if type isn't expected
+        if (!(builder.expectedTypes as TypeOfName[]).includes(typeof parameter))
+            throw HttpsError('invalid-argument', `Parameter ${key.toString()} has an invalid type, expected: ${builder.expectedTypes}, actual: ${typeof parameter}`, logger);
+
+        return builder.build(parameter as TypeFrom<TypeName>, logger.nextIndent);
     }
 }
