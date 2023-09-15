@@ -11,13 +11,17 @@ export class ParameterContainer {
 
     public readonly databaseType: DatabaseType;
 
-    public constructor(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys, logger: ILogger) {
-        const crypter = new Crypter(getPrivateKeys(data.databaseType).cryptionKeys);
+    public constructor(data: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, getPrivateKeys: ((databaseType: DatabaseType) => PrivateKeys) | 'uncrypted', logger: ILogger) {
+        if (getPrivateKeys === 'uncrypted') {
+            this.data = data;
+        } else {
+            const crypter = new Crypter(getPrivateKeys(data.databaseType).cryptionKeys);
 
-        // Get and decrypt parameters
-        if (!('parameters' in data) || typeof data.parameters !== 'string')
-            throw HttpsError('invalid-argument', 'Missing parameters in firebase function parameters.', logger);
-        this.data = crypter.decryptDecode(data.parameters);
+            // Get and decrypt parameters
+            if (!('parameters' in data) || typeof data.parameters !== 'string')
+                throw HttpsError('invalid-argument', 'Missing parameters in firebase function parameters.', logger);
+            this.data = crypter.decryptDecode(data.parameters);
+        }
         this.databaseType = data.databaseType;
     }
 

@@ -6,6 +6,7 @@ export * from './websiteExtractor';
 export * from './DatabaseType';
 export * from './FirebaseFunction';
 export * from './FirebaseSchedule';
+export * from './FirebaseRequest';
 export * from './HttpsError';
 export * from './Result';
 export * from './FunctionType';

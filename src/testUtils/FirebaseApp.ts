@@ -18,16 +18,17 @@ export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme ex
         options: FirebaseOptions,
         private readonly cryptionKeys: Crypter.Keys,
         private readonly callSecretKey: string,
-        config?: FirebaseApp.Config
+        private readonly config?: FirebaseApp.Config
     ) {
-        const app = initializeApp(options, config?.name);
-        this._functions = getFunctions(app, config?.functionsRegion);
-        this._database = getDatabase(app, config?.databaseUrl);
+        const app = initializeApp(options, this.config?.name);
+        this._functions = getFunctions(app, this.config?.functionsRegion);
+        this._database = getDatabase(app, this.config?.databaseUrl);
         this._auth = getAuth(app);
     }
 
     public get functions(): FirebaseFunctionsTester<FFunctions> {
-        return new FirebaseFunctionsTester(this._functions, this.cryptionKeys, this.callSecretKey);
+        const requestUrlComponent = this.config?.functionsRegion !== undefined && this.config?.projectId !== undefined ? `${this.config.functionsRegion}-${this.config.projectId}` : `${this.config?.functionsRegion ?? ''}${this.config?.projectId ?? ''}`;
+        return new FirebaseFunctionsTester(this._functions, requestUrlComponent, this.cryptionKeys, this.callSecretKey);
     }
 
     public get database(): FirebaseDatabase<DatabaseScheme> {
@@ -42,6 +43,7 @@ export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme ex
 export namespace FirebaseApp {
     export interface Config {
         name?: string;
+        projectId?: string;
         functionsRegion?: string;
         databaseUrl?: string;
     }
