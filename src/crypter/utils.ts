@@ -1,4 +1,5 @@
 import { webcrypto } from 'crypto';
+import { sha512 as crypt_sha512 } from 'sha512-crypt-ts';
 
 export function bits(byte: number): Array<0 | 1> {
     const totalBitsCount = 8;
@@ -61,4 +62,9 @@ export function addPadding(bytes: Uint8Array): Uint8Array {
 export function removePadding(bytes: Uint8Array): Uint8Array {
     const missingLength = bytes[0];
     return bytes.slice(missingLength);
+}
+
+export function sha512(value: string, key?: string): string {
+    const hashedValue = key === undefined ? crypt_sha512.base64(value) : crypt_sha512.base64Hmac(key, value);
+    return hashedValue.replaceAll('/', '_');
 }

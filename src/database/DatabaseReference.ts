@@ -1,26 +1,27 @@
 import * as admin from 'firebase-admin';
 import { Crypter } from '../crypter';
-import { type PrivateKeys } from '../PrivateKeys';
+import { type PrivateKeys } from '../types/PrivateKeys';
 import { DatabaseSnapshot } from './DatabaseSnapshot';
-import { type IsCryptedScheme, type SchemeType, type GetCryptedScheme } from './SchemeType';
+import { type IDatabaseScheme, type CryptedScheme } from './IDatabaseScheme';
+import { type IDatabaseReference } from './IDatabaseReference';
 
-export class DatabaseReference<Scheme extends SchemeType> {
+export class DatabaseReference<DatabaseScheme extends IDatabaseScheme> implements IDatabaseReference<DatabaseScheme> {
     public constructor(
         private readonly reference: admin.database.Reference,
         private readonly cryptionKeys: Crypter.Keys
     ) {}
 
-    public async snapshot(): Promise<DatabaseSnapshot<Scheme>> {
-        return new DatabaseSnapshot<Scheme>(await this.reference.once('value'), this.cryptionKeys);
+    public async snapshot(): Promise<DatabaseSnapshot<DatabaseScheme>> {
+        return new DatabaseSnapshot<DatabaseScheme>(await this.reference.once('value'), this.cryptionKeys);
     }
 
-    public child<Key extends true extends IsCryptedScheme<Scheme> ? never : (keyof Scheme & string)>(key: Key): DatabaseReference<Scheme extends Record<string, SchemeType> ? Scheme[Key] : never> {
+    public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): DatabaseReference<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
         return new DatabaseReference(this.reference.child(key.replaceAll('/', '_')), this.cryptionKeys);
     }
 
-    public async set(value: GetCryptedScheme<Scheme>, crypted: 'encrypt'): Promise<void>;
-    public async set(value: true extends IsCryptedScheme<Scheme> ? never : Scheme): Promise<void>;
-    public async set(value: Scheme | GetCryptedScheme<Scheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
+    public async set(value: CryptedScheme.GetType<DatabaseScheme>, crypted: 'encrypt'): Promise<void>;
+    public async set(value: true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme): Promise<void>;
+    public async set(value: DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
         if (crypted === 'encrypt') {
             const crypter = new Crypter(this.cryptionKeys);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,7 +48,7 @@ export class DatabaseReference<Scheme extends SchemeType> {
 }
 
 export namespace DatabaseReference {
-    export function base<Scheme extends SchemeType>(privateKey: PrivateKeys): DatabaseReference<Scheme> {
+    export function base<DatabaseScheme extends IDatabaseScheme>(privateKey: PrivateKeys): DatabaseReference<DatabaseScheme> {
         const reference = admin.app().database(privateKey.databaseUrl).ref();
         return new DatabaseReference(reference, privateKey.cryptionKeys);
     }

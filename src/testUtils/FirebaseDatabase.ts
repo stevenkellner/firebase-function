@@ -1,21 +1,21 @@
 import { onValue, ref, set, remove, type Database } from 'firebase/database';
 import { Crypter } from '../crypter';
-import { type GetCryptedScheme, type IsCryptedScheme, type SchemeType } from '../database';
+import { type IDatabaseScheme, type CryptedScheme } from '../database';
 
-export class FirebaseDatabase<Scheme extends SchemeType> {
+export class FirebaseDatabase<DatabaseScheme extends IDatabaseScheme> {
     public constructor(
         private readonly database: Database,
         private readonly cryptionKeys: Crypter.Keys,
         private readonly path?: string
     ) {}
 
-    public child<Key extends true extends IsCryptedScheme<Scheme> ? never : (keyof Scheme & string)>(key: Key): FirebaseDatabase<Scheme extends Record<string, SchemeType> ? Scheme[Key] : never> {
+    public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): FirebaseDatabase<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
         return new FirebaseDatabase(this.database, this.cryptionKeys, this.path === undefined ? key.replaceAll('/', '_') : `${this.path}/${key.replaceAll('/', '_')}`);
     }
 
-    public async set(value: GetCryptedScheme<Scheme>, crypted: 'encrypt'): Promise<void>;
-    public async set(value: true extends IsCryptedScheme<Scheme> ? never : Scheme): Promise<void>;
-    public async set(value: Scheme | GetCryptedScheme<Scheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
+    public async set(value: CryptedScheme.GetType<DatabaseScheme>, crypted: 'encrypt'): Promise<void>;
+    public async set(value: true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme): Promise<void>;
+    public async set(value: DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
         if (crypted === 'encrypt') {
             const crypter = new Crypter(this.cryptionKeys);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,14 +38,14 @@ export class FirebaseDatabase<Scheme extends SchemeType> {
         });
     }
 
-    public async get(crypted: 'decrypt'): Promise<true extends IsCryptedScheme<Scheme> ? GetCryptedScheme<Scheme> : never>;
-    public async get(): Promise<true extends IsCryptedScheme<Scheme> ? never : Scheme>;
-    public async get(crypted: 'plain' | 'decrypt' = 'plain'): Promise<Scheme | GetCryptedScheme<Scheme>> {
+    public async get(crypted: 'decrypt'): Promise<true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never>;
+    public async get(): Promise<true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme>;
+    public async get(crypted: 'plain' | 'decrypt' = 'plain'): Promise<DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>> {
         if (crypted === 'decrypt') {
             const crypter = new Crypter(this.cryptionKeys);
-            return crypter.decryptDecode<GetCryptedScheme<Scheme>>(await this.value() as string);
+            return crypter.decryptDecode<CryptedScheme.GetType<DatabaseScheme>>(await this.value() as string);
         }
-        return await this.value() as Scheme;
+        return await this.value() as DatabaseScheme;
     }
 
     public async exists(): Promise<boolean> {

@@ -1,4 +1,4 @@
-import { StringBuilder } from '../StringBuilder';
+import { StringBuilder } from '../types/StringBuilder';
 import { type LogLevel } from './LogLevel';
 import { type VerboseType } from './VerboseType';
 import { inspect } from 'util';
@@ -29,15 +29,13 @@ export class LoggingProperty {
 
     private detailString(key: string, detail: unknown, verbose: VerboseType): string {
         const builder = new StringBuilder();
-        const jsonLines = inspect(detail, { compact: true, depth: null, maxArrayLength: 25, maxStringLength: 250, breakLength: Number.POSITIVE_INFINITY }).split('\n') ?? [''];
+        const json = inspect(detail, { compact: true, depth: null, maxArrayLength: 25, maxStringLength: 250, breakLength: Number.POSITIVE_INFINITY });
         const coloredText = (value: string): string => {
             if (verbose.isColored)
                 return `\x1b[2m${value}\x1b[0m`;
             return value;
         };
-        builder.appendLine(this.prefix() + '    ' + `${key}: ${coloredText(jsonLines.shift() ?? '')}`);
-        for (const line of jsonLines)
-            builder.appendLine(this.prefix() + '        ' + coloredText(line));
+        builder.appendLine(this.prefix() + '    ' + `${key}: ${coloredText(json)}`);
         return builder.toString();
     }
 }

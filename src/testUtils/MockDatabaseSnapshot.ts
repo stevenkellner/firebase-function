@@ -1,53 +1,55 @@
-import type * as admin from 'firebase-admin';
-import { Crypter } from '../crypter';
-import { type ObjectValue } from '../types/utils';
-import { type IDatabaseScheme, type CryptedScheme } from './IDatabaseScheme';
-import { type IDatabaseSnapshot } from './IDatabaseSnapshot';
+import { type CryptedScheme, type IDatabaseScheme, type IDatabaseSnapshot } from '../database';
+import { type ObjectValue } from '../types';
 
-export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements IDatabaseSnapshot<DatabaseScheme> {
+export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements IDatabaseSnapshot<DatabaseScheme> {
     public constructor(
-        private readonly snapshot: admin.database.DataSnapshot,
-        private readonly cryptionKeys: Crypter.Keys
+        public readonly key: string | null,
+        private readonly data: DatabaseScheme | null
     ) {}
 
-    public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): DatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
-        return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')), this.cryptionKeys);
+    public get hasChildren(): boolean {
+        return typeof this.data === 'object' && this.data !== null;
+    }
+
+    public get numberChildren(): number {
+        if (typeof this.data !== 'object' || this.data === null)
+            return 0;
+        return Object.values(this.data).length;
+    }
+
+    public get exists(): boolean {
+        return this.data !== null;
     }
 
     public value(crypted: 'decrypt'): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never;
     public value(): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme;
     public value(crypted: 'plain' | 'decrypt' = 'plain'): DatabaseScheme | CryptedScheme.GetType<DatabaseScheme> {
         if (crypted === 'decrypt') {
-            const crypter = new Crypter(this.cryptionKeys);
-            return crypter.decryptDecode<CryptedScheme.GetType<DatabaseScheme>>(this.snapshot.val());
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return (this.data! as CryptedScheme<CryptedScheme.GetType<DatabaseScheme>>).value;
         }
-        return this.snapshot.val();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.data!;
     }
 
     public hasChild(path: string): boolean {
-        return this.snapshot.hasChild(path.replaceAll('/', '_'));
+        return typeof this.data === 'object' && this.data !== null && path in this.data;
     }
 
-    public get hasChildren(): boolean {
-        return this.snapshot.hasChildren();
-    }
-
-    public get numberChildren(): number {
-        return this.snapshot.numChildren();
-    }
-
-    public get key(): string | null {
-        return this.snapshot.key;
-    }
-
-    public get exists(): boolean {
-        return this.snapshot.exists();
+    public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : keyof DatabaseScheme & string>(key: Key): IDatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return new MockDatabaseSnapshot(key, this.data === null ? null as any : (this.data as DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme : never)[key]) as any;
     }
 
     public forEach(action: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => boolean | void): boolean {
-        return this.snapshot.forEach(snapshot => {
-            return action(new DatabaseSnapshot<ObjectValue<DatabaseScheme>>(snapshot, this.cryptionKeys));
-        });
+        if (typeof this.data !== 'object' || this.data === null)
+            return false;
+        for (const entry of Object.entries(this.data)) {
+            const shouldBreak = action(new MockDatabaseSnapshot<ObjectValue<DatabaseScheme>>(entry[0], entry[1]));
+            if (shouldBreak === true)
+                return true;
+        }
+        return false;
     }
 
     public map<U>(transform: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => U): U[] {

@@ -1,17 +1,17 @@
 import { httpsCallable, type Functions } from 'firebase/functions';
-import { type CallSecret } from '../CallSecret';
-import { Crypter } from '../crypter';
-import { DatabaseType } from '../DatabaseType';
-import { type FirebaseFunction } from '../FirebaseFunction';
-import { type FunctionType } from '../FunctionType';
-import { type FirebaseRequestDescriptor, type FirebaseFunctionDescriptor, type FirebaseFunctions as FirebaseFunctionsType } from '../FirebaseFunctions';
-import { type ValidReturnType } from '../ValidReturnType';
+import { type CallSecret } from '../types/CallSecret';
+import { Crypter, sha512 } from '../crypter';
+import { DatabaseType } from '../types/DatabaseType';
+import { type FirebaseFunctions as FirebaseFunctionsType } from '../FirebaseFunctions';
+import { type ValidReturnType } from '../types/ValidReturnType';
 import { type VerboseType } from '../logger';
 import { type ExpectResult, expectResult } from './Expect';
-import { UtcDate } from '../UtcDate';
+import { UtcDate } from '../types/UtcDate';
 import { encodeURL } from 'js-base64';
 import fetch from 'cross-fetch';
-import { Result } from '../Result';
+import { Result } from '../types/Result';
+import { type IFunctionType, type FirebaseError, type FirebaseResult } from '../types';
+import { type FirebaseDescriptor } from '../FirebaseDescriptor';
 
 export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
     public constructor(
@@ -45,24 +45,25 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType> {
             databaseType: databaseType.value,
             callSecret: {
                 expiresAt: expiresAtUtcDate.encoded,
-                hashedData: Crypter.sha512(expiresAtUtcDate.encoded, this.callSecretKey)
+                hashedData: sha512(expiresAtUtcDate.encoded, this.callSecretKey)
             },
             parameters: crypter.encodeEncrypt(parameters)
         });
-        const result: FirebaseFunction.Result<FirebaseFunctions.ReturnTypeIfFunction<FFunctions>> = await crypter.decryptDecode(httpsCallableResult.data.result);
+        const result: FirebaseResult<FirebaseFunctions.ReturnTypeIfFunction<FFunctions>> = await crypter.decryptDecode(httpsCallableResult.data.result);
         return expectResult(result);
     }
 
     public async request(parameters: FirebaseFunctions.ParametersIfRequest<FFunctions>): Promise<ExpectResult<FirebaseFunctions.ReturnTypeIfRequest<FFunctions>>> {
         const functionName = this.functionName !== undefined ? `debug-${this.functionName}` : '';
         const baseUrl = `https://${this.requestUrlComponent}.cloudfunctions.net/${functionName}`;
-        const joinedParameters = [...Object.entries(parameters), ['databaseType', 'testing'] as const].map(parameter => `${parameter[0]}=${parameter[1]}`).join('&');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const joinedParameters = [...Object.entries(parameters as any), ['databaseType', 'testing'] as const].map(parameter => `${parameter[0]}=${parameter[1]}`).join('&');
         const url = encodeURL(`${baseUrl}?${joinedParameters}`);
         try {
             const response: FirebaseFunctions.ReturnTypeIfRequest<FFunctions> = JSON.parse(await (await fetch(url)).json());
             return expectResult(Result.success(response));
         } catch (error) {
-            return expectResult(Result.failure(error as FirebaseFunction.Error));
+            return expectResult(Result.failure(error as FirebaseError));
         }
     }
 }
@@ -71,9 +72,9 @@ namespace FirebaseFunctions {
     export type KeyIfRecord<FFunctions extends FirebaseFunctionsType> = (FFunctions extends Record<string, FirebaseFunctionsType> ? (keyof FFunctions & string) : never);
     export type FFunctionIfRecord<FFunctions extends FirebaseFunctionsType, Key extends keyof FFunctions> = FFunctions extends Record<string, FirebaseFunctionsType> ? FFunctions[Key] : never;
 
-    export type ParametersIfFunction<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.FlattenParameters<FFunctions> : never;
-    export type ReturnTypeIfFunction<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseFunctionDescriptor<FunctionType<unknown, ValidReturnType, unknown>> ? FirebaseFunctionDescriptor.ReturnType<FFunctions> : never;
+    export type ParametersIfFunction<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseDescriptor.Function<IFunctionType<unknown, ValidReturnType, infer FlattenParameters>, unknown> ? FlattenParameters : never;
+    export type ReturnTypeIfFunction<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseDescriptor.Function<IFunctionType<unknown, infer ReturnType, unknown>, unknown> ? ReturnType : never;
 
-    export type ParametersIfRequest<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseRequestDescriptor<FunctionType<unknown, ValidReturnType, Record<string, string>>> ? FirebaseRequestDescriptor.FlattenParameters<FFunctions> : never;
-    export type ReturnTypeIfRequest<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseRequestDescriptor<FunctionType<unknown, ValidReturnType, Record<string, string>>> ? FirebaseRequestDescriptor.ReturnType<FFunctions> : never;
+    export type ParametersIfRequest<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseDescriptor.Request<IFunctionType<unknown, ValidReturnType, infer FlattenParameters>> ? FlattenParameters : never;
+    export type ReturnTypeIfRequest<FFunctions extends FirebaseFunctionsType> = FFunctions extends FirebaseDescriptor.Request<IFunctionType<unknown, infer ReturnType, unknown>> ? ReturnType : never;
 }

@@ -1,19 +1,15 @@
-import { type DatabaseType } from '../DatabaseType';
-import { HttpsError } from '../HttpsError';
+import { type DatabaseType } from '../types/DatabaseType';
+import { HttpsError } from '../types/HttpsError';
 import { type ILogger } from '../logger';
-import { type ParameterBuilder } from './ParameterBuilder';
-import { type ParameterContainer } from './ParameterContainer';
-import { type TypeOfName } from './TypeOf';
+import { type IParameterBuilders } from './IParameterBuilder';
+import { type IParameterParser } from './IParameterParser';
+import { type IParameterContainer } from './IParameterContainer';
 
-export type ParameterBuilders<Parameters extends Record<string, unknown>> = {
-    [Key in keyof Parameters]: ParameterBuilder<TypeOfName, Parameters[Key]>
-};
-
-export class ParameterParser<Parameters extends Record<string, unknown>> {
+export class ParameterParser<Parameters extends Record<string, unknown>> implements IParameterParser<Parameters> {
     private initialParameters?: Parameters & { databaseType: DatabaseType };
 
     public constructor(
-        private readonly paramterBuilders: ParameterBuilders<Parameters>,
+        private readonly paramterBuilders: IParameterBuilders<Parameters>,
         private readonly logger: ILogger
     ) {}
 
@@ -23,11 +19,11 @@ export class ParameterParser<Parameters extends Record<string, unknown>> {
         return this.initialParameters;
     }
 
-    public parseParameters(container: ParameterContainer): void {
+    public parse(container: IParameterContainer): void {
         this.logger.log('ParameterParser.parseParameters', { container: container });
         this.initialParameters = {} as Parameters & { databaseType: DatabaseType };
         for (const entry of Object.entries(this.paramterBuilders))
-            this.initialParameters[entry[0] as keyof Parameters] = container.parameter(entry[0], entry[1], this.logger.nextIndent);
+            this.initialParameters[entry[0] as keyof Parameters] = container.parameter(entry[0], entry[1]);
         this.initialParameters.databaseType = container.databaseType;
     }
 }

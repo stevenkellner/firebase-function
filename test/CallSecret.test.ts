@@ -1,0 +1,25 @@
+import { expect } from 'chai';
+import { CallSecret, DummyLogger, UtcDate, sha512 } from '../src';
+
+describe('CallSecret', () => {
+    it('fromObject', () => {
+        expect(() => CallSecret.fromObject(null, new DummyLogger())).to.throw();
+        expect(() => CallSecret.fromObject({ expiresAt: 0, hashedData: 0 }, new DummyLogger())).to.throw();
+        expect(() => CallSecret.fromObject({ expiresAt: '', hashedData: 0 }, new DummyLogger())).to.throw();
+        const expiresAt = UtcDate.now;
+        expect(CallSecret.fromObject({
+            expiresAt: expiresAt.encoded,
+            hashedData: 'abc'
+        }, new DummyLogger())).to.be.deep.equal({
+            expiresAt: expiresAt.encoded,
+            hashedData: 'abc'
+        });
+    });
+
+    it('check', () => {
+        const expiresAt = UtcDate.now;
+        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.encoded, hashedData: 'abc' }, 'xyz', new DummyLogger())).to.throw();
+        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: -1 }).encoded, hashedData: sha512(expiresAt.advanced({ minute: -1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).to.throw();
+        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: 1 }).encoded, hashedData: sha512(expiresAt.advanced({ minute: 1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).not.to.throw();
+    });
+});

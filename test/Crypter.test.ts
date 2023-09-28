@@ -1,11 +1,10 @@
 import { expect } from 'chai';
 import { PseudoRandom } from '../src/crypter/PseudoRandom';
 import { BytesToBitIterator } from '../src/crypter/BytesToBitIterator';
-import { bits, xor, bitIteratorToBytes, addPadding, removePadding } from '../src/crypter/utils';
+import { bits, xor, bitIteratorToBytes, addPadding, removePadding, sha512 } from '../src/crypter/utils';
 import { RandomBitIterator } from '../src/crypter/RandomBitIterator';
 import { CombineIterator } from '../src/crypter/CombineIterator';
-import { Crypter } from '../src/crypter/Crypter';
-import { FixedLength } from '../src/crypter/FixedLength';
+import { Crypter, FixedLength } from '../src/crypter';
 import * as crypterTestData from './dataset/crypterTestData.json';
 import { Base64 } from 'js-base64';
 
@@ -307,7 +306,7 @@ describe('Crypter', () => {
     });
 
     it('hash', () => {
-        expect(Crypter.sha512('lkjdasflnc')).to.be.equal('rbswGhojGpzw7EoB61dz3LpecUiFV7y0QHhO7xLHbgtPHhjsKxH6nbUg2p6B5CpSAa1hMzJKBfM8twldRbKj1g');
-        expect(Crypter.sha512('lkjdasflnc', 'oimli')).to.be.equal('5NRfmNX8NnSCP2jrQIrhmkpo+wpz27FQDyU4_4lheOiJ8etSQ+spWak39WgaF8lzd8qwHzlkrfixZIZlf_1hSQ');
+        expect(sha512('lkjdasflnc')).to.be.equal('rbswGhojGpzw7EoB61dz3LpecUiFV7y0QHhO7xLHbgtPHhjsKxH6nbUg2p6B5CpSAa1hMzJKBfM8twldRbKj1g');
+        expect(sha512('lkjdasflnc', 'oimli')).to.be.equal('5NRfmNX8NnSCP2jrQIrhmkpo+wpz27FQDyU4_4lheOiJ8etSQ+spWak39WgaF8lzd8qwHzlkrfixZIZlf_1hSQ');
     });
 });

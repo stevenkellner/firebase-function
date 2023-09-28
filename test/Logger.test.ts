@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Logger, VerboseType } from '../src';
+import { DatabaseType, DummyLogger, Logger, VerboseType } from '../src';
 
 describe('Logger', () => {
     const logger = Logger.start(new VerboseType('none'), 'f1', { v1: 'v1', v2: false }, 'notice');
@@ -88,5 +88,27 @@ describe('Logger', () => {
 |   |   | }
 `;
         expect(logger.completeLog).to.be.equal(expectedLog);
+    });
+
+    it('VerboseType.fromString', () => {
+        expect(() => VerboseType.fromString('invalid', new DatabaseType('debug'), logger.nextIndent)).to.throw();
+        expect(VerboseType.fromString('none', new DatabaseType('release'), logger.nextIndent)).to.be.deep.equal(new VerboseType('none'));
+        expect(VerboseType.fromString('verbose', new DatabaseType('release'), logger.nextIndent)).to.be.deep.equal(new VerboseType('none'));
+        expect(VerboseType.fromString('colored', new DatabaseType('release'), logger.nextIndent)).to.be.deep.equal(new VerboseType('colored'));
+        expect(VerboseType.fromString('coloredVerbose', new DatabaseType('release'), logger.nextIndent)).to.be.deep.equal(new VerboseType('colored'));
+        expect(VerboseType.fromString('none', new DatabaseType('debug'), logger.nextIndent)).to.be.deep.equal(new VerboseType('none'));
+        expect(VerboseType.fromString('verbose', new DatabaseType('debug'), logger.nextIndent)).to.be.deep.equal(new VerboseType('verbose'));
+        expect(VerboseType.fromString('colored', new DatabaseType('debug'), logger.nextIndent)).to.be.deep.equal(new VerboseType('colored'));
+        expect(VerboseType.fromString('coloredVerbose', new DatabaseType('debug'), logger.nextIndent)).to.be.deep.equal(new VerboseType('coloredVerbose'));
+        expect(VerboseType.fromString('none', new DatabaseType('testing'), logger.nextIndent)).to.be.deep.equal(new VerboseType('none'));
+        expect(VerboseType.fromString('verbose', new DatabaseType('testing'), logger.nextIndent)).to.be.deep.equal(new VerboseType('verbose'));
+        expect(VerboseType.fromString('colored', new DatabaseType('testing'), logger.nextIndent)).to.be.deep.equal(new VerboseType('colored'));
+        expect(VerboseType.fromString('coloredVerbose', new DatabaseType('testing'), logger.nextIndent)).to.be.deep.equal(new VerboseType('coloredVerbose'));
+    });
+
+    it('dummy logger', () => {
+        const logger = new DummyLogger();
+        logger.nextIndent.log('test', undefined);
+        expect(logger.completeLog).to.be.equal('');
     });
 });

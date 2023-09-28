@@ -14,11 +14,14 @@ export class PseudoRandom {
         let state1 = this.mashResult(n = this.mash(Uint8Array.from([32]), n));
         let state2 = this.mashResult(n = this.mash(Uint8Array.from([32]), n));
         state0 -= this.mashResult(n = this.mash(seed, n));
-        if (state0 < 0) state0 += 1;
+        if (state0 < 0)
+            state0 += 1;
         state1 -= this.mashResult(n = this.mash(seed, n));
-        if (state1 < 0) state1 += 1;
+        if (state1 < 0)
+            state1 += 1;
         state2 -= this.mashResult(n = this.mash(seed, n));
-        if (state2 < 0) state2 += 1;
+        if (state2 < 0)
+            state2 += 1;
         this.state = { state0: state0, state1: state1, state2: state2, constant: 1 };
     }
 

@@ -1,16 +1,15 @@
 import { assert, expect as chai_expect } from 'chai';
-import { type FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
-import { type FirebaseFunction } from '../FirebaseFunction';
+import { type FirebaseResult, type FirebaseError } from '../types';
 
 export function expect<T>(value: T): Expect<T> {
     return new Expect<T>(value);
 }
 
-export function expectResult<T>(result: FirebaseFunction.Result<T>): ExpectResult<T> {
+export function expectResult<T>(result: FirebaseResult<T>): ExpectResult<T> {
     return new ExpectResult<T>(result);
 }
 
-export function expectHttpsError(execute: () => void, code: FunctionsErrorCode) {
+export function expectHttpsError(execute: () => void, code: FirebaseError.Code) {
     try {
         execute();
         chai_expect.fail('Expected to throw an error.');
@@ -124,7 +123,7 @@ export class ExpectToBeDeep<T> {
 
 export class ExpectResult<T> {
     public constructor(
-        private readonly result: FirebaseFunction.Result<T>
+        private readonly result: FirebaseResult<T>
     ) {}
 
     public get success(): ExpectToBe<T> | ExpectToBeDeep<T> {
@@ -138,7 +137,7 @@ export class ExpectResult<T> {
     }
 
     public get failure(): ExpectToBeDeep<{
-        code: FunctionsErrorCode;
+        code: FirebaseError.Code;
         message: string;
     }> {
         expect<'failure' | 'success'>(this.result.state).to.be.equal('failure');

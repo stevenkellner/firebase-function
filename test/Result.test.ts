@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Result } from '../src/Result';
+import { Result } from '../src';
 
 describe('Result', () => {
     it('success', () => {

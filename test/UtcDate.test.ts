@@ -1,4 +1,4 @@
-import { UtcDate } from '../src/UtcDate';
+import { UtcDate } from '../src';
 import { expect } from '../src/testUtils';
 
 describe('utcDate', () => {
@@ -8,6 +8,7 @@ describe('utcDate', () => {
     });
 
     it('from date', () => {
+        expect(UtcDate.fromIsoDate(UtcDate.now.toIsoDate).day).to.be.equal(new Date().getDate());
         const date = UtcDate.fromDate(new Date('2023-02-07T12:34:56+01:00'));
         expect(date).to.be.deep.equal(new UtcDate(2023, 2, 7, 11, 34));
     });
@@ -17,6 +18,7 @@ describe('utcDate', () => {
         const encoded = date.encoded;
         expect(encoded).to.be.equal('2023-02-07-11-34');
         expect(UtcDate.decode(encoded)).to.be.deep.equal(date);
+        expect(UtcDate.decode('')).to.be.deep.equal(new UtcDate(0, 0, 0, 0, 0));
     });
 
     it('setted', () => {
@@ -44,6 +46,8 @@ describe('utcDate', () => {
         const date2 = UtcDate.fromDate(new Date('2023-02-08T12:34:56+01:00'));
         const date3 = UtcDate.fromDate(new Date('2023-02-07T12:35:56+01:00'));
         const date4 = UtcDate.fromDate(new Date('2023-02-07T12:34:56+01:00'));
+        const date5 = UtcDate.fromDate(new Date('2023-02-07T13:34:56+01:00'));
+        const date6 = UtcDate.fromDate(new Date('2023-03-07T13:34:56+01:00'));
         expect(date1.compare(date2)).to.be.equal('greater');
         expect(date1.compare(date3)).to.be.equal('greater');
         expect(date1.compare(date4)).to.be.equal('greater');
@@ -57,5 +61,14 @@ describe('utcDate', () => {
         expect(date3.compare(date2)).to.be.equal('less');
         expect(date4.compare(date2)).to.be.equal('less');
         expect(date4.compare(date3)).to.be.equal('less');
+        expect(date4.compare(date5)).to.be.equal('less');
+        expect(date5.compare(date4)).to.be.equal('greater');
+        expect(date5.compare(date6)).to.be.equal('less');
+        expect(date6.compare(date5)).to.be.equal('greater');
+    });
+
+    it('description', () => {
+        const date = UtcDate.fromDate(new Date('2024-02-07T12:34:56+01:00'));
+        expect(date.description('de-DE', 'Europe/Berlin')).to.be.equal('7.2.2024, 12:34:00');
     });
 });

@@ -1,6 +1,6 @@
-import { Crypter } from './crypter';
+import { sha512 } from '../crypter';
 import { HttpsError } from './HttpsError';
-import { type ILogger } from './logger';
+import { type ILogger } from '../logger';
 import { UtcDate } from './UtcDate';
 
 export interface CallSecret {
@@ -28,7 +28,7 @@ export namespace CallSecret {
     }
 
     export function checkCallSecret(callSecret: CallSecret, callSecretKey: string, logger: ILogger) {
-        const actualHashedData = Crypter.sha512(callSecret.expiresAt, callSecretKey);
+        const actualHashedData = sha512(callSecret.expiresAt, callSecretKey);
         if (callSecret.hashedData !== actualHashedData)
             throw HttpsError('permission-denied', 'Call secret is rejected, since the hashed data is invalid.', logger);
         if (UtcDate.decode(callSecret.expiresAt).compare(UtcDate.now) === 'less')

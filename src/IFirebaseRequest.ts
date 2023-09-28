@@ -1,23 +1,23 @@
 import * as functions from 'firebase-functions';
 import { DummyLogger, type ILogger, VerboseType, Logger } from './logger';
-import { type FunctionType } from './FunctionType';
-import { type ValidReturnType } from './ValidReturnType';
-import { DatabaseType } from './DatabaseType';
-import { HttpsError } from './HttpsError';
+import { type IFunctionType, DatabaseType, HttpsError, type PrivateKeys } from './types';
+import { ParameterContainer, type IParameterContainer } from './parameter';
+import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
 
-export type FirebaseRequestConstructor<FFunctionType extends FunctionType<unknown, ValidReturnType, Record<string, string>>> = new (params: Record<PropertyKey, unknown> & { databaseType: DatabaseType }, logger: ILogger) => FirebaseRequest<FFunctionType>;
-export interface FirebaseRequest<FFunctionType extends FunctionType<unknown, ValidReturnType, unknown>> {
+export interface IFirebaseRequest<FunctionType extends IFunctionType.Erased> {
+    parameters: IFunctionType.Parameters<FunctionType>;
 
-    parameters: FunctionType.Parameters<FFunctionType>;
-
-    executeFunction(): Promise<FunctionType.ReturnType<FFunctionType>>;
+    execute(): Promise<IFunctionType.ReturnType<FunctionType>>;
 }
 
+declare let IFirebaseRequest: FirebaseRequest.Constructor<IFunctionType.Erased>;
+
 export namespace FirebaseRequest {
-    export function create<
-        FFunctionType extends FunctionType<unknown, ValidReturnType, Record<string, string>>
-    >(
-        FirebaseRequest: FirebaseRequestConstructor<FFunctionType>
+    export type Constructor<FunctionType extends IFunctionType.Erased> = new (parameterContainer: IParameterContainer, databaseReference: IDatabaseReference<IDatabaseScheme>, logger: ILogger) => IFirebaseRequest<FunctionType>;
+
+    export function create<FunctionType extends IFunctionType.Erased>(
+        FirebaseRequest: FirebaseRequest.Constructor<FunctionType>,
+        getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
     ): functions.HttpsFunction {
         return functions
             .region('europe-west1')
@@ -44,11 +44,10 @@ export namespace FirebaseRequest {
                 const logger = Logger.start(loggerVerboseType, 'FirebaseRequest.create', undefined, 'notice');
 
                 // Get response of function call
-                const firebaseRequest = new FirebaseRequest({
-                    ...request.query,
-                    databaseType: databaseType
-                }, logger.nextIndent);
-                response.send(await firebaseRequest.executeFunction());
+                const parameterContainer = new ParameterContainer({ ...request.query, databaseType: databaseType }, null, logger.nextIndent);
+                const databaseReference = DatabaseReference.base(getPrivateKeys(databaseType));
+                const firebaseRequest = new FirebaseRequest(parameterContainer, databaseReference, logger.nextIndent);
+                response.send(await firebaseRequest.execute());
             });
     }
 }

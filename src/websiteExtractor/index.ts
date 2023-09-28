@@ -1,2 +1,3 @@
-export * from './HtmlNode';
+export * from './IWebsiteFetcher';
 export * from './WebsiteFetcher';
+export * from './HtmlNode';

@@ -1,4 +1,4 @@
-import { StringBuilder } from '../StringBuilder';
+import { StringBuilder } from '../types/StringBuilder';
 import { type ILogger } from './ILogger';
 import { LoggingProperty } from './LoggingProperty';
 import { LogLevel } from './LogLevel';

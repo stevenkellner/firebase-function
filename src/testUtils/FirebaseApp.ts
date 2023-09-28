@@ -6,10 +6,10 @@ import { FirebaseFunctions as FirebaseFunctionsTester } from './FirebaseFunction
 import { FirebaseDatabase } from './FirebaseDatabase';
 import { FirebaseAuth } from './FirebaseAuth';
 import { type Functions, getFunctions } from 'firebase/functions';
-import { type SchemeType } from '../database';
+import { type IDatabaseScheme } from '../database';
 import { type FirebaseFunctions } from '../FirebaseFunctions';
 
-export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme extends SchemeType> {
+export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme extends IDatabaseScheme> {
     private readonly _functions: Functions;
     private readonly _database: Database;
     private readonly _auth: Auth;

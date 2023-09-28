@@ -1,15 +1,10 @@
 import { expect } from 'chai';
-import { type FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
-import { Crypter } from '../src/crypter/Crypter';
-import { FixedLength } from '../src/crypter/FixedLength';
-import { DatabaseType } from '../src/DatabaseType';
-import { HttpsError } from '../src/HttpsError';
+import { Crypter, FixedLength } from '../src/crypter';
+import { DatabaseType, type FirebaseError, HttpsError } from '../src';
 import { Logger, type ILogger, VerboseType } from '../src/logger';
-import { ParameterBuilder } from '../src/parameter/ParameterBuilder';
-import { ParameterContainer } from '../src/parameter/ParameterContainer';
-import { ParameterParser, type ParameterBuilders } from '../src/parameter/ParameterParser';
+import { GuardParameterBuilder, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder } from '../src/parameter';
 
-function expectHttpsError(execute: () => void, code: FunctionsErrorCode) {
+function expectHttpsError(execute: () => void, code: FirebaseError.Code) {
     try {
         execute();
     } catch (error) {
@@ -64,26 +59,20 @@ describe('ParameterParser', () => {
         initialisationVector: new FixedLength(Uint8Array.from([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F]), 16),
         vernamKey: new FixedLength(Uint8Array.from([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F]), 32)
     };
+    const crypter = new Crypter(cryptionKeys);
     const logger = Logger.start(new VerboseType('coloredVerbose'), 'parameter parser test');
 
     function testParameterParser<Parameters extends Record<string, unknown>>(
         parameterToParse: unknown,
-        builders: ParameterBuilders<Parameters>,
+        builders: IParameterBuilders<Parameters>,
         expectedParameters: Parameters & { databaseType: DatabaseType }
     ) {
-        const crypter = new Crypter(cryptionKeys);
         const parameterContainer = new ParameterContainer({
             databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt(parameterToParse)
-        }, (databaseType: DatabaseType) => {
-            return {
-                cryptionKeys: cryptionKeys,
-                callSecretKey: '',
-                databaseUrl: ''
-            };
-        }, logger.nextIndent);
+        }, crypter, logger.nextIndent);
         const parameterParser = new ParameterParser<Parameters>(builders, logger.nextIndent);
-        parameterParser.parseParameters(parameterContainer);
+        parameterParser.parse(parameterContainer);
         expect(parameterParser.parameters).to.be.deep.equal(expectedParameters);
     }
 
@@ -92,7 +81,7 @@ describe('ParameterParser', () => {
             const parameterParser = new ParameterParser<{
                 value: string;
             }>({
-                value: ParameterBuilder.value('string')
+                value: new ValueParameterBuilder('string')
             }, logger.nextIndent);
             parameterParser.parameters;
         }, 'internal');
@@ -117,9 +106,9 @@ describe('ParameterParser', () => {
                 subValue2: 98
             }
         }, {
-            value1: ParameterBuilder.value('string'),
-            value2: ParameterBuilder.value('number'),
-            value3: ParameterBuilder.value('object')
+            value1: new ValueParameterBuilder('string'),
+            value2: new ValueParameterBuilder('number'),
+            value3: new ValueParameterBuilder('object')
         }, {
             value1: 'asdf',
             value2: 12,
@@ -144,9 +133,9 @@ describe('ParameterParser', () => {
                 v2: 3
             }
         }, {
-            value1: ParameterBuilder.build('string', StringClassType.fromString),
-            value2: ParameterBuilder.build('number', NumberClassType.fromNumber),
-            value3: ParameterBuilder.build('object', ObjectClassType.fromObject)
+            value1: new ParameterBuilder('string', StringClassType.fromString),
+            value2: new ParameterBuilder('number', NumberClassType.fromNumber),
+            value3: new ParameterBuilder('object', ObjectClassType.fromObject)
         }, {
             value1: new StringClassType('v1'),
             value2: new NumberClassType(12.50),
@@ -163,8 +152,8 @@ describe('ParameterParser', () => {
             value1: 23.9,
             value2: 'v3'
         }, {
-            value1: ParameterBuilder.value('number'),
-            value2: ParameterBuilder.build('string', StringClassType.fromString)
+            value1: new ValueParameterBuilder('number'),
+            value2: new ParameterBuilder('string', StringClassType.fromString)
         }, {
             value1: 23.9,
             value2: new StringClassType('v3'),
@@ -179,7 +168,7 @@ describe('ParameterParser', () => {
             }>({
                 value1: 'invalid'
             }, {
-                value1: ParameterBuilder.build('string', StringClassType.fromString)
+                value1: new ParameterBuilder('string', StringClassType.fromString)
             }, {
                 value1: new StringClassType('v1'),
                 databaseType: new DatabaseType('testing')
@@ -199,8 +188,8 @@ describe('ParameterParser', () => {
             value1: 'as',
             databaseType: 'testing'
         }, {
-            value1: ParameterBuilder.value('string'),
-            databaseType: ParameterBuilder.build('string', DatabaseType.fromString)
+            value1: new ValueParameterBuilder('string'),
+            databaseType: new ParameterBuilder('string', DatabaseType.fromString)
         }, {
             value1: 'as',
             databaseType: new DatabaseType('testing')
@@ -213,7 +202,7 @@ describe('ParameterParser', () => {
         }>({
             value: 'b'
         }, {
-            value: ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')
+            value: new GuardParameterBuilder('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')
         }, {
             value: 'b',
             databaseType: new DatabaseType('testing')
@@ -238,13 +227,13 @@ describe('ParameterParser', () => {
             value3b: undefined,
             value4a: undefined
         }, {
-            value1a: ParameterBuilder.optional(ParameterBuilder.value('number')),
-            value1b: ParameterBuilder.optional(ParameterBuilder.value('number')),
-            value2a: ParameterBuilder.optional(ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
-            value2b: ParameterBuilder.optional(ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
-            value3a: ParameterBuilder.optional(ParameterBuilder.build('string', DatabaseType.fromString)),
-            value3b: ParameterBuilder.optional(ParameterBuilder.build('string', DatabaseType.fromString)),
-            value4a: ParameterBuilder.optional(ParameterBuilder.build('undefined', (value: undefined) => value))
+            value1a: new OptionalParameterBuilder(new ValueParameterBuilder('number')),
+            value1b: new OptionalParameterBuilder(new ValueParameterBuilder('number')),
+            value2a: new OptionalParameterBuilder(new GuardParameterBuilder('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
+            value2b: new OptionalParameterBuilder(new GuardParameterBuilder('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
+            value3a: new OptionalParameterBuilder(new ParameterBuilder('string', DatabaseType.fromString)),
+            value3b: new OptionalParameterBuilder(new ParameterBuilder('string', DatabaseType.fromString)),
+            value4a: new OptionalParameterBuilder(new ParameterBuilder('undefined', (value: undefined) => value))
         }, {
             value1a: 12,
             value1b: undefined,
@@ -264,7 +253,7 @@ describe('ParameterParser', () => {
             }>({
                 value: 'asdf'
             }, {
-                value: new ParameterBuilder(['number'], v => v.toString())
+                value: { expectedTypes: ['number'], build: (v: number) => v.toString() }
             }, {
                 value: 'asdf',
                 databaseType: new DatabaseType('testing')
@@ -279,7 +268,7 @@ describe('ParameterParser', () => {
             }>({
                 value: undefined
             }, {
-                value: new ParameterBuilder(['number'], v => v.toString())
+                value: { expectedTypes: ['number'], build: (v: number) => v.toString() }
             }, {
                 value: 'asdf',
                 databaseType: new DatabaseType('testing')
@@ -294,7 +283,7 @@ describe('ParameterParser', () => {
             }>({
                 value: 'c'
             }, {
-                value: ParameterBuilder.guard('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')
+                value: new GuardParameterBuilder('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')
             }, {
                 value: 'a',
                 databaseType: new DatabaseType('testing')
