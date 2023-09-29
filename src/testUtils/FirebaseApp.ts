@@ -9,7 +9,7 @@ import { type Functions, getFunctions } from 'firebase/functions';
 import { type IDatabaseScheme } from '../database';
 import { type FirebaseFunctions } from '../FirebaseFunctions';
 
-export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme extends IDatabaseScheme> {
+export class FirebaseApp<FFunctions extends FirebaseFunctions<DatabaseScheme>, DatabaseScheme extends IDatabaseScheme> {
     private readonly _functions: Functions;
     private readonly _database: Database;
     private readonly _auth: Auth;
@@ -26,7 +26,7 @@ export class FirebaseApp<FFunctions extends FirebaseFunctions, DatabaseScheme ex
         this._auth = getAuth(app);
     }
 
-    public get functions(): FirebaseFunctionsTester<FFunctions> {
+    public get functions(): FirebaseFunctionsTester<FFunctions, DatabaseScheme> {
         const requestUrlComponent = this.config?.functionsRegion !== undefined && this.config?.projectId !== undefined ? `${this.config.functionsRegion}-${this.config.projectId}` : `${this.config?.functionsRegion ?? ''}${this.config?.projectId ?? ''}`;
         return new FirebaseFunctionsTester(this._functions, requestUrlComponent, this.cryptionKeys, this.callSecretKey);
     }

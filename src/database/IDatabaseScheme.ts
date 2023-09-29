@@ -20,5 +20,3 @@ export namespace CryptedScheme {
 export type IDatabaseScheme =
     | ValidDatabaseSchemeType
     | CryptedScheme<ValidDatabaseSchemeType>;
-
-export type DatabaseScheme<T extends IDatabaseScheme> = T;

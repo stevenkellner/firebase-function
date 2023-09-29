@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { DummyLogger, type ILogger, VerboseType, Logger } from './logger';
 import { type IFunctionType, DatabaseType, HttpsError, type PrivateKeys } from './types';
 import { ParameterContainer, type IParameterContainer } from './parameter';
-import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
+import { DatabaseReference, type IDatabaseScheme, type IDatabaseReference } from './database';
 
 export interface IFirebaseRequest<FunctionType extends IFunctionType.Erased> {
     parameters: IFunctionType.Parameters<FunctionType>;
@@ -10,13 +10,11 @@ export interface IFirebaseRequest<FunctionType extends IFunctionType.Erased> {
     execute(): Promise<IFunctionType.ReturnType<FunctionType>>;
 }
 
-declare let IFirebaseRequest: FirebaseRequest.Constructor<IFunctionType.Erased>;
+export namespace IFirebaseRequest {
+    export type Constructor<FunctionType extends IFunctionType.Erased, DatabaseScheme extends IDatabaseScheme> = new (parameterContainer: IParameterContainer, databaseReference: IDatabaseReference<DatabaseScheme>, logger: ILogger) => IFirebaseRequest<FunctionType>;
 
-export namespace FirebaseRequest {
-    export type Constructor<FunctionType extends IFunctionType.Erased> = new (parameterContainer: IParameterContainer, databaseReference: IDatabaseReference<IDatabaseScheme>, logger: ILogger) => IFirebaseRequest<FunctionType>;
-
-    export function create<FunctionType extends IFunctionType.Erased>(
-        FirebaseRequest: FirebaseRequest.Constructor<FunctionType>,
+    export function create<FunctionType extends IFunctionType.Erased, DatabaseScheme extends IDatabaseScheme>(
+        FirebaseRequest: IFirebaseRequest.Constructor<FunctionType, DatabaseScheme>,
         getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
     ): functions.HttpsFunction {
         return functions
@@ -45,7 +43,7 @@ export namespace FirebaseRequest {
 
                 // Get response of function call
                 const parameterContainer = new ParameterContainer({ ...request.query, databaseType: databaseType }, null, logger.nextIndent);
-                const databaseReference = DatabaseReference.base(getPrivateKeys(databaseType));
+                const databaseReference = DatabaseReference.base<DatabaseScheme>(getPrivateKeys(databaseType));
                 const firebaseRequest = new FirebaseRequest(parameterContainer, databaseReference, logger.nextIndent);
                 response.send(await firebaseRequest.execute());
             });

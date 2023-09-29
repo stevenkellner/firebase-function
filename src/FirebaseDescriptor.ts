@@ -1,35 +1,39 @@
 import { type IFunctionType } from './types';
-import { type FirebaseFunction } from './IFirebaseFunction';
-import { type FirebaseRequest } from './IFirebaseRequest';
-import { type FirebaseSchedule } from './IFirebaseSchedule';
+import { type IFirebaseFunction } from './IFirebaseFunction';
+import { type IFirebaseRequest } from './IFirebaseRequest';
+import { type IFirebaseSchedule } from './IFirebaseSchedule';
+import { type IDatabaseScheme } from './database';
 
-export type FirebaseDescriptor =
-    | FirebaseDescriptor.Function<IFunctionType.Erased, unknown>
-    | FirebaseDescriptor.Request<IFunctionType.Erased>
-    | FirebaseDescriptor.Schedule;
+export type FirebaseDescriptor<DatabaseScheme extends IDatabaseScheme> =
+    | FirebaseDescriptor.Function<IFunctionType.Erased, unknown, DatabaseScheme>
+    | FirebaseDescriptor.Request<IFunctionType.Erased, DatabaseScheme>
+    | FirebaseDescriptor.Schedule<DatabaseScheme>;
 
 export namespace FirebaseDescriptor {
-    export type Function<FunctionType extends IFunctionType.Erased, ResponseContext> = [FirebaseFunction.Constructor<FunctionType, ResponseContext>];
+    export type Function<FunctionType extends IFunctionType.Erased, ResponseContext, DatabaseScheme extends IDatabaseScheme> = [IFirebaseFunction.Constructor<FunctionType, ResponseContext, DatabaseScheme>];
 
-    export type Request<FunctionType extends IFunctionType.Erased> = [FirebaseRequest.Constructor<FunctionType>, void];
+    export type Request<FunctionType extends IFunctionType.Erased, DatabaseScheme extends IDatabaseScheme> = [IFirebaseRequest.Constructor<FunctionType, DatabaseScheme>, void];
 
-    export type Schedule = [FirebaseSchedule.Constructor, string, void];
+    export type Schedule<DatabaseScheme extends IDatabaseScheme> = [IFirebaseSchedule.Constructor<DatabaseScheme>, string, void];
 
-    export function _function<FunctionType extends IFunctionType.Erased, ResponseContext = never>(
-        firebaseFunction: FirebaseFunction.Constructor<FunctionType, ResponseContext>
-    ): FirebaseDescriptor {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    export function _function<FunctionType extends IFunctionType.Erased, ResponseContext = never, DatabaseScheme extends IDatabaseScheme = any>(
+        firebaseFunction: IFirebaseFunction.Constructor<FunctionType, ResponseContext, DatabaseScheme>
+    ): FirebaseDescriptor.Function<FunctionType, ResponseContext, DatabaseScheme> {
         return [firebaseFunction];
     }
 
-    export function request<FunctionType extends IFunctionType.Erased>(
-        firebaseRequest: FirebaseRequest.Constructor<FunctionType>
-    ): FirebaseDescriptor {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    export function request<FunctionType extends IFunctionType.Erased, DatabaseScheme extends IDatabaseScheme = any>(
+        firebaseRequest: IFirebaseRequest.Constructor<FunctionType, DatabaseScheme>
+    ): FirebaseDescriptor.Request<FunctionType, DatabaseScheme> {
         return [firebaseRequest, undefined];
     }
 
-    export function schedule(
-        schedule: string, firebaseSchedule: FirebaseSchedule.Constructor
-    ): FirebaseDescriptor {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    export function schedule<DatabaseScheme extends IDatabaseScheme = any>(
+        schedule: string, firebaseSchedule: IFirebaseSchedule.Constructor<DatabaseScheme>
+    ): FirebaseDescriptor.Schedule<DatabaseScheme> {
         return [firebaseSchedule, schedule, undefined];
     }
 }

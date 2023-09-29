@@ -13,7 +13,8 @@
     "include": [
         "index.ts",
         "src",
-        "test"
+        "test",
+        "example"
     ],
     "exclude": [
         "node_modules",

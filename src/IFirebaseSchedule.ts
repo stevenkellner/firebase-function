@@ -6,13 +6,11 @@ export interface IFirebaseSchedule {
     execute(): Promise<void>;
 }
 
-declare let IFirebaseSchedule: FirebaseSchedule.Constructor;
+export namespace IFirebaseSchedule {
+    export type Constructor<DatabaseScheme extends IDatabaseScheme> = new (databaseType: DatabaseType, databaseReference: IDatabaseReference<DatabaseScheme>) => IFirebaseSchedule;
 
-export namespace FirebaseSchedule {
-    export type Constructor = new (databaseType: DatabaseType, databaseReference: IDatabaseReference<IDatabaseScheme>) => IFirebaseSchedule;
-
-    export function create(
-        FirebaseSchedule: FirebaseSchedule.Constructor,
+    export function create<DatabaseScheme extends IDatabaseScheme>(
+        FirebaseSchedule: IFirebaseSchedule.Constructor<DatabaseScheme>,
         getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys,
         schedule: string,
         databaseType: DatabaseType
@@ -23,7 +21,7 @@ export namespace FirebaseSchedule {
             .schedule(schedule)
             .timeZone('Europe/Berlin')
             .onRun(async () => {
-                const databaseReference = DatabaseReference.base(getPrivateKeys(databaseType));
+                const databaseReference = DatabaseReference.base<DatabaseScheme>(getPrivateKeys(databaseType));
                 const firebaseFunction = new FirebaseSchedule(databaseType, databaseReference);
                 await firebaseFunction.execute();
             });

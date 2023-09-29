@@ -6,20 +6,18 @@ import { Crypter } from './crypter';
 import { ParameterContainer, type IParameterContainer } from './parameter';
 import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
 
-export interface IFirebaseFunction<FunctionType extends IFunctionType.Erased, ResponseContext> {
+export interface IFirebaseFunction<FunctionType extends IFunctionType.Erased, ResponseContext = never> {
     parameters: IFunctionType.Parameters<FunctionType>;
     responseContext?: ResponseContext;
 
     execute(): Promise<IFunctionType.ReturnType<FunctionType>>;
 }
 
-declare let IFirebaseFunction: FirebaseFunction.Constructor<IFunctionType.Erased, unknown>;
+export namespace IFirebaseFunction {
+    export type Constructor<FunctionType extends IFunctionType.Erased, ResponseContext, DatabaseScheme extends IDatabaseScheme> = new(parameterContainer: IParameterContainer, auth: AuthData | null, databaseReference: IDatabaseReference<DatabaseScheme>, logger: ILogger) => IFirebaseFunction<FunctionType, ResponseContext>;
 
-export namespace FirebaseFunction {
-    export type Constructor<FunctionType extends IFunctionType.Erased, ResponseContext> = new(parameterContainer: IParameterContainer, auth: AuthData | null, databaseReference: IDatabaseReference<IDatabaseScheme>, logger: ILogger) => IFirebaseFunction<FunctionType, ResponseContext>;
-
-    export function create<FunctionType extends IFunctionType.Erased, ResponseContext>(
-        FirebaseFunction: FirebaseFunction.Constructor<FunctionType, ResponseContext>,
+    export function create<FunctionType extends IFunctionType.Erased, ResponseContext, DatabaseScheme extends IDatabaseScheme>(
+        FirebaseFunction: IFirebaseFunction.Constructor<FunctionType, ResponseContext, DatabaseScheme>,
         getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
     ): functions.HttpsFunction & functions.Runnable<unknown> {
         return functions
@@ -51,7 +49,7 @@ export namespace FirebaseFunction {
                 // Get result of function call
                 const crypter = new Crypter(getPrivateKeys(databaseType).cryptionKeys);
                 const parameterContainer = new ParameterContainer({ ...data, databaseType: databaseType }, crypter, logger.nextIndent);
-                const databaseReference = DatabaseReference.base(getPrivateKeys(databaseType));
+                const databaseReference = DatabaseReference.base<DatabaseScheme>(getPrivateKeys(databaseType));
                 const firebaseFunction = new FirebaseFunction(parameterContainer, context.auth ?? null, databaseReference, logger.nextIndent);
                 const response = await execute(firebaseFunction);
 
