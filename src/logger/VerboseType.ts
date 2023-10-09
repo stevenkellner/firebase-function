@@ -1,6 +1,6 @@
-import { type DatabaseType } from '../types/DatabaseType';
+import type { DatabaseType } from '../types/DatabaseType';
 import { HttpsError } from '../types/HttpsError';
-import { type ILogger } from './ILogger';
+import type { ILogger } from './ILogger';
 
 export class VerboseType {
     public constructor(

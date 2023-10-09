@@ -1,4 +1,4 @@
-import { type ValidReturnType } from './ValidReturnType';
+import type { ValidReturnType } from './ValidReturnType';
 
 export interface IFunctionType<Parameters, ReturnType extends ValidReturnType, FlattenParameters = undefined> {
     parameters: Parameters;

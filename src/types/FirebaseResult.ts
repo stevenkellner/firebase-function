@@ -1,5 +1,5 @@
-import { type FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
-import { type Result } from './Result';
+import type { FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
+import type { Result } from './Result';
 
 export interface FirebaseError extends Error {
     name: 'FirebaseError';
@@ -22,13 +22,17 @@ export namespace FirebaseError {
 
     export function toFirebaseError(error: unknown): FirebaseError {
         const errorIsObject = error !== null && typeof error === 'object';
+        // eslint-disable-next-line no-undefined
         const hasMessage = errorIsObject && 'message' in error && error.message !== undefined && error.message !== null && error.message !== '';
+        // eslint-disable-next-line no-undefined
         const hasStack = errorIsObject && 'stack' in error && error.stack !== undefined && error.stack !== null && error.stack !== '';
         return {
             name: 'FirebaseError',
             code: errorIsObject && 'code' in error && typeof error.code === 'string' && isFirebaseErrorCode(error.code) ? error.code : 'unknown',
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             message: hasMessage ? `${error.message}` : 'Unknown error occured, see details for more infos.',
             details: hasMessage && 'details' in error ? error.details : error,
+            // eslint-disable-next-line no-undefined, @typescript-eslint/restrict-template-expressions
             stack: hasStack ? `${error.stack}` : undefined
         };
     }

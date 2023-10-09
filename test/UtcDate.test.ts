@@ -15,7 +15,7 @@ describe('utcDate', () => {
 
     it('encode decode', () => {
         const date = UtcDate.fromDate(new Date('2023-02-07T12:34:56+01:00'));
-        const encoded = date.encoded;
+        const { encoded } = date;
         expect(encoded).to.be.equal('2023-02-07-11-34');
         expect(UtcDate.decode(encoded)).to.be.deep.equal(date);
         expect(UtcDate.decode('')).to.be.deep.equal(new UtcDate(0, 0, 0, 0, 0));

@@ -1,8 +1,9 @@
-import { expect } from 'chai';
+/* eslint-disable no-undefined */
 import { Crypter, FixedLength } from '../src/crypter';
 import { Logger, VerboseType } from '../src/logger';
-import { DatabaseType } from '../src';
 import { ParameterContainer, ValueParameterBuilder } from '../src/parameter';
+import { DatabaseType } from '../src';
+import { expect } from 'chai';
 
 describe('Parameter container', () => {
     const cryptionKeys: Crypter.Keys = {
@@ -51,15 +52,16 @@ describe('Parameter container', () => {
                 value1: true,
                 value2: 'asdf',
                 value3: 12,
-                value5: { v: 'asdf' },
+                value5: { value: 'asdf' },
                 value6: null
             })
         }, crypter, logger.nextIndent);
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(parameterContainer.parameter('value0', new ValueParameterBuilder('undefined'))).to.be.undefined;
         expect(parameterContainer.parameter('value1', new ValueParameterBuilder('boolean'))).to.be.true;
         expect(parameterContainer.parameter('value2', new ValueParameterBuilder('string'))).to.be.equal('asdf');
         expect(parameterContainer.parameter('value3', new ValueParameterBuilder('number'))).to.be.equal(12);
-        expect(parameterContainer.parameter('value5', new ValueParameterBuilder('object'))).to.be.deep.equal({ v: 'asdf' });
+        expect(parameterContainer.parameter('value5', new ValueParameterBuilder('object'))).to.be.deep.equal({ value: 'asdf' });
         expect(parameterContainer.parameter('value6', new ValueParameterBuilder('object'))).to.be.null;
     });
 
@@ -70,14 +72,15 @@ describe('Parameter container', () => {
             value1: true,
             value2: 'asdf',
             value3: 12,
-            value5: { v: 'asdf' },
+            value5: { value: 'asdf' },
             value6: null
         }, null, logger.nextIndent);
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(parameterContainer.parameter('value0', new ValueParameterBuilder('undefined'))).to.be.undefined;
         expect(parameterContainer.parameter('value1', new ValueParameterBuilder('boolean'))).to.be.true;
         expect(parameterContainer.parameter('value2', new ValueParameterBuilder('string'))).to.be.equal('asdf');
         expect(parameterContainer.parameter('value3', new ValueParameterBuilder('number'))).to.be.equal(12);
-        expect(parameterContainer.parameter('value5', new ValueParameterBuilder('object'))).to.be.deep.equal({ v: 'asdf' });
+        expect(parameterContainer.parameter('value5', new ValueParameterBuilder('object'))).to.be.deep.equal({ value: 'asdf' });
         expect(parameterContainer.parameter('value6', new ValueParameterBuilder('object'))).to.be.null;
     });
 });

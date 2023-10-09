@@ -1,9 +1,9 @@
 import * as admin from 'firebase-admin';
+import type { CryptedScheme, IDatabaseScheme } from './IDatabaseScheme';
 import { Crypter } from '../crypter';
-import { type PrivateKeys } from '../types/PrivateKeys';
 import { DatabaseSnapshot } from './DatabaseSnapshot';
-import { type IDatabaseScheme, type CryptedScheme } from './IDatabaseScheme';
-import { type IDatabaseReference } from './IDatabaseReference';
+import type { IDatabaseReference } from './IDatabaseReference';
+import type { PrivateKeys } from '../types/PrivateKeys';
 
 export class DatabaseReference<DatabaseScheme extends IDatabaseScheme> implements IDatabaseReference<DatabaseScheme> {
     public constructor(
@@ -24,23 +24,27 @@ export class DatabaseReference<DatabaseScheme extends IDatabaseScheme> implement
     public async set(value: DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
         if (crypted === 'encrypt') {
             const crypter = new Crypter(this.cryptionKeys);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, no-param-reassign
             value = crypter.encodeEncrypt(value) as any;
         }
-        return await new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.reference.set(value, error => {
-                if (error !== null)
-                    return reject(error);
+                if (error !== null) {
+                    reject(error);
+                    return;
+                }
                 resolve();
             }).catch(reject);
         });
     }
 
     public async remove(): Promise<void> {
-        return await new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.reference.remove(error => {
-                if (error !== null)
-                    return reject(error);
+                if (error !== null) {
+                    reject(error);
+                    return;
+                }
                 resolve();
             }).catch(reject);
         });
@@ -49,7 +53,10 @@ export class DatabaseReference<DatabaseScheme extends IDatabaseScheme> implement
 
 export namespace DatabaseReference {
     export function base<DatabaseScheme extends IDatabaseScheme>(privateKey: PrivateKeys): DatabaseReference<DatabaseScheme> {
-        const reference = admin.app().database(privateKey.databaseUrl).ref();
+        const reference = admin
+            .app()
+            .database(privateKey.databaseUrl)
+            .ref();
         return new DatabaseReference(reference, privateKey.cryptionKeys);
     }
 }

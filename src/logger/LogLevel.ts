@@ -13,6 +13,8 @@ export class LogLevel {
                 return `\x1b[31m${text}\x1b[0m`;
             case 'notice':
                 return `\x1b[34m${text}\x1b[0m`;
+            default:
+                return text;
         }
     }
 }

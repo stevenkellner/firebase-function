@@ -1,6 +1,6 @@
-import { type AuthData } from 'firebase-functions/lib/common/providers/https';
-import { type DatabaseType, type IFirebaseFunction, type IFunctionType, type IParameterContainer, type IDatabaseReference, type ILogger, ParameterParser } from '../src';
-import { type DatabaseScheme } from './DatabaseScheme';
+import { type DatabaseType, type IDatabaseReference, type IFirebaseFunction, type IFunctionType, type ILogger, type IParameterContainer, ParameterParser } from '../src';
+import type { AuthData } from 'firebase-functions/lib/common/providers/https';
+import type { DatabaseScheme } from './DatabaseScheme';
 
 export class GetAnimalsFunction implements IFirebaseFunction<GetAnimalsFunctionType> {
     public readonly parameters: IFunctionType.Parameters<GetAnimalsFunctionType> & { databaseType: DatabaseType };
@@ -33,4 +33,4 @@ export class GetAnimalsFunction implements IFirebaseFunction<GetAnimalsFunctionT
     }
 }
 
-export type GetAnimalsFunctionType = IFunctionType<Record<string, never>, Array<{ id: string; name: string }>>;
+export type GetAnimalsFunctionType = IFunctionType<Record<string, never>, { id: string; name: string }[]>;

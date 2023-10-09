@@ -1,5 +1,5 @@
-import { type ILogger } from '../logger';
-import { type TypeOfName, type TypeFrom } from './TypeOf';
+import type { TypeFrom, TypeOfName } from './TypeOf';
+import type { ILogger } from '../logger';
 
 export interface IParameterBuilder<TypeName extends TypeOfName, T> {
     readonly expectedTypes: TypeName[];

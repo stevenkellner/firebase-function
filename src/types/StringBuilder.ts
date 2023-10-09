@@ -1,11 +1,11 @@
 export class StringBuilder {
     private readonly stringArray: string[] = [];
 
-    public append(string: string) {
+    public append(string: string): void {
         this.stringArray.push(string);
     }
 
-    public appendLine(string: string) {
+    public appendLine(string: string): void {
         this.stringArray.push(`${string}\n`);
     }
 

@@ -8,6 +8,7 @@ export namespace Result {
             public readonly value: T
         ) {}
 
+        // eslint-disable-next-line @typescript-eslint/class-literal-property-style
         public get error(): null {
             return null;
         }
@@ -36,6 +37,7 @@ export namespace Result {
             public readonly error: E
         ) {}
 
+        // eslint-disable-next-line @typescript-eslint/class-literal-property-style
         public get value(): null {
             return null;
         }
@@ -60,7 +62,9 @@ export namespace Result {
 
     export function success<T>(value: T): Result<T, never>;
     export function success(): Result<void, never>;
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     export function success<T>(value?: T): Result<T | void, never> {
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         return new Result.Success<T | void>(value);
     }
 

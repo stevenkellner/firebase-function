@@ -1,6 +1,6 @@
-import { type AuthData } from 'firebase-functions/lib/common/providers/https';
-import { type DatabaseType, Guid, type IFirebaseFunction, type IFunctionType, type IParameterContainer, type IDatabaseReference, type ILogger, ParameterBuilder, ValueParameterBuilder, ParameterParser } from '../src';
-import { type DatabaseScheme } from './DatabaseScheme';
+import { type DatabaseType, Guid, type IDatabaseReference, type IFirebaseFunction, type IFunctionType, type ILogger, type IParameterContainer, ParameterBuilder, ParameterParser, ValueParameterBuilder } from '../src';
+import type { AuthData } from 'firebase-functions/lib/common/providers/https';
+import type { DatabaseScheme } from './DatabaseScheme';
 
 export class AddPersonFunction implements IFirebaseFunction<AddPersonFunctionType> {
     public readonly parameters: IFunctionType.Parameters<AddPersonFunctionType> & { databaseType: DatabaseType };
@@ -26,10 +26,11 @@ export class AddPersonFunction implements IFirebaseFunction<AddPersonFunctionTyp
 
     public async execute(): Promise<IFunctionType.ReturnType<AddPersonFunctionType>> {
         this.logger.log('AddPersonFunction.executeFunction', {}, 'info');
-        await this.databaseReference.child('persons').child(this.parameters.id.guidString).set({
-            name: this.parameters.name,
-            age: this.parameters.age
-        }, 'encrypt');
+        await this.databaseReference.child('persons').child(this.parameters.id.guidString)
+            .set({
+                name: this.parameters.name,
+                age: this.parameters.age
+            }, 'encrypt');
     }
 }
 

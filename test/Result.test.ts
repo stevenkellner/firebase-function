@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { Result } from '../src';
+import { expect } from 'chai';
 
 describe('Result', () => {
     it('success', () => {
@@ -12,16 +12,14 @@ describe('Result', () => {
         expect(result.value).to.be.equal('asdf');
         expect(result.error).to.be.null;
         expect(result.valueOrError).to.be.equal('asdf');
-        expect(result.map<string>(v => v + '_')).to.be.deep.equal({
+        expect(result.map<string>(value => `${value}_`)).to.be.deep.equal({
             state: 'success',
             value: 'asdf_'
         });
-        expect(result.mapError<Error>(v => {
-            return {
-                ...v,
-                message: v.message + '_'
-            };
-        })).to.be.deep.equal({
+        expect(result.mapError<Error>(value => ({
+            ...value,
+            message: `${value.message}_`
+        }))).to.be.deep.equal({
             state: 'success',
             value: 'asdf'
         });
@@ -29,6 +27,7 @@ describe('Result', () => {
         expect(Result.isFailure(result)).to.be.false;
         expect(Result.success()).to.be.deep.equal({
             state: 'success',
+            // eslint-disable-next-line no-undefined
             value: undefined
         });
     });
@@ -63,19 +62,17 @@ describe('Result', () => {
             name: 'opiu',
             message: 'nrtz'
         });
-        expect(result.map<string>(v => v + '_')).to.be.deep.equal({
+        expect(result.map<string>(value => `${value}_`)).to.be.deep.equal({
             state: 'failure',
             error: {
                 name: 'opiu',
                 message: 'nrtz'
             }
         });
-        expect(result.mapError<Error>(v => {
-            return {
-                ...v,
-                message: v.message + '_'
-            };
-        })).to.be.deep.equal({
+        expect(result.mapError<Error>(value => ({
+            ...value,
+            message: `${value.message}_`
+        }))).to.be.deep.equal({
             state: 'failure',
             error: {
                 name: 'opiu',

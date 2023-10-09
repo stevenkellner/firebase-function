@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, type UserCredential, type Auth, signOut, type User } from 'firebase/auth';
+import { type Auth, type User, type UserCredential, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 export class FirebaseAuth {
     public constructor(
@@ -10,10 +10,10 @@ export class FirebaseAuth {
     }
 
     public async signIn(email: string, password: string): Promise<UserCredential> {
-        return await signInWithEmailAndPassword(this.auth, email, password);
+        return signInWithEmailAndPassword(this.auth, email, password);
     }
 
-    public async signOut() {
+    public async signOut(): Promise<void> {
         if (this.currentUser !== null)
             await signOut(this.auth);
     }

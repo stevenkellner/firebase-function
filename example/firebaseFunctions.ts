@@ -1,5 +1,5 @@
-import { FirebaseDescriptor, type FirebaseFunctions } from '../src';
 import { AddPersonFunction, type AddPersonFunctionType } from './AddPersonFunction';
+import { FirebaseDescriptor, type FirebaseFunctions } from '../src';
 import { GetAnimalsFunction, type GetAnimalsFunctionType } from './GetAnimalsFunction';
 import { GetPersonRequest, type GetPersonRequestType } from './GetPersonRequest';
 import { PetAnimalsSchedule } from './PetAnimalsSchedule';

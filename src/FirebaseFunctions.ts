@@ -1,12 +1,11 @@
 import type * as functions from 'firebase-functions';
 import { DatabaseType, type IFunctionType, type PrivateKeys } from './types';
-import { type FirebaseDescriptor } from './FirebaseDescriptor';
+import type { FirebaseDescriptor } from './FirebaseDescriptor';
+import type { IDatabaseScheme } from './database';
 import { IFirebaseFunction } from './IFirebaseFunction';
 import { IFirebaseRequest } from './IFirebaseRequest';
 import { IFirebaseSchedule } from './IFirebaseSchedule';
-import { type IDatabaseScheme } from './database';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FirebaseFunctions<DatabaseScheme extends IDatabaseScheme = any> =
     | FirebaseDescriptor<DatabaseScheme>
     | { [key: string]: FirebaseFunctions<DatabaseScheme> };
@@ -16,17 +15,6 @@ export type RunnableFirebaseFunctions =
     | functions.CloudFunction<unknown>
     | functions.HttpsFunction
     | { [key: string]: RunnableFirebaseFunctions };
-
-export function createFirebaseFunctions<DatabaseScheme extends IDatabaseScheme>(
-    getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys,
-    firebaseFunctions: Record<string, FirebaseFunctions<DatabaseScheme>>,
-    debugFirebaseFunctions: Record<string, FirebaseFunctions<DatabaseScheme>> = {}
-): RunnableFirebaseFunctions {
-    return {
-        debug: createFirebaseFunctionsType(debugFirebaseFunctions, getPrivateKeys, new DatabaseType('debug')),
-        ...createFirebaseFunctionsType(firebaseFunctions, getPrivateKeys, new DatabaseType('release'))
-    };
-}
 
 function createFirebaseFunctionsType<DatabaseScheme extends IDatabaseScheme>(firebaseFunction: FirebaseDescriptor.Function<IFunctionType.Erased, unknown, DatabaseScheme>, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys, databaseType: DatabaseType): (functions.HttpsFunction & functions.Runnable<unknown>);
 function createFirebaseFunctionsType<DatabaseScheme extends IDatabaseScheme>(firebaseRequest: FirebaseDescriptor.Request<IFunctionType.Erased, DatabaseScheme>, getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys, databaseType: DatabaseType): functions.HttpsFunction;
@@ -43,11 +31,21 @@ function createFirebaseFunctionsType<DatabaseScheme extends IDatabaseScheme>(
             return IFirebaseFunction.create(firebaseFunctions[0], getPrivateKeys);
         if (firebaseFunctions.length === 2)
             return IFirebaseRequest.create(firebaseFunctions[0], getPrivateKeys);
-        if (firebaseFunctions.length === 3)
-            return IFirebaseSchedule.create(firebaseFunctions[0], getPrivateKeys, firebaseFunctions[1], databaseType);
+        return IFirebaseSchedule.create(firebaseFunctions[0], getPrivateKeys, firebaseFunctions[1], databaseType);
     }
     const runnableFirebaseFunctions: Record<string, RunnableFirebaseFunctions> = {};
     for (const entry of Object.entries(firebaseFunctions))
         runnableFirebaseFunctions[entry[0]] = createFirebaseFunctionsType(entry[1], getPrivateKeys, databaseType);
     return runnableFirebaseFunctions;
+}
+
+export function createFirebaseFunctions<DatabaseScheme extends IDatabaseScheme>(
+    getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys,
+    firebaseFunctions: Record<string, FirebaseFunctions<DatabaseScheme>>,
+    debugFirebaseFunctions: Record<string, FirebaseFunctions<DatabaseScheme>> = {}
+): RunnableFirebaseFunctions {
+    return {
+        debug: createFirebaseFunctionsType(debugFirebaseFunctions, getPrivateKeys, new DatabaseType('debug')),
+        ...createFirebaseFunctionsType(firebaseFunctions, getPrivateKeys, new DatabaseType('release'))
+    };
 }

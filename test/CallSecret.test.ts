@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { CallSecret, DummyLogger, UtcDate, sha512 } from '../src';
+import { expect } from 'chai';
 
 describe('CallSecret', () => {
     it('fromObject', () => {
@@ -18,8 +18,11 @@ describe('CallSecret', () => {
 
     it('check', () => {
         const expiresAt = UtcDate.now;
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.encoded, hashedData: 'abc' }, 'xyz', new DummyLogger())).to.throw();
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: -1 }).encoded, hashedData: sha512(expiresAt.advanced({ minute: -1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).to.throw();
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: 1 }).encoded, hashedData: sha512(expiresAt.advanced({ minute: 1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).not.to.throw();
     });
 });

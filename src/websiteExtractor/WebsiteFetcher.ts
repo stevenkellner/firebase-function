@@ -1,7 +1,7 @@
-import fetch from 'cross-fetch';
 import DOMParser from 'dom-parser';
 import { HtmlDom } from './HtmlNode';
-import { type IWebsiteFetcher } from './IWebsiteFetcher';
+import type { IWebsiteFetcher } from './IWebsiteFetcher';
+import fetch from 'cross-fetch';
 
 export class WebsiteFetcher implements IWebsiteFetcher {
     public constructor(

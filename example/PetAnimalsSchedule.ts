@@ -1,5 +1,5 @@
-import { type DatabaseType, type IDatabaseReference, type IFirebaseSchedule } from '../src';
-import { type DatabaseScheme } from './DatabaseScheme';
+import type { DatabaseType, IDatabaseReference, IFirebaseSchedule } from '../src';
+import type { DatabaseScheme } from './DatabaseScheme';
 
 export class PetAnimalsSchedule implements IFirebaseSchedule {
     public constructor(
@@ -16,5 +16,6 @@ export class PetAnimalsSchedule implements IFirebaseSchedule {
         });
     }
 
-    private pet(animal: { name: string }) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private pet(animal: { name: string }): void {}
 }

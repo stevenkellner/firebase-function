@@ -5,39 +5,17 @@ export class UtcDate {
         public readonly day: number,
         public readonly hour: number,
         public readonly minute: number,
-        timezone?: 'Europe/Berlin'
+        timezone: 'Europe/Berlin' | null = null
     ) {
-        if (timezone !== undefined) {
+        if (timezone !== null) {
             const date = new Date(this.year, this.month, this.day, this.hour, this.minute);
             const offset = date.getUTCHours() - new Date(date.toLocaleString('en-US', { timeZone: timezone })).getUTCHours();
             this.hour += offset;
         }
     }
 
-    public static fromDate(date: Date): UtcDate {
-        return new UtcDate(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes());
-    }
-
-    public static fromIsoDate(date: string): UtcDate {
-        return UtcDate.fromDate(new Date(date));
-    }
-
     public static get now(): UtcDate {
         return UtcDate.fromDate(new Date());
-    }
-
-    public static decode(encodedDate: string): UtcDate {
-        const regex = /^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})-(?<hour>\d{2})-(?<minute>\d{2})$/g;
-        const match = regex.exec(encodedDate);
-        if (match === null || match.groups === undefined)
-            return new UtcDate(0, 0, 0, 0, 0);
-        return new UtcDate(
-            Number.parseInt(match.groups.year),
-            Number.parseInt(match.groups.month),
-            Number.parseInt(match.groups.day),
-            Number.parseInt(match.groups.hour),
-            Number.parseInt(match.groups.minute)
-        );
     }
 
     public get toDate(): Date {
@@ -55,6 +33,29 @@ export class UtcDate {
         const hour = this.hour <= 9 ? `0${this.hour}` : this.hour.toString();
         const minute = this.minute <= 9 ? `0${this.minute}` : this.minute.toString();
         return `${year}-${month}-${day}-${hour}-${minute}`;
+    }
+
+    public static fromDate(date: Date): UtcDate {
+        return new UtcDate(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes());
+    }
+
+    public static fromIsoDate(date: string): UtcDate {
+        return UtcDate.fromDate(new Date(date));
+    }
+
+    public static decode(encodedDate: string): UtcDate {
+        const regex = /^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})-(?<hour>\d{2})-(?<minute>\d{2})$/gu;
+        const match = regex.exec(encodedDate);
+        // eslint-disable-next-line no-undefined
+        if (match === null || match.groups === undefined)
+            return new UtcDate(0, 0, 0, 0, 0);
+        return new UtcDate(
+            Number.parseInt(match.groups.year),
+            Number.parseInt(match.groups.month),
+            Number.parseInt(match.groups.day),
+            Number.parseInt(match.groups.hour),
+            Number.parseInt(match.groups.minute)
+        );
     }
 
     public description(locale: 'de-DE', timezone: 'Europe/Berlin'): string {

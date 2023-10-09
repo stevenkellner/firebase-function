@@ -1,12 +1,12 @@
-import { expect } from 'chai';
-import { PseudoRandom } from '../src/crypter/PseudoRandom';
-import { BytesToBitIterator } from '../src/crypter/BytesToBitIterator';
-import { bits, xor, bitIteratorToBytes, addPadding, removePadding, sha512 } from '../src/crypter/utils';
-import { RandomBitIterator } from '../src/crypter/RandomBitIterator';
-import { CombineIterator } from '../src/crypter/CombineIterator';
-import { Crypter, FixedLength } from '../src/crypter';
 import * as crypterTestData from './dataset/crypterTestData.json';
+import { Crypter, FixedLength } from '../src/crypter';
+import { addPadding, bitIteratorToBytes, bits, removePadding, sha512, xor } from '../src/crypter/utils';
 import { Base64 } from 'js-base64';
+import { BytesToBitIterator } from '../src/crypter/BytesToBitIterator';
+import { CombineIterator } from '../src/crypter/CombineIterator';
+import { PseudoRandom } from '../src/crypter/PseudoRandom';
+import { RandomBitIterator } from '../src/crypter/RandomBitIterator';
+import { expect } from 'chai';
 
 describe('Crypter', () => {
     describe('PseudoRandom', () => {
@@ -20,7 +20,7 @@ describe('Crypter', () => {
 
     describe('utils', () => {
         it('bits', () => {
-            const dataset: Array<[number, Array<0 | 1>]> = [
+            const dataset: [number, (0 | 1)[]][] = [
                 [0x00, [0, 0, 0, 0, 0, 0, 0, 0]],
                 [0x01, [0, 0, 0, 0, 0, 0, 0, 1]],
                 [0x4e, [0, 1, 0, 0, 1, 1, 1, 0]],
@@ -48,14 +48,14 @@ describe('Crypter', () => {
         });
 
         it('bitIteratorToBuffer 1', () => {
-            const bitIterator: Iterator<0 | 1> = ([] as Array<0 | 1>)[Symbol.iterator]();
+            const bitIterator: Iterator<0 | 1> = ([] as (0 | 1)[])[Symbol.iterator]();
             const buffer = bitIteratorToBytes(bitIterator);
             const expectedBuffer = Uint8Array.from([]);
             expect(buffer).to.be.deep.equal(expectedBuffer);
         });
 
         it('bitIteratorToBuffer 2', () => {
-            const bitIterator: Iterator<0 | 1> = ([0, 0, 1, 0, 0, 0, 1, 1] as Array<0 | 1>)[Symbol.iterator]();
+            const bitIterator: Iterator<0 | 1> = ([0, 0, 1, 0, 0, 0, 1, 1] as (0 | 1)[])[Symbol.iterator]();
             const buffer = bitIteratorToBytes(bitIterator);
             const expectedBuffer = Uint8Array.from([0x23]);
             expect(buffer).to.be.deep.equal(expectedBuffer);
@@ -67,7 +67,7 @@ describe('Crypter', () => {
                 0, 1, 0, 0, 0, 1, 0, 1,
                 0, 1, 1, 0, 0, 1, 1, 1,
                 1, 0, 1, 0, 1, 1, 1, 1
-            ] as Array<0 | 1>)[Symbol.iterator]();
+            ] as (0 | 1)[])[Symbol.iterator]();
             const buffer = bitIteratorToBytes(bitIterator);
             const expectedBuffer = Uint8Array.from([0x23, 0x45, 0x67, 0xaf]);
             expect(buffer).to.be.deep.equal(expectedBuffer);
@@ -78,7 +78,7 @@ describe('Crypter', () => {
         it('buffer to bits 1', () => {
             const buffer = Uint8Array.from([]);
             const bufferToBitIterator = new BytesToBitIterator(buffer);
-            const expectedBits: Array<0 | 1> = [];
+            const expectedBits: (0 | 1)[] = [];
             let bitResult = bufferToBitIterator.next();
             let index = 0;
             while (!(bitResult.done ?? false)) {
@@ -91,7 +91,7 @@ describe('Crypter', () => {
         it('buffer to bits 2', () => {
             const buffer = Uint8Array.from([0x23]);
             const bufferToBitIterator = new BytesToBitIterator(buffer);
-            const expectedBits: Array<0 | 1> = [0, 0, 1, 0, 0, 0, 1, 1];
+            const expectedBits: (0 | 1)[] = [0, 0, 1, 0, 0, 0, 1, 1];
             let bitResult = bufferToBitIterator.next();
             let index = 0;
             while (!(bitResult.done ?? false)) {
@@ -104,7 +104,7 @@ describe('Crypter', () => {
         it('buffer to bits 3', () => {
             const buffer = Uint8Array.from([0x23, 0x45, 0x67, 0xaf]);
             const bufferToBitIterator = new BytesToBitIterator(buffer);
-            const expectedBits: Array<0 | 1> = [
+            const expectedBits: (0 | 1)[] = [
                 0, 0, 1, 0, 0, 0, 1, 1,
                 0, 1, 0, 0, 0, 1, 0, 1,
                 0, 1, 1, 0, 0, 1, 1, 1,
@@ -137,7 +137,7 @@ describe('Crypter', () => {
             const iterator1 = [1, 2, 3][Symbol.iterator]();
             const iterator2 = [4, 5, 6][Symbol.iterator]();
             const combineIterator = new CombineIterator(iterator1, iterator2, (e1, e2) => [e1, e2] as [number, number]);
-            const expectedData: Array<[number, number]> = [[1, 4], [2, 5], [3, 6]];
+            const expectedData: [number, number][] = [[1, 4], [2, 5], [3, 6]];
             for (const expected of expectedData)
                 expect(combineIterator.next().value).to.be.deep.equal(expected);
         });
@@ -146,7 +146,7 @@ describe('Crypter', () => {
             const iterator1 = [1, 2][Symbol.iterator]();
             const iterator2 = [4, 5, 6][Symbol.iterator]();
             const combineIterator = new CombineIterator(iterator1, iterator2, (e1, e2) => [e1, e2] as [number, number]);
-            const expectedData: Array<[number, number]> = [[1, 4], [2, 5]];
+            const expectedData: [number, number][] = [[1, 4], [2, 5]];
             for (const expected of expectedData)
                 expect(combineIterator.next().value).to.be.deep.equal(expected);
         });
@@ -155,7 +155,7 @@ describe('Crypter', () => {
             const iterator1 = [1, 2, 3][Symbol.iterator]();
             const iterator2 = [4, 5][Symbol.iterator]();
             const combineIterator = new CombineIterator(iterator1, iterator2, (e1, e2) => [e1, e2] as [number, number]);
-            const expectedData: Array<[number, number]> = [[1, 4], [2, 5]];
+            const expectedData: [number, number][] = [[1, 4], [2, 5]];
             for (const expected of expectedData)
                 expect(combineIterator.next().value).to.be.deep.equal(expected);
         });
@@ -231,7 +231,8 @@ describe('Crypter', () => {
         });
 
         it('decrypt decode emtpy string', () => {
-            expect(crypter.decryptDecode('')).to.be.undefined;
+            // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+            expect(crypter.decryptDecode('')).to.be.null;
         });
     });
 
@@ -261,7 +262,7 @@ describe('Crypter', () => {
         };
         const crypter = new Crypter(cryptionKeys);
 
-        const dataset: Array<[Uint8Array, Uint8Array]> = [
+        const dataset: [Uint8Array, Uint8Array][] = [
             [new Uint8Array([170, 75, 61, 13, 14, 114, 106, 162, 157, 106, 126, 148, 10, 146, 237, 38, 199, 130, 112, 181, 249, 177, 47, 41, 112, 28, 203, 146, 49, 166, 30, 53]), new Uint8Array([137, 242, 23, 251, 185, 141, 78, 137, 169, 184, 72, 54, 117, 155, 168, 31, 68, 74, 236, 230, 177, 33, 150, 95, 96, 144, 35, 94, 71, 228, 9, 189, 86, 3, 123, 136, 217, 27, 215, 47, 196, 45, 172, 50, 42, 3, 58, 247])],
             [new Uint8Array([168, 30, 249, 191, 240, 106, 114, 72, 35, 10, 48, 21, 136, 177, 81, 212, 206, 176, 48, 251, 55, 24, 17, 224, 229, 106, 220, 152, 189, 65, 83, 174, 39]), new Uint8Array([207, 221, 188, 9, 133, 81, 139, 62, 131, 48, 232, 110, 211, 143, 141, 109, 80, 89, 196, 7, 45, 137, 158, 81, 239, 184, 2, 237, 59, 51, 4, 155, 144, 38, 117, 186, 224, 157, 241, 252, 253, 241, 10, 93, 221, 115, 41, 8])],
             [new Uint8Array([2, 55, 148, 101, 113, 236, 77, 94, 211, 55, 39, 84, 162, 55, 142, 175, 129, 58, 1, 246, 2, 195, 186, 161, 5, 176, 172, 115, 211, 202, 80, 193, 45, 22]), new Uint8Array([125, 147, 213, 174, 101, 244, 238, 247, 116, 61, 107, 180, 133, 103, 173, 198, 13, 108, 249, 113, 173, 36, 118, 145, 140, 115, 230, 7, 34, 227, 198, 152, 130, 254, 49, 232, 226, 57, 141, 97, 22, 66, 98, 105, 169, 140, 155, 125])],

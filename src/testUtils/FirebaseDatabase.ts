@@ -1,16 +1,16 @@
-import { onValue, ref, set, remove, type Database } from 'firebase/database';
+import type { CryptedScheme, IDatabaseScheme } from '../database';
+import { type Database, onValue, ref, remove, set } from 'firebase/database';
 import { Crypter } from '../crypter';
-import { type IDatabaseScheme, type CryptedScheme } from '../database';
 
 export class FirebaseDatabase<DatabaseScheme extends IDatabaseScheme> {
     public constructor(
         private readonly database: Database,
         private readonly cryptionKeys: Crypter.Keys,
-        private readonly path?: string
+        private readonly path: string | null = null
     ) {}
 
     public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): FirebaseDatabase<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
-        return new FirebaseDatabase(this.database, this.cryptionKeys, this.path === undefined ? key.replaceAll('/', '_') : `${this.path}/${key.replaceAll('/', '_')}`);
+        return new FirebaseDatabase(this.database, this.cryptionKeys, this.path === null ? key.replaceAll('/', '_') : `${this.path}/${key.replaceAll('/', '_')}`);
     }
 
     public async set(value: CryptedScheme.GetType<DatabaseScheme>, crypted: 'encrypt'): Promise<void>;
@@ -18,24 +18,12 @@ export class FirebaseDatabase<DatabaseScheme extends IDatabaseScheme> {
     public async set(value: DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
         if (crypted === 'encrypt') {
             const crypter = new Crypter(this.cryptionKeys);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, no-param-reassign
             value = crypter.encodeEncrypt(value) as any;
         }
-        const reference = ref(this.database, this.path);
+        // eslint-disable-next-line no-undefined
+        const reference = ref(this.database, this.path ?? undefined);
         await set(reference, value);
-    }
-
-    private async value(): Promise<unknown> {
-        const reference = ref(this.database, this.path);
-        return await new Promise<unknown>(resolve => {
-            onValue(reference, snapshot => {
-                if (!snapshot.exists())
-                    throw new Error('No data in snapshot.');
-                resolve(snapshot.val());
-            }, {
-                onlyOnce: true
-            });
-        });
     }
 
     public async get(crypted: 'decrypt'): Promise<true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never>;
@@ -49,8 +37,9 @@ export class FirebaseDatabase<DatabaseScheme extends IDatabaseScheme> {
     }
 
     public async exists(): Promise<boolean> {
-        const reference = ref(this.database, this.path);
-        return await new Promise<boolean>(resolve => {
+        // eslint-disable-next-line no-undefined
+        const reference = ref(this.database, this.path ?? undefined);
+        return new Promise<boolean>(resolve => {
             onValue(reference, snapshot => {
                 resolve(snapshot.exists());
             }, {
@@ -60,7 +49,22 @@ export class FirebaseDatabase<DatabaseScheme extends IDatabaseScheme> {
     }
 
     public async remove(): Promise<void> {
-        const reference = ref(this.database, this.path);
+        // eslint-disable-next-line no-undefined
+        const reference = ref(this.database, this.path ?? undefined);
         await remove(reference);
+    }
+
+    private async value(): Promise<unknown> {
+        // eslint-disable-next-line no-undefined
+        const reference = ref(this.database, this.path ?? undefined);
+        return new Promise<unknown>(resolve => {
+            onValue(reference, snapshot => {
+                if (!snapshot.exists())
+                    throw new Error('No data in snapshot.');
+                resolve(snapshot.val());
+            }, {
+                onlyOnce: true
+            });
+        });
     }
 }

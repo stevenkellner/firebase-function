@@ -1,5 +1,5 @@
-import { type IDatabaseSnapshot } from './IDatabaseSnapshot';
-import { type IDatabaseScheme, type CryptedScheme } from './IDatabaseScheme';
+import type { CryptedScheme, IDatabaseScheme } from './IDatabaseScheme';
+import type { IDatabaseSnapshot } from './IDatabaseSnapshot';
 
 export interface IDatabaseReference<DatabaseScheme extends IDatabaseScheme> {
     snapshot(): Promise<IDatabaseSnapshot<DatabaseScheme>>;

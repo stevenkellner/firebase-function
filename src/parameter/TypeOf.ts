@@ -16,5 +16,4 @@ export type TypeFrom<TypeName extends TypeOfName> =
                     TypeName extends 'bigint' ? bigint :
                         TypeName extends 'symbol' ? symbol :
                             TypeName extends 'object' ? object | null :
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 TypeName extends 'function' ? (...args: any[]) => unknown : never;

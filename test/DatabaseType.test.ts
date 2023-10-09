@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { DatabaseType, DummyLogger } from '../src';
+import { expect } from 'chai';
 
 describe('DatabaseType', () => {
     it('fromString', () => {

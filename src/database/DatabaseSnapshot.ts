@@ -1,32 +1,14 @@
 import type * as admin from 'firebase-admin';
+import type { CryptedScheme, IDatabaseScheme } from './IDatabaseScheme';
 import { Crypter } from '../crypter';
-import { type ObjectValue } from '../types/utils';
-import { type IDatabaseScheme, type CryptedScheme } from './IDatabaseScheme';
-import { type IDatabaseSnapshot } from './IDatabaseSnapshot';
+import type { IDatabaseSnapshot } from './IDatabaseSnapshot';
+import type { ObjectValue } from '../types/utils';
 
 export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements IDatabaseSnapshot<DatabaseScheme> {
     public constructor(
         private readonly snapshot: admin.database.DataSnapshot,
         private readonly cryptionKeys: Crypter.Keys
     ) {}
-
-    public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): DatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
-        return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')), this.cryptionKeys);
-    }
-
-    public value(crypted: 'decrypt'): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never;
-    public value(): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme;
-    public value(crypted: 'plain' | 'decrypt' = 'plain'): DatabaseScheme | CryptedScheme.GetType<DatabaseScheme> {
-        if (crypted === 'decrypt') {
-            const crypter = new Crypter(this.cryptionKeys);
-            return crypter.decryptDecode<CryptedScheme.GetType<DatabaseScheme>>(this.snapshot.val());
-        }
-        return this.snapshot.val();
-    }
-
-    public hasChild(path: string): boolean {
-        return this.snapshot.hasChild(path.replaceAll('/', '_'));
-    }
 
     public get hasChildren(): boolean {
         return this.snapshot.hasChildren();
@@ -44,10 +26,27 @@ export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements
         return this.snapshot.exists();
     }
 
+    public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): DatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
+        return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')), this.cryptionKeys);
+    }
+
+    public value(crypted: 'decrypt'): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never;
+    public value(): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme;
+    public value(crypted: 'plain' | 'decrypt' = 'plain'): DatabaseScheme | CryptedScheme.GetType<DatabaseScheme> {
+        if (crypted === 'decrypt') {
+            const crypter = new Crypter(this.cryptionKeys);
+            return crypter.decryptDecode<CryptedScheme.GetType<DatabaseScheme>>(this.snapshot.val() as string);
+        }
+        return this.snapshot.val() as DatabaseScheme;
+    }
+
+    public hasChild(path: string): boolean {
+        return this.snapshot.hasChild(path.replaceAll('/', '_'));
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     public forEach(action: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => boolean | void): boolean {
-        return this.snapshot.forEach(snapshot => {
-            return action(new DatabaseSnapshot<ObjectValue<DatabaseScheme>>(snapshot, this.cryptionKeys));
-        });
+        return this.snapshot.forEach(snapshot => action(new DatabaseSnapshot<ObjectValue<DatabaseScheme>>(snapshot, this.cryptionKeys)));
     }
 
     public map<U>(transform: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => U): U[] {
@@ -71,6 +70,7 @@ export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements
         const result: U[] = [];
         this.forEach(snapshot => {
             const value = transform(snapshot);
+            // eslint-disable-next-line no-undefined
             if (value !== undefined && value !== null)
                 result.push(value);
         });
@@ -79,6 +79,7 @@ export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements
 
     public reduce<T>(initialValue: T, transform: (value: T, snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => T): T {
         this.forEach(snapshot => {
+            // eslint-disable-next-line no-param-reassign
             initialValue = transform(initialValue, snapshot);
         });
         return initialValue;

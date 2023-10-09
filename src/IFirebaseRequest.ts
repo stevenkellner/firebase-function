@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
-import { DummyLogger, type ILogger, VerboseType, Logger } from './logger';
-import { type IFunctionType, DatabaseType, HttpsError, type PrivateKeys } from './types';
-import { ParameterContainer, type IParameterContainer } from './parameter';
-import { DatabaseReference, type IDatabaseScheme, type IDatabaseReference } from './database';
+import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
+import { DatabaseType, HttpsError, type IFunctionType, type PrivateKeys } from './types';
+import { DummyLogger, type ILogger, Logger, VerboseType } from './logger';
+import { type IParameterContainer, ParameterContainer } from './parameter';
 
 export interface IFirebaseRequest<FunctionType extends IFunctionType.Erased> {
     parameters: IFunctionType.Parameters<FunctionType>;
@@ -14,13 +14,14 @@ export namespace IFirebaseRequest {
     export type Constructor<FunctionType extends IFunctionType.Erased, DatabaseScheme extends IDatabaseScheme> = new (parameterContainer: IParameterContainer, databaseReference: IDatabaseReference<DatabaseScheme>, logger: ILogger) => IFirebaseRequest<FunctionType>;
 
     export function create<FunctionType extends IFunctionType.Erased, DatabaseScheme extends IDatabaseScheme>(
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         FirebaseRequest: IFirebaseRequest.Constructor<FunctionType, DatabaseScheme>,
         getPrivateKeys: (databaseType: DatabaseType) => PrivateKeys
     ): functions.HttpsFunction {
         return functions
             .region('europe-west1')
             .https
-            .onRequest(async(request, response) => {
+            .onRequest(async (request, response) => {
                 const initialLogger = new DummyLogger();
 
                 // Get database
@@ -39,7 +40,7 @@ export namespace IFirebaseRequest {
                     loggerVerboseType = VerboseType.fromString(request.query.verbose, databaseType, initialLogger.nextIndent);
                 }
 
-                const logger = Logger.start(loggerVerboseType, 'FirebaseRequest.create', undefined, 'notice');
+                const logger = Logger.start(loggerVerboseType, 'FirebaseRequest.create', null, 'notice');
 
                 // Get response of function call
                 const parameterContainer = new ParameterContainer({ ...request.query, databaseType: databaseType }, null, logger.nextIndent);

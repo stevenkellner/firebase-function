@@ -1,10 +1,10 @@
-import { expect } from 'chai';
 import { DatabaseType, DummyLogger, Logger, VerboseType } from '../src';
+import { expect } from 'chai';
 
 describe('Logger', () => {
     const logger = Logger.start(new VerboseType('none'), 'f1', { v1: 'v1', v2: false }, 'notice');
     logger.nextIndent.log('f2', { v1: 3.14, v2: [0, 1, 2] });
-    logger.log('f3', undefined, 'debug');
+    logger.log('f3', null, 'debug');
     const loggerN1 = logger.nextIndent;
     loggerN1.log('f4', { v1: { s1: 's1', s2: {} } }, 'info');
     const same = { same: null as unknown };
@@ -108,7 +108,7 @@ describe('Logger', () => {
 
     it('dummy logger', () => {
         const logger = new DummyLogger();
-        logger.nextIndent.log('test', undefined);
+        logger.nextIndent.log('test');
         expect(logger.completeLog).to.be.equal('');
     });
 });

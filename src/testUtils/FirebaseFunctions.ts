@@ -1,17 +1,17 @@
-import { httpsCallable, type Functions } from 'firebase/functions';
-import { type CallSecret } from '../types/CallSecret';
 import { Crypter, sha512 } from '../crypter';
-import { DatabaseType } from '../types/DatabaseType';
-import { type FirebaseFunctions as FirebaseFunctionsType } from '../FirebaseFunctions';
-import { type VerboseType } from '../logger';
 import { type ExpectResult, expectResult } from './Expect';
+import type { FirebaseError, FirebaseResult, IFunctionType } from '../types';
+import { type Functions, httpsCallable } from 'firebase/functions';
+import type { CallSecret } from '../types/CallSecret';
+import { DatabaseType } from '../types/DatabaseType';
+import type { FirebaseDescriptor } from '../FirebaseDescriptor';
+import type { FirebaseFunctions as FirebaseFunctionsType } from '../FirebaseFunctions';
+import type { IDatabaseScheme } from '../database';
+import { Result } from '../types/Result';
 import { UtcDate } from '../types/UtcDate';
+import type { VerboseType } from '../logger';
 import { encodeURL } from 'js-base64';
 import fetch from 'cross-fetch';
-import { Result } from '../types/Result';
-import { type IFunctionType, type FirebaseError, type FirebaseResult } from '../types';
-import { type FirebaseDescriptor } from '../FirebaseDescriptor';
-import { type IDatabaseScheme } from '../database';
 
 export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType<DatabaseScheme>, DatabaseScheme extends IDatabaseScheme> {
     public constructor(
@@ -19,18 +19,18 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType<Database
         private readonly requestUrlComponent: string,
         private readonly cryptionKeys: Crypter.Keys,
         private readonly callSecretKey: string,
-        private readonly functionName?: string
+        private readonly functionName: string | null = null
     ) {}
 
     public function<Key extends FirebaseFunctions.KeyIfRecord<FFunctions, DatabaseScheme>>(key: Key): FirebaseFunctions<FirebaseFunctions.FFunctionIfRecord<FFunctions, Key, DatabaseScheme>, DatabaseScheme> {
-        return new FirebaseFunctions(this.functions, this.requestUrlComponent, this.cryptionKeys, this.callSecretKey, this.functionName === undefined ? key : `${this.functionName}-${key}`);
+        return new FirebaseFunctions(this.functions, this.requestUrlComponent, this.cryptionKeys, this.callSecretKey, this.functionName === null ? key : `${this.functionName}-${key}`);
     }
 
     public async call(parameters: FirebaseFunctions.ParametersIfFunction<FFunctions, DatabaseScheme>): Promise<ExpectResult<FirebaseFunctions.ReturnTypeIfFunction<FFunctions, DatabaseScheme>>> {
         const databaseType = new DatabaseType('testing');
         const crypter = new Crypter(this.cryptionKeys);
         const expiresAtUtcDate = UtcDate.now.advanced({ minute: 1 });
-        const functionName = this.functionName !== undefined ? `debug-${this.functionName}` : '';
+        const functionName = this.functionName === null ? '' : `debug-${this.functionName}`;
         const callableFunction = httpsCallable<{
             verbose: VerboseType.Value;
             databaseType: DatabaseType.Value;
@@ -54,12 +54,13 @@ export class FirebaseFunctions<FFunctions extends FirebaseFunctionsType<Database
     }
 
     public async request(parameters: FirebaseFunctions.ParametersIfRequest<FFunctions, DatabaseScheme>): Promise<ExpectResult<FirebaseFunctions.ReturnTypeIfRequest<FFunctions, DatabaseScheme>>> {
-        const functionName = this.functionName !== undefined ? `debug-${this.functionName}` : '';
+        const functionName = this.functionName === null ? '' : `debug-${this.functionName}`;
         const baseUrl = `https://${this.requestUrlComponent}.cloudfunctions.net/${functionName}`;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/restrict-template-expressions
         const joinedParameters = [...Object.entries(parameters as any), ['databaseType', 'testing'] as const].map(parameter => `${parameter[0]}=${parameter[1]}`).join('&');
         const url = encodeURL(`${baseUrl}?${joinedParameters}`);
         try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
             const response: FirebaseFunctions.ReturnTypeIfRequest<FFunctions, DatabaseScheme> = JSON.parse(await (await fetch(url)).json());
             return expectResult(Result.success(response));
         } catch (error) {

@@ -1,5 +1,6 @@
-import { type CryptedScheme, type IDatabaseScheme, type IDatabaseSnapshot } from '../database';
-import { type ObjectValue } from '../types';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { CryptedScheme, IDatabaseScheme, IDatabaseSnapshot } from '../database';
+import type { ObjectValue } from '../types';
 
 export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements IDatabaseSnapshot<DatabaseScheme> {
     public constructor(
@@ -24,11 +25,9 @@ export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implem
     public value(crypted: 'decrypt'): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never;
     public value(): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme;
     public value(crypted: 'plain' | 'decrypt' = 'plain'): DatabaseScheme | CryptedScheme.GetType<DatabaseScheme> {
-        if (crypted === 'decrypt') {
+        if (crypted === 'decrypt')
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return (this.data! as CryptedScheme<CryptedScheme.GetType<DatabaseScheme>>).value;
-        }
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.data!;
     }
 
@@ -37,14 +36,16 @@ export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implem
     }
 
     public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : keyof DatabaseScheme & string>(key: Key): IDatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return new MockDatabaseSnapshot(key, this.data === null ? null as any : (this.data as DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme : never)[key]) as any;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     public forEach(action: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => boolean | void): boolean {
         if (typeof this.data !== 'object' || this.data === null)
             return false;
         for (const entry of Object.entries(this.data)) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const shouldBreak = action(new MockDatabaseSnapshot<ObjectValue<DatabaseScheme>>(entry[0], entry[1]));
             if (shouldBreak === true)
                 return true;
@@ -73,6 +74,7 @@ export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implem
         const result: U[] = [];
         this.forEach(snapshot => {
             const value = transform(snapshot);
+            // eslint-disable-next-line no-undefined
             if (value !== undefined && value !== null)
                 result.push(value);
         });
@@ -81,6 +83,7 @@ export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implem
 
     public reduce<T>(initialValue: T, transform: (value: T, snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => T): T {
         this.forEach(snapshot => {
+            // eslint-disable-next-line no-param-reassign
             initialValue = transform(initialValue, snapshot);
         });
         return initialValue;

@@ -1,4 +1,4 @@
-import { type Crypter } from '../crypter';
+import type { Crypter } from '../crypter';
 
 export interface PrivateKeys {
     cryptionKeys: Crypter.Keys;

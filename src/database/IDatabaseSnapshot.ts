@@ -1,5 +1,5 @@
-import { type ObjectValue } from '../types/utils';
-import { type IDatabaseScheme, type CryptedScheme } from './IDatabaseScheme';
+import type { CryptedScheme, IDatabaseScheme } from './IDatabaseScheme';
+import type { ObjectValue } from '../types/utils';
 
 export interface IDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> {
     readonly hasChildren: boolean;
@@ -13,6 +13,7 @@ export interface IDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> {
     hasChild(path: string): boolean;
     child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): IDatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never>;
 
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     forEach(action: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => boolean | void): boolean;
     map<U>(transform: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => U): U[];
     flatMap<U>(transform: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => U[]): U[];

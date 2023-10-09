@@ -1,5 +1,5 @@
 import { HttpsError } from './HttpsError';
-import { type ILogger } from '../logger';
+import type { ILogger } from '../logger';
 
 export class DatabaseType {
     public constructor(

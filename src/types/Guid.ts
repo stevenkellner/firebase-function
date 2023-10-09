@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
 import { HttpsError } from './HttpsError';
-import { type ILogger } from '../logger';
+import type { ILogger } from '../logger';
+import { v4 as uuidv4 } from 'uuid';
 
 export class Guid {
     public constructor(
@@ -11,7 +11,7 @@ export class Guid {
 export namespace Guid {
     export function fromString(value: string, logger: ILogger): Guid {
         logger.log('guid.fromString', { value: value });
-        const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/u;
         if (!regex.test(value))
             throw HttpsError('internal', `Couldn't parse Guid, guid string isn't a valid Guid: ${value}`, logger);
         return new Guid(value.toUpperCase());

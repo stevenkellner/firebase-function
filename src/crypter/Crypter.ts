@@ -1,11 +1,11 @@
-import { RandomBitIterator } from './RandomBitIterator';
-import { type FixedLength } from './FixedLength';
+import { CBCDecryptor, CBCEncryptor } from 'aes-ts';
+import { addPadding, bitIteratorToBytes, randomBytes, removePadding, unishortBytes, unishortString, xor } from './utils';
+import { Base64 } from 'js-base64';
 import { BytesToBitIterator } from './BytesToBitIterator';
 import { CombineIterator } from './CombineIterator';
-import { bitIteratorToBytes, randomBytes, xor, addPadding, removePadding, unishortBytes, unishortString } from './utils';
-import { CBCEncryptor, CBCDecryptor } from 'aes-ts';
-import { Base64 } from 'js-base64';
-import { type ICrypter } from './ICrypter';
+import type { FixedLength } from './FixedLength';
+import type { ICrypter } from './ICrypter';
+import { RandomBitIterator } from './RandomBitIterator';
 
 export class Crypter implements ICrypter {
     public constructor(
@@ -48,21 +48,21 @@ export class Crypter implements ICrypter {
     }
 
     public encodeEncrypt(data: unknown): string {
-        const decodedData = JSON.stringify(data);
+        const decodedData = JSON.stringify(data) as string | undefined;
         const dataBytes = unishortBytes(decodedData ?? '');
         const encryptedData = this.encryptVernamAndAes(dataBytes);
         return Base64.fromUint8Array(encryptedData, true);
     }
 
-    public decryptDecode(data: ''): undefined;
+    public decryptDecode(data: ''): null;
     public decryptDecode<T = unknown>(data: string): T;
-    public decryptDecode<T = unknown>(data: string): T | undefined {
+    public decryptDecode<T = unknown>(data: string): T | null {
         if (data === '')
-            return undefined;
+            return null;
         const dataBytes = Base64.toUint8Array(data);
         const decryptedData = this.decryptAesAndVernam(dataBytes);
         const decodedData = unishortString(decryptedData);
-        return JSON.parse(decodedData);
+        return JSON.parse(decodedData) as T;
     }
 }
 

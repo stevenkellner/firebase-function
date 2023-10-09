@@ -1,67 +1,5 @@
-import { assert, expect as chai_expect } from 'chai';
-import { type FirebaseResult, type FirebaseError } from '../types';
-
-export function expect<T>(value: T): Expect<T> {
-    return new Expect<T>(value);
-}
-
-export function expectResult<T>(result: FirebaseResult<T>): ExpectResult<T> {
-    return new ExpectResult<T>(result);
-}
-
-export function expectHttpsError(execute: () => void, code: FirebaseError.Code) {
-    try {
-        execute();
-        chai_expect.fail('Expected to throw an error.');
-    } catch (error) {
-        chai_expect(error).to.have.ownProperty('httpErrorCode');
-        chai_expect(error).to.have.ownProperty('code');
-        assert(typeof error === 'object' && error !== null && 'code' in error);
-        chai_expect(error.code).to.be.equal(code);
-    }
-}
-
-export class Expect<T> {
-    public constructor(
-        private readonly _value: T
-    ) {}
-
-    public value<Key extends keyof T>(key: Key): Expect<T[Key]> {
-        return new Expect<T[Key]>(this._value[key]);
-    }
-
-    public get to(): ExpectTo<T> {
-        return new ExpectTo<T>(this._value);
-    }
-}
-
-export class ExpectTo<T> {
-    public constructor(
-        private readonly _value: T
-    ) {}
-
-    public get be(): ExpectToBe<T> {
-        return new ExpectToBe<T>(this._value);
-    }
-}
-
-export class ExpectToBe<T> {
-    public constructor(
-        public readonly value: T
-    ) {}
-
-    public get deep(): ExpectToBeDeep<T> {
-        return new ExpectToBeDeep<T>(this.value);
-    }
-
-    public equal(value: T, message?: string): Chai.Assertion {
-        return chai_expect(this.value).to.be.equal(value, message);
-    }
-
-    public unsorted(value: T extends Array<infer Element> ? Element[] : never, message?: string) {
-        assert.fail('Use deep unsorted array.');
-    }
-}
+import type { FirebaseError, FirebaseResult } from '../types';
+import { assert, expect as chaiExpect } from 'chai';
 
 export class ExpectToBeDeep<T> {
     public constructor(
@@ -69,15 +7,14 @@ export class ExpectToBeDeep<T> {
     ) {}
 
     public equal(value: T, message?: string): Chai.Assertion {
-        return chai_expect(this.value).to.be.deep.equal(value, message);
+        return chaiExpect(this.value).to.be.deep.equal(value, message);
     }
 
-    public unsorted(value: T extends Array<infer Element> ? Element[] : never, message?: string) {
+    public unsorted(value: T extends (infer Element)[] ? Element[] : never, message?: string): void {
         assert(Array.isArray(this.value));
-        chai_expect(this.value.length).to.be.equal(value.length);
+        chaiExpect(this.value.length).to.be.equal(value.length);
         for (const element of value) {
-            // eslint-disable-next-line eqeqeq
-            const index = this.value.findIndex(e => this.deepEqual(e, element));
+            const index = this.value.findIndex(elem => this.deepEqual(elem, element));
             if (index === -1)
                 assert.fail(message ?? `Couldn't find element: ${JSON.stringify(element)}`);
             this.value.splice(index, 1);
@@ -112,13 +49,61 @@ export class ExpectToBeDeep<T> {
     }
 
     private removeUndefined(value: object): object {
-        const v: Record<string, unknown> = {};
+        const object: Record<string, unknown> = {};
         for (const key of Object.keys(value)) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-undefined
             if (value[key as keyof typeof value] !== undefined)
-                v[key] = value[key as keyof typeof value];
+                object[key] = value[key as keyof typeof value];
         }
-        return v;
+        return object;
     }
+}
+
+export class ExpectToBe<T> {
+    public constructor(
+        public readonly value: T
+    ) {}
+
+    public get deep(): ExpectToBeDeep<T> {
+        return new ExpectToBeDeep<T>(this.value);
+    }
+
+    public equal(value: T, message?: string): Chai.Assertion {
+        return chaiExpect(this.value).to.be.equal(value, message);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public unsorted(value: T extends (infer Element)[] ? Element[] : never, message?: string): void {
+        assert.fail('Use deep unsorted array.');
+    }
+}
+
+export class ExpectTo<T> {
+    public constructor(
+        private readonly _value: T
+    ) {}
+
+    public get be(): ExpectToBe<T> {
+        return new ExpectToBe<T>(this._value);
+    }
+}
+
+export class Expect<T> {
+    public constructor(
+        private readonly _value: T
+    ) {}
+
+    public get to(): ExpectTo<T> {
+        return new ExpectTo<T>(this._value);
+    }
+
+    public value<Key extends keyof T>(key: Key): Expect<T[Key]> {
+        return new Expect<T[Key]>(this._value[key]);
+    }
+}
+
+export function expect<T>(value: T): Expect<T> {
+    return new Expect<T>(value);
 }
 
 export class ExpectResult<T> {
@@ -128,7 +113,9 @@ export class ExpectResult<T> {
 
     public get success(): ExpectToBe<T> | ExpectToBeDeep<T> {
         if (this.result.state === 'failure') {
+            // eslint-disable-next-line no-console
             console.error(this.result.error.code, this.result.error.message);
+            // eslint-disable-next-line no-console
             console.error(this.result.error);
         }
         expect<'failure' | 'success'>(this.result.state).to.be.equal('success');
@@ -146,5 +133,21 @@ export class ExpectResult<T> {
             code: this.result.error.code,
             message: this.result.error.message
         });
+    }
+}
+
+export function expectResult<T>(result: FirebaseResult<T>): ExpectResult<T> {
+    return new ExpectResult<T>(result);
+}
+
+export function expectHttpsError(execute: () => void, code: FirebaseError.Code): void {
+    try {
+        execute();
+        chaiExpect.fail('Expected to throw an error.');
+    } catch (error) {
+        chaiExpect(error).to.have.ownProperty('httpErrorCode');
+        chaiExpect(error).to.have.ownProperty('code');
+        assert(typeof error === 'object' && error !== null && 'code' in error);
+        chaiExpect(error.code).to.be.equal(code);
     }
 }

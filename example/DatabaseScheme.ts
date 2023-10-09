@@ -1,4 +1,4 @@
-import { type CryptedScheme } from '../src';
+import type { CryptedScheme } from '../src';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type DatabaseScheme = {

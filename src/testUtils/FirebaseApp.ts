@@ -1,17 +1,19 @@
-import { type Crypter } from '../crypter';
+import { type Auth, getAuth } from 'firebase/auth';
+import { type Database, getDatabase } from 'firebase/database';
 import { type FirebaseOptions, initializeApp } from 'firebase/app';
-import { getDatabase, type Database } from 'firebase/database';
-import { getAuth, type Auth } from 'firebase/auth';
-import { FirebaseFunctions as FirebaseFunctionsTester } from './FirebaseFunctions';
-import { FirebaseDatabase } from './FirebaseDatabase';
-import { FirebaseAuth } from './FirebaseAuth';
 import { type Functions, getFunctions } from 'firebase/functions';
-import { type IDatabaseScheme } from '../database';
-import { type FirebaseFunctions } from '../FirebaseFunctions';
+import type { Crypter } from '../crypter';
+import { FirebaseAuth } from './FirebaseAuth';
+import { FirebaseDatabase } from './FirebaseDatabase';
+import type { FirebaseFunctions } from '../FirebaseFunctions';
+import { FirebaseFunctions as FirebaseFunctionsTester } from './FirebaseFunctions';
+import type { IDatabaseScheme } from '../database';
 
 export class FirebaseApp<FFunctions extends FirebaseFunctions<DatabaseScheme>, DatabaseScheme extends IDatabaseScheme> {
     private readonly _functions: Functions;
+
     private readonly _database: Database;
+
     private readonly _auth: Auth;
 
     public constructor(
@@ -27,7 +29,8 @@ export class FirebaseApp<FFunctions extends FirebaseFunctions<DatabaseScheme>, D
     }
 
     public get functions(): FirebaseFunctionsTester<FFunctions, DatabaseScheme> {
-        const requestUrlComponent = this.config?.functionsRegion !== undefined && this.config?.projectId !== undefined ? `${this.config.functionsRegion}-${this.config.projectId}` : `${this.config?.functionsRegion ?? ''}${this.config?.projectId ?? ''}`;
+        // eslint-disable-next-line no-undefined
+        const requestUrlComponent = this.config?.functionsRegion !== undefined && this.config.projectId !== undefined ? `${this.config.functionsRegion}-${this.config.projectId}` : `${this.config?.functionsRegion ?? ''}${this.config?.projectId ?? ''}`;
         return new FirebaseFunctionsTester(this._functions, requestUrlComponent, this.cryptionKeys, this.callSecretKey);
     }
 

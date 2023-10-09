@@ -1,10 +1,11 @@
-import { expect } from 'chai';
+/* eslint-disable no-undefined */
 import { Crypter, FixedLength } from '../src/crypter';
 import { DatabaseType, type FirebaseError, HttpsError } from '../src';
-import { Logger, type ILogger, VerboseType } from '../src/logger';
 import { GuardParameterBuilder, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder } from '../src/parameter';
+import { type ILogger, Logger, VerboseType } from '../src/logger';
+import { expect } from 'chai';
 
-function expectHttpsError(execute: () => void, code: FirebaseError.Code) {
+function expectHttpsError(execute: () => void, code: FirebaseError.Code): void {
     try {
         execute();
     } catch (error) {
@@ -66,7 +67,7 @@ describe('ParameterParser', () => {
         parameterToParse: unknown,
         builders: IParameterBuilders<Parameters>,
         expectedParameters: Parameters & { databaseType: DatabaseType }
-    ) {
+    ): void {
         const parameterContainer = new ParameterContainer({
             databaseType: new DatabaseType('testing'),
             parameters: crypter.encodeEncrypt(parameterToParse)
@@ -253,7 +254,7 @@ describe('ParameterParser', () => {
             }>({
                 value: 'asdf'
             }, {
-                value: { expectedTypes: ['number'], build: (v: number) => v.toString() }
+                value: { expectedTypes: ['number'], build: (value: number) => value.toString() }
             }, {
                 value: 'asdf',
                 databaseType: new DatabaseType('testing')
@@ -268,7 +269,7 @@ describe('ParameterParser', () => {
             }>({
                 value: undefined
             }, {
-                value: { expectedTypes: ['number'], build: (v: number) => v.toString() }
+                value: { expectedTypes: ['number'], build: (value: number) => value.toString() }
             }, {
                 value: 'asdf',
                 databaseType: new DatabaseType('testing')
