@@ -1,5 +1,5 @@
-import { UtcDate } from '../src';
-import { expect } from '../testSrc';
+import { UtcDate } from '../../src';
+import { expect } from '../../testSrc';
 
 describe('utcDate', () => {
     it('timezone', () => {
@@ -65,10 +65,5 @@ describe('utcDate', () => {
         expect(date5.compare(date4)).to.be.equal('greater');
         expect(date5.compare(date6)).to.be.equal('less');
         expect(date6.compare(date5)).to.be.equal('greater');
-    });
-
-    it('description', () => {
-        const date = UtcDate.fromDate(new Date('2024-02-07T12:34:56+01:00'));
-        expect(date.description('de-DE', 'Europe/Berlin')).to.be.equal('7.2.2024, 12:34:00');
     });
 });

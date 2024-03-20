@@ -5,6 +5,7 @@ export * from './FirebaseDescriptor';
 export * from './FirebaseFunctions';
 export * from './crypter';
 export * from './hasher';
+export * from './bytesCoder';
 export * from './utils';
 export * from './database';
 export * from './logger';

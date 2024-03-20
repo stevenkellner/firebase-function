@@ -5,7 +5,5 @@ export * from './Guid';
 export * from './HttpsError';
 export * from './IFunctionType';
 export * from './PrivateKeys';
-export * from './Result';
-export * from './UtcDate';
 export * from './ValidReturnType';
 export * from './utils';

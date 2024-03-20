@@ -1,11 +1,11 @@
-import { FirebaseError } from '../src';
-import { expect } from 'chai';
+import { FirebaseError } from '../../src';
+import { expect } from '../../testSrc';
 
 describe('FirebaseResult', () => {
     it('isFirebaseErrorCode', () => {
-        expect(FirebaseError.isFirebaseErrorCode('invalid')).to.be.false;
-        expect(FirebaseError.isFirebaseErrorCode('ok')).to.be.true;
-        expect(FirebaseError.isFirebaseErrorCode('unauthenticated')).to.be.true;
+        expect(FirebaseError.isFirebaseErrorCode('invalid')).to.be.equal(false);
+        expect(FirebaseError.isFirebaseErrorCode('ok')).to.be.equal(true);
+        expect(FirebaseError.isFirebaseErrorCode('unauthenticated')).to.be.equal(true);
     });
 
     it('toFirebaseError', () => {

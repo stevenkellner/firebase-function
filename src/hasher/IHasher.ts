@@ -1,4 +1,4 @@
 export interface IHasher {
 
-    hash(value: string, hmacKey?: string | null): string;
+    hash(data: Uint8Array): Uint8Array;
 }

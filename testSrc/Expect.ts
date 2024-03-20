@@ -1,4 +1,5 @@
-import { FirebaseError, type Result } from '../src/types';
+import { FirebaseError } from '../src/types';
+import type { Result } from '../src/utils';
 import { assert, expect as chaiExpect } from 'chai';
 
 export class ExpectToBeDeep<T> {

@@ -8,7 +8,7 @@
     "build": "tsc",
     "lint": "eslint --ext .js,.ts .",
     "test": "mocha --reporter spec -r ts-node/register --timeout 3600000 --reporter-option maxDiffSize=0",
-    "testAll": "npm run test test/*.test.ts test/**/*.test.ts",
+    "testAll": "npm run test test/**/*.test.ts",
     "test:coverage": "nyc npm run test",
     "testAll:coverage": "nyc npm run testAll",
     "prepare": "npm run build",

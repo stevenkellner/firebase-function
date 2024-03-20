@@ -1,5 +1,5 @@
 import type { FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
-import type { Result } from './Result';
+import type { Result } from '../utils/Result';
 
 export interface FirebaseError extends Error {
     name: 'FirebaseError';

@@ -58,10 +58,6 @@ export class UtcDate {
         );
     }
 
-    public description(locale: 'de-DE', timezone: 'Europe/Berlin'): string {
-        return this.toDate.toLocaleString(locale, { timeZone: timezone });
-    }
-
     public setted(components: { year?: number; month?: number; day?: number; hour?: number; minute?: number }): UtcDate {
         const date = new Date(Date.UTC(this.year, this.month, this.day, this.hour, this.minute));
         date.setUTCFullYear(components.year ?? date.getUTCFullYear());

@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions';
-import { CallSecret, DatabaseType, FirebaseError, type FirebaseResult, HttpsError, type IFunctionType, type PrivateKeys, Result } from './types';
+import { CallSecret, DatabaseType, FirebaseError, type FirebaseResult, HttpsError, type IFunctionType, type PrivateKeys } from './types';
 import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
 import { type ILogger, Logger, VoidLogger } from './logger';
 import { type IParameterContainer, ParameterContainer } from './parameter';
 import type { AuthData } from 'firebase-functions/lib/common/providers/https';
+import { Result } from './utils';
 
 export interface IFirebaseFunction<FunctionType extends IFunctionType.Erased, ResponseContext = never> {
     parameters: IFunctionType.Parameters<FunctionType>;
