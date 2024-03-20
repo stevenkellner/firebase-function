@@ -1,6 +1,13 @@
 export type Result<T, E extends Error> = Result.Success<T> | Result.Failure<E>;
 
+type ErrorType = Error;
+
 export namespace Result {
+
+    export type Value<R> = R extends Result<infer T, ErrorType> ? T : never;
+
+    export type Error<R> = R extends Result<unknown, infer E> ? E : never;
+
     export class Success<T> {
         public readonly state = 'success';
 
@@ -30,7 +37,7 @@ export namespace Result {
         }
     }
 
-    export class Failure<E extends Error> {
+    export class Failure<E extends ErrorType> {
         public readonly state = 'failure';
 
         public constructor(
@@ -55,7 +62,7 @@ export namespace Result {
             return this;
         }
 
-        public mapError<E2 extends Error>(mapper: (value: E) => E2): Result<never, E2> {
+        public mapError<E2 extends ErrorType>(mapper: (value: E) => E2): Result<never, E2> {
             return new Result.Failure<E2>(mapper(this.error));
         }
     }
@@ -68,15 +75,15 @@ export namespace Result {
         return new Result.Success<T | void>(value);
     }
 
-    export function failure<E extends Error>(error: E): Result<never, E> {
+    export function failure<E extends ErrorType>(error: E): Result<never, E> {
         return new Result.Failure<E>(error);
     }
 
-    export function isSuccess<T, E extends Error>(result: Result<T, E>): result is Result.Success<T> {
+    export function isSuccess<T, E extends ErrorType>(result: Result<T, E>): result is Result.Success<T> {
         return result.state === 'success';
     }
 
-    export function isFailure<T, E extends Error>(result: Result<T, E>): result is Result.Failure<E> {
+    export function isFailure<T, E extends ErrorType>(result: Result<T, E>): result is Result.Failure<E> {
         return result.state === 'failure';
     }
 }

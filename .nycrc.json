@@ -3,5 +3,5 @@
     "all": true,
     "check-coverage": true,
     "extension": [".js", ".ts"],
-    "reporter": ["html"]
+    "reporter": ["html", "text-summary"]
 }

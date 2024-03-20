@@ -1,4 +1,4 @@
-import { FirebaseError, type FirebaseResult } from '../src/types';
+import { FirebaseError, type Result } from '../src/types';
 import { assert, expect as chaiExpect } from 'chai';
 
 export class ExpectToBeDeep<T> {
@@ -71,6 +71,22 @@ export class ExpectToBe<T> {
     public equal(value: T, message?: string): Chai.Assertion {
         return chaiExpect(this.value).to.be.equal(value, message);
     }
+
+    public get success(): ExpectToBe<Result.Value<T>> | ExpectToBeDeep<Result.Value<T>> {
+        assert(typeof this.value === 'object' && this.value !== null && 'state' in this.value && (this.value.state === 'failure' || this.value.state === 'success'));
+        const result = this.value as unknown as Result<Result.Value<T>, Result.Error<T>>;
+        chaiExpect(result.state).to.be.equal('success');
+        assert(result.state === 'success');
+        return typeof result.value === 'object' ? new ExpectToBeDeep<Result.Value<T>>(result.value) : new ExpectToBe<Result.Value<T>>(result.value);
+    }
+
+    public get failure(): ExpectToBeDeep<Result.Error<T>> {
+        assert(typeof this.value === 'object' && this.value !== null && 'state' in this.value && (this.value.state === 'failure' || this.value.state === 'success'));
+        const result = this.value as unknown as Result<Result.Value<T>, Result.Error<T>>;
+        chaiExpect(result.state).to.be.equal('failure');
+        assert(result.state === 'failure');
+        return new ExpectToBeDeep(result.error);
+    }
 }
 
 export class ExpectTo<T> {
@@ -117,39 +133,3 @@ export class Expect<T> {
 export function expect<T>(value: T): Expect<T> {
     return new Expect<T>(value);
 }
-
-// TODO: remove
-export class ExpectResult<T> {
-    public constructor(
-        private readonly result: FirebaseResult<T>
-    ) {}
-
-    public get success(): ExpectToBe<T> | ExpectToBeDeep<T> {
-        if (this.result.state === 'failure') {
-            // eslint-disable-next-line no-console
-            console.error(this.result.error.code, this.result.error.message);
-            // eslint-disable-next-line no-console
-            console.error(this.result.error);
-        }
-        expect<'failure' | 'success'>(this.result.state).to.be.equal('success');
-        assert(this.result.state === 'success');
-        return typeof this.result.value === 'object' ? new ExpectToBeDeep<T>(this.result.value) : new ExpectToBe<T>(this.result.value);
-    }
-
-    public get failure(): ExpectToBeDeep<{
-        code: FirebaseError.Code;
-        message: string;
-    }> {
-        expect<'failure' | 'success'>(this.result.state).to.be.equal('failure');
-        assert(this.result.state === 'failure');
-        return new ExpectToBeDeep({
-            code: this.result.error.code,
-            message: this.result.error.message
-        });
-    }
-}
-
-export function expectResult<T>(result: FirebaseResult<T>): ExpectResult<T> {
-    return new ExpectResult<T>(result);
-}
-
