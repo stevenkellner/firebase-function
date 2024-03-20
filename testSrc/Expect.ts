@@ -1,6 +1,14 @@
-import { FirebaseError } from '../src/types';
+import type * as functions from 'firebase-functions';
 import type { Result } from '../src/utils';
 import { assert, expect as chaiExpect } from 'chai';
+
+function isFirebaseErrorCode(code: string): code is functions.https.FunctionsErrorCode {
+    return [
+        'ok', 'cancelled', 'unknown', 'invalid-argument', 'deadline-exceeded', 'not-found', 'already-exists',
+        'permission-denied', 'resource-exhausted', 'failed-precondition', 'aborted', 'out-of-range', 'unimplemented',
+        'internal', 'unavailable', 'data-loss', 'unauthenticated'
+    ].includes(code);
+}
 
 export class ExpectToBeDeep<T> {
     public constructor(
@@ -100,13 +108,13 @@ export class ExpectTo<T> {
     }
 
     public throw(expected?: string | RegExp | undefined, message?: string): Chai.Assertion;
-    public throw(firebaseErrorCode: FirebaseError.Code, message?: string): Chai.Assertion;
-    public throw(expected?: string | RegExp | undefined | FirebaseError.Code, message?: string): Chai.Assertion {
-        if (typeof expected === 'string' && FirebaseError.isFirebaseErrorCode(expected)) {
+    public throw(firebaseErrorCode: functions.https.FunctionsErrorCode, message?: string): Chai.Assertion;
+    public throw(expected?: string | RegExp | undefined | functions.https.FunctionsErrorCode, message?: string): Chai.Assertion {
+        if (typeof expected === 'string' && isFirebaseErrorCode(expected)) {
             const executeValue = this._value as () => unknown;
             try {
                 executeValue();
-                chaiExpect.fail('Expected to throw an error.');
+                return chaiExpect.fail('Expected to throw an error.');
             } catch (error) {
                 chaiExpect(error).to.have.ownProperty('httpErrorCode');
                 chaiExpect(error).to.have.ownProperty('code');

@@ -1,4 +1,4 @@
-import { GuardParameterBuilder, HttpsError, type ILogger, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder, VoidLogger, DatabaseType } from '../../src';
+import { GuardParameterBuilder, HttpsError, type ILogger, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder, VoidLogger } from '../../src';
 import { expect } from '../../testSrc';
 
 class StringClassType {
@@ -8,7 +8,7 @@ class StringClassType {
 namespace StringClassType {
     export function fromString(value: string, logger: ILogger): StringClassType {
         if (value !== 'v1' && value !== 'v2' && value !== 'v3')
-            throw HttpsError('internal', '', logger);
+            throw new HttpsError('internal', '', logger);
         return new StringClassType(value);
     }
 }
@@ -29,11 +29,11 @@ class ObjectClassType {
 namespace ObjectClassType {
     export function fromObject(value: object | null, logger: ILogger): ObjectClassType {
         if (value === null)
-            throw HttpsError('internal', '', logger);
+            throw new HttpsError('internal', '', logger);
         if (!('v1' in value) || typeof value.v1 !== 'string')
-            throw HttpsError('internal', '', logger);
+            throw new HttpsError('internal', '', logger);
         if (!('v2' in value) || typeof value.v2 !== 'number')
-            throw HttpsError('internal', '', logger);
+            throw new HttpsError('internal', '', logger);
         return new ObjectClassType(value.v1, value.v2);
     }
 }
@@ -164,8 +164,6 @@ describe('ParameterParser', () => {
             value1b: number | undefined;
             value2a: 'a' | 'b' | undefined;
             value2b: 'a' | 'b' | undefined;
-            value3a: DatabaseType | undefined;
-            value3b: DatabaseType | undefined;
             value4a: undefined;
         }>({
             value1a: 12,
@@ -184,8 +182,6 @@ describe('ParameterParser', () => {
             value1b: new OptionalParameterBuilder(new ValueParameterBuilder('number')),
             value2a: new OptionalParameterBuilder(new GuardParameterBuilder('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
             value2b: new OptionalParameterBuilder(new GuardParameterBuilder('string', (value: string): value is 'a' | 'b' => value === 'a' || value === 'b')),
-            value3a: new OptionalParameterBuilder(new ParameterBuilder('string', DatabaseType.fromString)),
-            value3b: new OptionalParameterBuilder(new ParameterBuilder('string', DatabaseType.fromString)),
             value4a: new OptionalParameterBuilder(new ParameterBuilder('undefined', (value: undefined) => value))
         }, {
             value1a: 12,
@@ -194,9 +190,6 @@ describe('ParameterParser', () => {
             value2a: 'a',
             // eslint-disable-next-line no-undefined
             value2b: undefined,
-            value3a: new DatabaseType('testing'),
-            // eslint-disable-next-line no-undefined
-            value3b: undefined,
             // eslint-disable-next-line no-undefined
             value4a: undefined
         });

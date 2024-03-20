@@ -1,9 +1,8 @@
-import { HttpsError } from '../types';
 import type { ILogger } from '../logger';
 import type { IParameterBuilders } from './IParameterBuilders';
 import type { IParameterContainer } from './IParameterContainer';
 import type { IParameterParser } from './IParameterParser';
-import { mapRecord } from '../utils';
+import { HttpsError, mapRecord } from '../utils';
 
 export class ParameterParser<Parameters extends Record<string, unknown>> implements IParameterParser<Parameters> {
 
@@ -16,7 +15,7 @@ export class ParameterParser<Parameters extends Record<string, unknown>> impleme
 
     public get parameters(): Parameters {
         if (this.initialParameters === null)
-            throw HttpsError('internal', 'Tried to access parameters before parameters were parsed.', this.logger);
+            throw new HttpsError('internal', 'Tried to access parameters before parameters were parsed.', this.logger);
         return this.initialParameters;
     }
 

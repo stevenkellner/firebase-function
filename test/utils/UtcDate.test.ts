@@ -13,6 +13,11 @@ describe('utcDate', () => {
         expect(date).to.be.deep.equal(new UtcDate(2023, 2, 7, 11, 34));
     });
 
+    it('encode', () => {
+        expect(new UtcDate(2024, 4, 3, 9, 3).encoded).to.be.equal('2024-04-03-09-03');
+        expect(new UtcDate(2024, 11, 23, 19, 21).encoded).to.be.equal('2024-11-23-19-21');
+    });
+
     it('encode decode', () => {
         const date = UtcDate.fromDate(new Date('2023-02-07T12:34:56+01:00'));
         const { encoded } = date;

@@ -1,7 +1,7 @@
 import type { BaseType, BaseTypeName } from '../BaseType';
-import { HttpsError } from '../../types';
 import type { ILogger } from '../../logger';
 import type { IParameterBuilder } from './IParameterBuilder';
+import { HttpsError } from '../../utils';
 
 export class NullableParameterBuilder<TypeName extends BaseTypeName, T> implements IParameterBuilder<TypeName | 'object', T | null> {
 
@@ -20,7 +20,7 @@ export class NullableParameterBuilder<TypeName extends BaseTypeName, T> implemen
         if (value === null)
             return null;
         if (typeof value === 'object' && !(this.builder.expectedTypes as Set<BaseTypeName>).has('object'))
-            throw HttpsError('invalid-argument', 'Value is unexpected an object.', logger);
+            throw new HttpsError('invalid-argument', 'Value is unexpected an object.', logger);
         return this.builder.build(value as BaseType<TypeName>, logger.nextIndent);
     }
 }
