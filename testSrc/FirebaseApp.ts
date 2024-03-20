@@ -4,9 +4,9 @@ import { type FirebaseOptions, initializeApp } from 'firebase/app';
 import { type Functions, getFunctions } from 'firebase/functions';
 import { FirebaseAuth } from './FirebaseAuth';
 import { FirebaseDatabase } from './FirebaseDatabase';
-import type { FirebaseFunctions } from '../../src/FirebaseFunctions';
+import type { FirebaseFunctions } from '../src/FirebaseFunctions';
 import { FirebaseFunctions as FirebaseFunctionsTester } from './FirebaseFunctions';
-import type { IDatabaseScheme } from '../../src/database';
+import type { IDatabaseScheme } from '../src/database';
 
 export class FirebaseApp<FFunctions extends FirebaseFunctions<DatabaseScheme>, DatabaseScheme extends IDatabaseScheme> {
     private readonly _functions: Functions;

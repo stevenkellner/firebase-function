@@ -1,5 +1,5 @@
 import { Sha512Base64Encoding } from '../../src';
-import { expect } from '../testUtils';
+import { expect } from '../../testSrc';
 
 describe('Sha512Base64Encoding', () => {
 

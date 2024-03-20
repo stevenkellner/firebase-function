@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { ECBMode } from '../../../src';
-import { expect } from '../../testUtils';
+import { expect } from '../../../testSrc';
 import { Block } from 'aes-ts';
 
 describe('ECBMode', () => {

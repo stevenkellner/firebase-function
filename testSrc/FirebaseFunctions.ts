@@ -1,14 +1,14 @@
 import { type ExpectResult, expectResult } from './Expect';
-import type { FirebaseError, FirebaseResult, IFunctionType } from '../../src/types';
+import type { FirebaseError, FirebaseResult, IFunctionType } from '../src/types';
 import { type Functions, httpsCallable } from 'firebase/functions';
-import type { CallSecret } from '../../src/types/CallSecret';
-import { DatabaseType } from '../../src/types/DatabaseType';
-import type { FirebaseDescriptor } from '../../src/FirebaseDescriptor';
-import type { FirebaseFunctions as FirebaseFunctionsType } from '../../src/FirebaseFunctions';
-import type { IDatabaseScheme } from '../../src/database';
-import { Result } from '../../src/types/Result';
-import { Sha512 } from '../../src';
-import { UtcDate } from '../../src/types/UtcDate';
+import type { CallSecret } from '../src/types/CallSecret';
+import { DatabaseType } from '../src/types/DatabaseType';
+import type { FirebaseDescriptor } from '../src/FirebaseDescriptor';
+import type { FirebaseFunctions as FirebaseFunctionsType } from '../src/FirebaseFunctions';
+import type { IDatabaseScheme } from '../src/database';
+import { Result } from '../src/types/Result';
+import { Sha512 } from '../src';
+import { UtcDate } from '../src/types/UtcDate';
 import { encodeURL } from 'js-base64';
 import fetch from 'cross-fetch';
 

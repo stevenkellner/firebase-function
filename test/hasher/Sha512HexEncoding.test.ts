@@ -1,5 +1,5 @@
 import { Sha512HexEncoding } from '../../src';
-import { expect } from '../testUtils';
+import { expect } from '../../testSrc';
 
 describe('Sha512HexEncoding', () => {
 

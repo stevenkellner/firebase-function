@@ -1,4 +1,5 @@
 export * from './ICrypter';
-export * from './Aes';
+export * from './AES';
 export * from './modeOfOperation';
+export * from './padding';
 export * from './xor';

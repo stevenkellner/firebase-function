@@ -26,6 +26,7 @@ module.exports = {
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/quotes': ['error', 'single'],
     'function-call-argument-newline': ['error', 'consistent'],
+    '@typescript-eslint/unified-signatures': 'off',
     'padded-blocks': 'off',
     '@typescript-eslint/no-unused-expressions': 'off',
     'multiline-comment-style': 'off',

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { CryptedScheme, IDatabaseScheme, IDatabaseSnapshot } from '../../src/database';
-import type { ObjectValue } from '../../src/types';
+import type { CryptedScheme, IDatabaseScheme, IDatabaseSnapshot } from '../src/database';
+import type { ObjectValue } from '../src/types';
 
 export class MockDatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements IDatabaseSnapshot<DatabaseScheme> {
     public constructor(

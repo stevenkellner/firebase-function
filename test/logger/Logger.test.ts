@@ -1,5 +1,5 @@
 import { type ILogger, Logger } from '../../src';
-import { expect } from '../testUtils';
+import { expect } from '../../testSrc';
 
 describe('Logger', () => {
     it('log not verbose', () => {

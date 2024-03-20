@@ -1,4 +1,4 @@
-import type { CryptedScheme, IDatabaseScheme } from '../../src/database';
+import type { CryptedScheme, IDatabaseScheme } from '../src/database';
 import { type Database, onValue, ref, remove, set } from 'firebase/database';
 
 export class FirebaseDatabase<DatabaseScheme extends IDatabaseScheme> {

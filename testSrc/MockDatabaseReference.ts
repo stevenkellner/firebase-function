@@ -1,6 +1,6 @@
-import type { CryptedScheme, IDatabaseScheme, ValidDatabaseSchemeType } from '../../src/database/IDatabaseScheme';
-import type { IDatabaseReference } from '../../src/database/IDatabaseReference';
-import type { IDatabaseSnapshot } from '../../src/database/IDatabaseSnapshot';
+import type { CryptedScheme, IDatabaseScheme, ValidDatabaseSchemeType } from '../src/database/IDatabaseScheme';
+import type { IDatabaseReference } from '../src/database/IDatabaseReference';
+import type { IDatabaseSnapshot } from '../src/database/IDatabaseSnapshot';
 import { MockDatabaseSnapshot } from './MockDatabaseSnapshot';
 
 class ParentMockDatabaseRefernence<ParentDatabaseScheme extends Record<string, IDatabaseScheme>, ChildKey extends keyof ParentDatabaseScheme & string> implements IDatabaseReference<ParentDatabaseScheme[ChildKey]> {

@@ -1,5 +1,5 @@
 import { GuardParameterBuilder, VoidLogger } from '../../../src';
-import { expect } from '../../testUtils';
+import { expect } from '../../../testSrc';
 
 describe('GuardParameterBuilder', () => {
     const logger = new VoidLogger();

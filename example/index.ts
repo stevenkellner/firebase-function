@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { FixedLength, type PrivateKeys, createFirebaseFunctions } from '../src';
 import type { DatabaseScheme } from './DatabaseScheme';
-import { FirebaseApp } from '../test/testUtils';
+import { FirebaseApp } from '../testSrc';
 import { firebaseFunctions } from './firebaseFunctions';
 
 const privateKeys: PrivateKeys = {

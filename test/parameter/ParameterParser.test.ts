@@ -1,5 +1,5 @@
 import { GuardParameterBuilder, HttpsError, type ILogger, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder, VoidLogger, DatabaseType } from '../../src';
-import { expect } from '../testUtils';
+import { expect } from '../../testSrc';
 
 class StringClassType {
     public constructor(public value: 'v1' | 'v2' | 'v3') {}

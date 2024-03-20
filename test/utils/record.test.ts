@@ -1,5 +1,5 @@
 import { entries, keys, mapRecord, values } from '../../src';
-import { expect } from '../testUtils';
+import { expect } from '../../testSrc';
 
 describe('record', () => {
     const record = {

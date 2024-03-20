@@ -13,6 +13,7 @@
     "include": [
         "index.ts",
         "src",
+        "testSrc",
         "test",
         "example"
     ],
