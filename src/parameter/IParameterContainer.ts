@@ -1,9 +1,7 @@
-import type { DatabaseType } from '../types/DatabaseType';
-import type { IParameterBuilder } from './IParameterBuilder';
-import type { TypeOfName } from './TypeOf';
+import type { BaseTypeName } from './BaseType';
+import type { IParameterBuilder } from './parameterBuilder/IParameterBuilder';
 
 export interface IParameterContainer {
-    readonly databaseType: DatabaseType;
 
-    parameter<TypeName extends TypeOfName, T>(key: PropertyKey, builder: IParameterBuilder<TypeName, T>): T;
+    parameter<TypeName extends BaseTypeName, T>(key: PropertyKey, builder: IParameterBuilder<TypeName, T>): T;
 }

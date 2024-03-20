@@ -1,6 +1,5 @@
-import type { LogLevel } from './LogLevel';
-import { StringBuilder } from '../types/StringBuilder';
-import type { VerboseType } from './VerboseType';
+import type { LogLevel } from './ILogger';
+import { StringBuilder } from '../utils/StringBuilder';
 import { inspect } from 'util';
 
 export class LoggingProperty {
@@ -11,31 +10,25 @@ export class LoggingProperty {
         private readonly details: Record<PropertyKey, unknown> | null
     ) {}
 
-    public completeLog(verbose: VerboseType): string {
+    public completeLog(verbose: boolean): string {
         const builder = new StringBuilder();
-        builder.appendLine(this.prefix(true) + this.logLevel.coloredText(`[${this.functionName}]`, verbose.isColored) + (verbose.isVerbose ? ': {' : ''));
-        if (this.details && verbose.isVerbose) {
+        builder.appendLine(`${this.prefix(true)}[${this.logLevel}: ${this.functionName}]${verbose ? ': {' : ''}${!verbose || this.details ? '' : '}'}`);
+        if (this.details && verbose) {
             for (const entry of Object.entries(this.details))
-                builder.append(this.detailString(entry[0], entry[1], verbose));
+                builder.append(this.detailString(entry[0], entry[1]));
+            builder.appendLine(`${this.prefix()}}`);
         }
-        if (verbose.isVerbose)
-            builder.appendLine(`${this.prefix(false)}}`);
+        return builder.toString();
+    }
+
+    private detailString(key: string, detail: unknown): string {
+        const builder = new StringBuilder();
+        const jsonString = inspect(detail, { compact: true, depth: null, maxArrayLength: 25, maxStringLength: 250, breakLength: Number.POSITIVE_INFINITY });
+        builder.appendLine(`${this.prefix()}    ${key}: ${jsonString}`);
         return builder.toString();
     }
 
     private prefix(start: boolean = false): string {
         return '|   '.repeat(this.indent) + (start ? '> ' : '| ');
-    }
-
-    private detailString(key: string, detail: unknown, verbose: VerboseType): string {
-        const builder = new StringBuilder();
-        const json = inspect(detail, { compact: true, depth: null, maxArrayLength: 25, maxStringLength: 250, breakLength: Number.POSITIVE_INFINITY });
-        function coloredText(value: string): string {
-            if (verbose.isColored)
-                return `\x1b[2m${value}\x1b[0m`;
-            return value;
-        }
-        builder.appendLine(`${this.prefix()}    ${key}: ${coloredText(json)}`);
-        return builder.toString();
     }
 }

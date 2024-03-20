@@ -1,5 +1,5 @@
 import { UtcDate } from '../src';
-import { expect } from '../src/testUtils';
+import { expect } from './testUtils';
 
 describe('utcDate', () => {
     it('timezone', () => {

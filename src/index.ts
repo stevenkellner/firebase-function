@@ -4,6 +4,8 @@ export * from './IFirebaseRequest';
 export * from './FirebaseDescriptor';
 export * from './FirebaseFunctions';
 export * from './crypter';
+export * from './hasher';
+export * from './utils';
 export * from './database';
 export * from './logger';
 export * from './parameter';

@@ -1,12 +1,11 @@
-import type { ILogger } from './ILogger';
-import { LogLevel } from './LogLevel';
+import type { ILogger, LogLevel } from './ILogger';
 import { LoggingProperty } from './LoggingProperty';
-import { StringBuilder } from '../types/StringBuilder';
-import type { VerboseType } from './VerboseType';
+import { StringBuilder } from '../utils/StringBuilder';
 
 export class Logger implements ILogger {
+
     private constructor(
-        public verbose: VerboseType,
+        public verbose: boolean,
         private readonly properties: LoggingProperty[],
         private readonly currentIndent: number = 0
     ) {}
@@ -22,21 +21,12 @@ export class Logger implements ILogger {
         return builder.toString();
     }
 
-    public static start(
-        verbose: VerboseType,
-        functionName: string,
-        details: Record<string, unknown> | null = null,
-        logLevel: LogLevel.Value = 'debug'
-    ): Logger {
-        const property = new LoggingProperty(functionName, new LogLevel(logLevel), 0, details);
+    public static start(functionName: string, details: Record<string, unknown> | null = null, logLevel: LogLevel = 'debug', verbose: boolean = false): Logger {
+        const property = new LoggingProperty(functionName, logLevel, 0, details);
         return new Logger(verbose, [property]);
     }
 
-    public log(
-        functionName: string,
-        details: Record<string, unknown> | null = null,
-        logLevel: LogLevel.Value = 'debug'
-    ): void {
-        this.properties.push(new LoggingProperty(functionName, new LogLevel(logLevel), this.currentIndent, details));
+    public log(functionName: string, details: Record<string, unknown> | null = null, logLevel: LogLevel = 'debug'): void {
+        this.properties.push(new LoggingProperty(functionName, logLevel, this.currentIndent, details));
     }
 }

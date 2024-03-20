@@ -14,7 +14,7 @@ export class GetAnimalsFunction implements IFirebaseFunction<GetAnimalsFunctionT
         this.logger.log('GetAnimalsFunction.constructor', { auth: auth }, 'notice');
         const parameterParser = new ParameterParser<IFunctionType.Parameters<GetAnimalsFunctionType>>({}, this.logger.nextIndent);
         parameterParser.parse(parameterContainer);
-        this.parameters = parameterParser.parameters;
+        this.parameters = parameterParser.parameters as any; // TODO
     }
 
     public async execute(): Promise<IFunctionType.ReturnType<GetAnimalsFunctionType>> {

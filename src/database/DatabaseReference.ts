@@ -1,32 +1,25 @@
 import * as admin from 'firebase-admin';
 import type { CryptedScheme, IDatabaseScheme } from './IDatabaseScheme';
-import { Crypter } from '../crypter';
 import { DatabaseSnapshot } from './DatabaseSnapshot';
 import type { IDatabaseReference } from './IDatabaseReference';
 import type { PrivateKeys } from '../types/PrivateKeys';
 
 export class DatabaseReference<DatabaseScheme extends IDatabaseScheme> implements IDatabaseReference<DatabaseScheme> {
     public constructor(
-        private readonly reference: admin.database.Reference,
-        private readonly cryptionKeys: Crypter.Keys
+        private readonly reference: admin.database.Reference
     ) {}
 
     public async snapshot(): Promise<DatabaseSnapshot<DatabaseScheme>> {
-        return new DatabaseSnapshot<DatabaseScheme>(await this.reference.once('value'), this.cryptionKeys);
+        return new DatabaseSnapshot<DatabaseScheme>(await this.reference.once('value'));
     }
 
     public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): DatabaseReference<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
-        return new DatabaseReference(this.reference.child(key.replaceAll('/', '_')), this.cryptionKeys);
+        return new DatabaseReference(this.reference.child(key.replaceAll('/', '_')));
     }
 
     public async set(value: CryptedScheme.GetType<DatabaseScheme>, crypted: 'encrypt'): Promise<void>;
     public async set(value: true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme): Promise<void>;
-    public async set(value: DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>, crypted: 'plain' | 'encrypt' = 'plain'): Promise<void> {
-        if (crypted === 'encrypt') {
-            const crypter = new Crypter(this.cryptionKeys);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, no-param-reassign
-            value = crypter.encodeEncrypt(value) as any;
-        }
+    public async set(value: DatabaseScheme | CryptedScheme.GetType<DatabaseScheme>): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.reference.set(value, error => {
                 if (error !== null) {
@@ -57,6 +50,6 @@ export namespace DatabaseReference {
             .app()
             .database(privateKey.databaseUrl)
             .ref();
-        return new DatabaseReference(reference, privateKey.cryptionKeys);
+        return new DatabaseReference(reference);
     }
 }

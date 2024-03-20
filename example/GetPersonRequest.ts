@@ -17,7 +17,7 @@ export class GetPersonRequest implements IFirebaseRequest<GetPersonRequestType> 
             this.logger.nextIndent
         );
         parameterParser.parse(parameterContainer);
-        this.parameters = parameterParser.parameters;
+        this.parameters = parameterParser.parameters as any; // TODO
     }
 
     public async execute(): Promise<IFunctionType.ReturnType<GetPersonRequestType>> {

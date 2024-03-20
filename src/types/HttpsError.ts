@@ -9,6 +9,6 @@ export function HttpsError(
     logger: ILogger
 ): functions.https.HttpsError {
     // eslint-disable-next-line no-console
-    console.log(`HttpsError (${code}): ${message}`);
+    // console.log(`HttpsError (${code}): ${message}`);
     return new functions.https.HttpsError(code, message, logger.completeLog);
 }

@@ -1,7 +1,5 @@
-import type { Crypter } from '../crypter';
-
 export interface PrivateKeys {
-    cryptionKeys: Crypter.Keys;
+    cryptionKeys: any;
     callSecretKey: string;
     databaseUrl: string;
 }

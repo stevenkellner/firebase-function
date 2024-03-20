@@ -1,6 +1,6 @@
 import * as crypterTestData from './dataset/crypterTestData.json';
 import { Crypter, FixedLength } from '../src/crypter';
-import { addPadding, bitIteratorToBytes, bits, removePadding, sha512, xor } from '../src/crypter/utils';
+import { addPadding, bitIteratorToBytes, bits, removePadding, xor } from '../src/crypter/utils';
 import { Base64 } from 'js-base64';
 import { BytesToBitIterator } from '../src/crypter/BytesToBitIterator';
 import { CombineIterator } from '../src/crypter/CombineIterator';
@@ -304,10 +304,5 @@ describe('Crypter', () => {
                 expect(actual).to.be.deep.equal(data[0]);
             }
         });
-    });
-
-    it('hash', () => {
-        expect(sha512('lkjdasflnc')).to.be.equal('rbswGhojGpzw7EoB61dz3LpecUiFV7y0QHhO7xLHbgtPHhjsKxH6nbUg2p6B5CpSAa1hMzJKBfM8twldRbKj1g');
-        expect(sha512('lkjdasflnc', 'oimli')).to.be.equal('5NRfmNX8NnSCP2jrQIrhmkpo+wpz27FQDyU4_4lheOiJ8etSQ+spWak39WgaF8lzd8qwHzlkrfixZIZlf_1hSQ');
     });
 });

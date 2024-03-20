@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions';
 import { CallSecret, DatabaseType, FirebaseError, type FirebaseResult, HttpsError, type IFunctionType, type PrivateKeys, Result } from './types';
 import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
-import { DummyLogger, type ILogger, Logger, VerboseType } from './logger';
+import { type ILogger, Logger, VoidLogger } from './logger';
 import { type IParameterContainer, ParameterContainer } from './parameter';
 import type { AuthData } from 'firebase-functions/lib/common/providers/https';
-import { Crypter } from './crypter';
 
 export interface IFirebaseFunction<FunctionType extends IFunctionType.Erased, ResponseContext = never> {
     parameters: IFunctionType.Parameters<FunctionType>;
@@ -43,7 +42,8 @@ export namespace IFirebaseFunction {
             .region('europe-west1')
             .https
             .onCall(async (data: unknown, context) => {
-                const initialLogger = new DummyLogger();
+                /*
+                const initialLogger = new VoidLogger();
                 if (typeof data !== 'object' || data === null)
                     throw HttpsError('invalid-argument', 'Function parameter data has to be an object.', initialLogger);
 
@@ -53,11 +53,11 @@ export namespace IFirebaseFunction {
                 const databaseType = DatabaseType.fromString(data.databaseType, initialLogger.nextIndent);
 
                 // Get logger verbose type
-                if (!('verbose' in data) || typeof data.verbose !== 'string')
-                    throw HttpsError('invalid-argument', 'Couldn\'t get verbose type from function parameter data.', initialLogger);
-                const loggerVerboseType = VerboseType.fromString(data.verbose, databaseType, initialLogger.nextIndent);
+                // if (!('verbose' in data) || typeof data.verbose !== 'string')
+                //    throw HttpsError('invalid-argument', 'Couldn\'t get verbose type from function parameter data.', initialLogger);
+                // const loggerVerboseType = VerboseType.fromString(data.verbose, databaseType, initialLogger.nextIndent);
 
-                const logger = Logger.start(loggerVerboseType, 'FirebaseFunction.create', { auth: context.auth }, 'notice');
+                const logger = Logger.start('FirebaseFunction.create', { auth: context.auth }, 'notice', true);
 
                 // Check call secret
                 if (!('callSecret' in data) || typeof data.callSecret !== 'object')
@@ -67,7 +67,7 @@ export namespace IFirebaseFunction {
 
                 // Get result of function call
                 const crypter = new Crypter(getPrivateKeys(databaseType).cryptionKeys);
-                const parameterContainer = new ParameterContainer({ ...data, databaseType: databaseType }, crypter, logger.nextIndent);
+                const parameterContainer = new ParameterContainer({ ...data, databaseType: databaseType }, logger.nextIndent);
                 const databaseReference = DatabaseReference.base<DatabaseScheme>(getPrivateKeys(databaseType));
                 const firebaseFunction = new FirebaseFunction(parameterContainer, context.auth ?? null, databaseReference, logger.nextIndent);
                 const response = await execute(firebaseFunction);
@@ -77,6 +77,7 @@ export namespace IFirebaseFunction {
                     result: crypter.encodeEncrypt(response.result),
                     context: response.context
                 };
+                */
             });
     }
 }

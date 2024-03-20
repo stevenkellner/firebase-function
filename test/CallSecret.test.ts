@@ -1,4 +1,4 @@
-import { CallSecret, DummyLogger, UtcDate, sha512 } from '../src';
+import { CallSecret, DummyLogger, Sha512, UtcDate } from '../src';
 import { expect } from 'chai';
 
 describe('CallSecret', () => {
@@ -21,8 +21,8 @@ describe('CallSecret', () => {
         // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.encoded, hashedData: 'abc' }, 'xyz', new DummyLogger())).to.throw();
         // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: -1 }).encoded, hashedData: sha512(expiresAt.advanced({ minute: -1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).to.throw();
+        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: -1 }).encoded, hashedData: new Sha512().hash(expiresAt.advanced({ minute: -1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).to.throw();
         // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: 1 }).encoded, hashedData: sha512(expiresAt.advanced({ minute: 1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).not.to.throw();
+        expect(() => CallSecret.checkCallSecret({ expiresAt: expiresAt.advanced({ minute: 1 }).encoded, hashedData: new Sha512().hash(expiresAt.advanced({ minute: 1 }).encoded, 'xyz') }, 'xyz', new DummyLogger())).not.to.throw();
     });
 });

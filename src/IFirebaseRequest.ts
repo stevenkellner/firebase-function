@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { DatabaseReference, type IDatabaseReference, type IDatabaseScheme } from './database';
 import { DatabaseType, HttpsError, type IFunctionType, type PrivateKeys } from './types';
-import { DummyLogger, type ILogger, Logger, VerboseType } from './logger';
+import { type ILogger, Logger, VoidLogger } from './logger';
 import { type IParameterContainer, ParameterContainer } from './parameter';
 
 export interface IFirebaseRequest<FunctionType extends IFunctionType.Erased> {
@@ -22,7 +22,7 @@ export namespace IFirebaseRequest {
             .region('europe-west1')
             .https
             .onRequest(async (request, response) => {
-                const initialLogger = new DummyLogger();
+                const initialLogger = new VoidLogger();
 
                 // Get database
                 let databaseType = new DatabaseType('release');
@@ -33,17 +33,17 @@ export namespace IFirebaseRequest {
                 }
 
                 // Get logger verbose type
-                let loggerVerboseType = new VerboseType('none');
-                if ('verbose' in request.query) {
-                    if (typeof request.query.verbose !== 'string')
-                        throw HttpsError('invalid-argument', 'Couldn\'t get verbose type from function parameter data.', initialLogger);
-                    loggerVerboseType = VerboseType.fromString(request.query.verbose, databaseType, initialLogger.nextIndent);
-                }
+                // let loggerVerboseType = new VerboseType('none');
+                // if ('verbose' in request.query) {
+                //     if (typeof request.query.verbose !== 'string')
+                //         throw HttpsError('invalid-argument', 'Couldn\'t get verbose type from function parameter data.', initialLogger);
+                //     loggerVerboseType = VerboseType.fromString(request.query.verbose, databaseType, initialLogger.nextIndent);
+                // }
 
-                const logger = Logger.start(loggerVerboseType, 'FirebaseRequest.create', null, 'notice');
+                const logger = Logger.start('FirebaseRequest.create', null, 'notice', true);
 
                 // Get response of function call
-                const parameterContainer = new ParameterContainer({ ...request.query, databaseType: databaseType }, null, logger.nextIndent);
+                const parameterContainer = new ParameterContainer({ ...request.query, databaseType: databaseType }, logger.nextIndent);
                 const databaseReference = DatabaseReference.base<DatabaseScheme>(getPrivateKeys(databaseType));
                 const firebaseRequest = new FirebaseRequest(parameterContainer, databaseReference, logger.nextIndent);
                 response.send(await firebaseRequest.execute());

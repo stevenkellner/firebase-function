@@ -13,7 +13,8 @@
     "testAll:coverage": "nyc npm run testAll",
     "prepare": "npm run build",
     "prepublishOnly": "npm run testAll && npm run lint",
-    "preversion": "npm run lint"
+    "preversion": "npm run lint",
+    "secrets": "ts-node ../secrets-manager/src"
   },
   "files": [
     "lib/**/*"

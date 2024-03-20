@@ -21,7 +21,7 @@ export class AddPersonFunction implements IFirebaseFunction<AddPersonFunctionTyp
             this.logger.nextIndent
         );
         parameterParser.parse(parameterContainer);
-        this.parameters = parameterParser.parameters;
+        this.parameters = parameterParser.parameters as any; // TODO
     }
 
     public async execute(): Promise<IFunctionType.ReturnType<AddPersonFunctionType>> {

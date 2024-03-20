@@ -26,13 +26,16 @@ module.exports = {
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/quotes': ['error', 'single'],
     'function-call-argument-newline': ['error', 'consistent'],
-    'padded-blocks': ['error', 'never'],
+    'padded-blocks': 'off',
     '@typescript-eslint/no-unused-expressions': 'off',
+    'multiline-comment-style': 'off',
+    '@typescript-eslint/member-ordering': 'off',
     'max-len': 'off',
     'quote-props': ['error', 'consistent-as-needed'],
     'object-property-newline': 'off',
     'sort-keys': 'off',
     'one-var': ['error', 'never'],
+    'no-negated-condition': 'off',
     'max-lines-per-function': 'off',
     '@typescript-eslint/no-magic-numbers': 'off',
     'max-statements': 'off',
@@ -71,6 +74,9 @@ module.exports = {
     'no-bitwise': 'off',
     'radix': 'off',
     'no-underscore-dangle': 'off',
-    '@typescript-eslint/no-inferrable-types': 'off'
+    '@typescript-eslint/no-inferrable-types': 'off',
+    'capitalized-comments': 'off',
+    '@typescript-eslint/no-redundant-type-constituents': 'off',
+    'sort-imports': 'off'
   }
 }

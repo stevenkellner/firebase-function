@@ -1,13 +1,11 @@
 import type * as admin from 'firebase-admin';
 import type { CryptedScheme, IDatabaseScheme } from './IDatabaseScheme';
-import { Crypter } from '../crypter';
 import type { IDatabaseSnapshot } from './IDatabaseSnapshot';
 import type { ObjectValue } from '../types/utils';
 
 export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements IDatabaseSnapshot<DatabaseScheme> {
     public constructor(
-        private readonly snapshot: admin.database.DataSnapshot,
-        private readonly cryptionKeys: Crypter.Keys
+        private readonly snapshot: admin.database.DataSnapshot
     ) {}
 
     public get hasChildren(): boolean {
@@ -27,16 +25,12 @@ export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements
     }
 
     public child<Key extends true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : (keyof DatabaseScheme & string)>(key: Key): DatabaseSnapshot<DatabaseScheme extends Record<string, IDatabaseScheme> ? DatabaseScheme[Key] : never> {
-        return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')), this.cryptionKeys);
+        return new DatabaseSnapshot(this.snapshot.child(key.replaceAll('/', '_')));
     }
 
     public value(crypted: 'decrypt'): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? CryptedScheme.GetType<DatabaseScheme> : never;
     public value(): true extends CryptedScheme.IsCrypted<DatabaseScheme> ? never : DatabaseScheme;
-    public value(crypted: 'plain' | 'decrypt' = 'plain'): DatabaseScheme | CryptedScheme.GetType<DatabaseScheme> {
-        if (crypted === 'decrypt') {
-            const crypter = new Crypter(this.cryptionKeys);
-            return crypter.decryptDecode<CryptedScheme.GetType<DatabaseScheme>>(this.snapshot.val() as string);
-        }
+    public value(): DatabaseScheme | CryptedScheme.GetType<DatabaseScheme> {
         return this.snapshot.val() as DatabaseScheme;
     }
 
@@ -46,7 +40,7 @@ export class DatabaseSnapshot<DatabaseScheme extends IDatabaseScheme> implements
 
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     public forEach(action: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => boolean | void): boolean {
-        return this.snapshot.forEach(snapshot => action(new DatabaseSnapshot<ObjectValue<DatabaseScheme>>(snapshot, this.cryptionKeys)));
+        return this.snapshot.forEach(snapshot => action(new DatabaseSnapshot<ObjectValue<DatabaseScheme>>(snapshot)));
     }
 
     public map<U>(transform: (snapshot: IDatabaseSnapshot<ObjectValue<DatabaseScheme>>) => U): U[] {

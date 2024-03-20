@@ -1,4 +1,4 @@
-import { MockDatabaseReference } from '../src/testUtils';
+import { MockDatabaseReference } from './testUtils';
 import { expect } from 'chai';
 
 describe('MockDatabase', () => {
