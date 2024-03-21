@@ -16,7 +16,6 @@ describe('Result', () => {
         }))).to.be.success.equal('asdf');
         expect(Result.isSuccess(result)).to.be.equal(true);
         expect(Result.isFailure(result)).to.be.equal(false);
-        // eslint-disable-next-line no-undefined
         expect(Result.success()).to.be.success.equal(undefined);
     });
 

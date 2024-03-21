@@ -6,7 +6,7 @@ describe('ParameterContainer', () => {
 
     it('get invalid parameter', () => {
         const parameterContainer = new ParameterContainer({
-            // eslint-disable-next-line no-undefined
+            // eslint-disable-next-line
             value1: undefined,
             value2: null,
             value3: 'asdf'
@@ -19,7 +19,6 @@ describe('ParameterContainer', () => {
 
     it('get parameter', () => {
         const parameterContainer = new ParameterContainer({
-            // eslint-disable-next-line no-undefined
             value0: undefined,
             value1: true,
             value2: 'asdf',
@@ -27,7 +26,7 @@ describe('ParameterContainer', () => {
             value5: { value: 'asdf' },
             value6: null
         }, logger.nextIndent);
-        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression, no-undefined
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(parameterContainer.parameter('value0', new ValueParameterBuilder('undefined'))).to.be.equal(undefined);
         expect(parameterContainer.parameter('value1', new ValueParameterBuilder('boolean'))).to.be.equal(true);
         expect(parameterContainer.parameter('value2', new ValueParameterBuilder('string'))).to.be.equal('asdf');

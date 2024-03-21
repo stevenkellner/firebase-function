@@ -167,15 +167,11 @@ describe('ParameterParser', () => {
             value4a: undefined;
         }>({
             value1a: 12,
-            // eslint-disable-next-line no-undefined
             value1b: undefined,
             value2a: 'a',
-            // eslint-disable-next-line no-undefined
             value2b: undefined,
             value3a: 'testing',
-            // eslint-disable-next-line no-undefined
             value3b: undefined,
-            // eslint-disable-next-line no-undefined
             value4a: undefined
         }, {
             value1a: new OptionalParameterBuilder(new ValueParameterBuilder('number')),
@@ -185,12 +181,9 @@ describe('ParameterParser', () => {
             value4a: new OptionalParameterBuilder(new ParameterBuilder('undefined', (value: undefined) => value))
         }, {
             value1a: 12,
-            // eslint-disable-next-line no-undefined
             value1b: undefined,
             value2a: 'a',
-            // eslint-disable-next-line no-undefined
             value2b: undefined,
-            // eslint-disable-next-line no-undefined
             value4a: undefined
         });
     });
@@ -214,7 +207,6 @@ describe('ParameterParser', () => {
             testParameterParser<{
                 value: string;
             }>({
-                // eslint-disable-next-line no-undefined
                 value: undefined
             }, {
                 value: { expectedTypes: new Set(['number']), build: (value: number) => value.toString() }

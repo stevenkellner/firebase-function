@@ -3,7 +3,6 @@ import { expect } from '../../testSrc';
 
 describe('record', () => {
     const record = {
-        // eslint-disable-next-line no-undefined
         k1: undefined,
         k2: 0,
         k3: [],
@@ -20,14 +19,12 @@ describe('record', () => {
 
     it('values', () => {
         expect(values({})).to.be.deep.equal([]);
-        // eslint-disable-next-line no-undefined
         expect(values(record)).to.be.deep.equal([undefined, 0, [], 'adsf', { k6: 1 }]);
     });
 
     it('entries', () => {
         expect(entries({})).to.be.deep.equal([]);
         expect(entries(record)).to.be.deep.equal([
-            // eslint-disable-next-line no-undefined
             { key: 'k1', value: undefined },
             { key: 'k2', value: 0 },
             { key: 'k3', value: [] },

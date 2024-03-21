@@ -46,7 +46,6 @@ export class UtcDate {
     public static decode(encodedDate: string): UtcDate {
         const regex = /^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})-(?<hour>\d{2})-(?<minute>\d{2})$/gu;
         const match = regex.exec(encodedDate);
-        // eslint-disable-next-line no-undefined
         if (match === null || match.groups === undefined)
             return new UtcDate(0, 0, 0, 0, 0);
         return new UtcDate(

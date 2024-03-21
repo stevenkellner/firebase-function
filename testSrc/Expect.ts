@@ -60,7 +60,7 @@ export class ExpectToBeDeep<T> {
     private removeUndefined(value: object): object {
         const object: Record<string, unknown> = {};
         for (const key of Object.keys(value)) {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-undefined
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (value[key as keyof typeof value] !== undefined)
                 object[key] = value[key as keyof typeof value];
         }

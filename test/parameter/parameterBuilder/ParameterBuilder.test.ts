@@ -7,7 +7,6 @@ describe('ParameterBuilder', () => {
     it('undefined', () => {
         const builder = new ParameterBuilder('undefined', () => 'asdf');
         expect(builder.expectedTypes).to.be.deep.equal(new Set(['undefined']));
-        // eslint-disable-next-line no-undefined
         expect(builder.build(undefined, logger.nextIndent)).to.be.equal('asdf');
     });
 

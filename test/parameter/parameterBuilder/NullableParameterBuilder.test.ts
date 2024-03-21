@@ -7,7 +7,6 @@ describe('NullableParameterBuilder', () => {
     it('undefined', () => {
         const builder = new NullableParameterBuilder(new ValueParameterBuilder('undefined'));
         expect(builder.expectedTypes).to.be.deep.equal(new Set(['object', 'undefined']));
-        // eslint-disable-next-line no-undefined
         expect(builder.build(undefined, logger.nextIndent)).to.be.equal(undefined);
         expect(builder.build(null, logger.nextIndent)).to.be.equal(null);
         expect(() => builder.build({ value: 0 }, logger.nextIndent)).to.throw();

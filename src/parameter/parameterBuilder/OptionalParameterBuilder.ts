@@ -17,7 +17,6 @@ export class OptionalParameterBuilder<TypeName extends BaseTypeName, T> implemen
     public build(value: BaseType<TypeName | 'undefined'>, logger: ILogger): T | undefined {
         logger.log('OptionalParameterBuilder.build', { expectedTypes: this.builder.expectedTypes, value: value });
         if (typeof value === 'undefined')
-            // eslint-disable-next-line no-undefined
             return undefined;
         return this.builder.build(value, logger.nextIndent);
     }

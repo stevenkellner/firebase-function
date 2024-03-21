@@ -7,7 +7,7 @@ describe('GuardParameterBuilder', () => {
     it('undefined', () => {
         const builder = new GuardParameterBuilder('undefined', (value): value is undefined => true);
         expect(builder.expectedTypes).to.be.deep.equal(new Set(['undefined']));
-        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression, no-undefined
+        // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
         expect(builder.build(undefined, logger.nextIndent)).to.be.equal(undefined);
     });
 
