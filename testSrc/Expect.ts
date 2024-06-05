@@ -1,6 +1,6 @@
-import type * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions';
 import type { Result } from '../src/utils';
-import { assert, expect as chaiExpect } from 'chai';
+import { assert, AssertionError, expect as chaiExpect } from 'chai';
 
 function isFirebaseErrorCode(code: string): code is functions.https.FunctionsErrorCode {
     return [
@@ -123,6 +123,16 @@ export class ExpectTo<T> {
         }
         return chaiExpect(this._value).to.throw(expected, message);
     }
+
+    public async awaitThrow(): Promise<void> {
+        const executeValue = this._value as () => Promise<unknown>;
+        await executeValue()
+            .then(() => chaiExpect.fail('Expected to throw an error.'))
+            .catch(error => {
+                if (error instanceof AssertionError)
+                    throw error as Error;
+            });
+    }
 }
 
 export class Expect<T> {
@@ -141,4 +151,10 @@ export class Expect<T> {
 
 export function expect<T>(value: T): Expect<T> {
     return new Expect<T>(value);
+}
+
+export namespace expect {
+    export function fail(message?: string): never {
+        chaiExpect.fail(message);
+    }
 }

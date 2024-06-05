@@ -5,4 +5,5 @@ export * from './utils';
 export * from './logger';
 export * from './parameter';
 export * from './database';
+export * from './firestore';
 export * from './messageAuthenticator';

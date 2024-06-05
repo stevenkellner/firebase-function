@@ -25,6 +25,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/quotes': ['error', 'single'],
+    '@typescript-eslint/consistent-indexed-object-style': 'off',
     'function-call-argument-newline': ['error', 'consistent'],
     'no-undefined': 'off',
     '@typescript-eslint/no-invalid-void-type': 'off',
