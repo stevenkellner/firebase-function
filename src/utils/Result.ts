@@ -1,10 +1,8 @@
-export type Result<T, E extends Error> = Result.Success<T> | Result.Failure<E>;
-
-type ErrorType = Error;
+export type Result<T, E> = Result.Success<T> | Result.Failure<E>;
 
 export namespace Result {
 
-    export type Value<R> = R extends Result<infer T, ErrorType> ? T : never;
+    export type Value<R> = R extends Result<infer T, unknown> ? T : never;
 
     export type Error<R> = R extends Result<unknown, infer E> ? E : never;
 
@@ -37,7 +35,7 @@ export namespace Result {
         }
     }
 
-    export class Failure<E extends ErrorType> {
+    export class Failure<E> {
         public readonly state = 'failure';
 
         public constructor(
@@ -62,7 +60,7 @@ export namespace Result {
             return this;
         }
 
-        public mapError<E2 extends ErrorType>(mapper: (value: E) => E2): Result<never, E2> {
+        public mapError<E2>(mapper: (value: E) => E2): Result<never, E2> {
             return new Result.Failure<E2>(mapper(this.error));
         }
     }
@@ -75,15 +73,33 @@ export namespace Result {
         return new Result.Success<T | void>(value);
     }
 
-    export function failure<E extends ErrorType>(error: E): Result<never, E> {
+    export function failure<E>(error: E): Result<never, E> {
         return new Result.Failure<E>(error);
     }
 
-    export function isSuccess<T, E extends ErrorType>(result: Result<T, E>): result is Result.Success<T> {
+    export function isSuccess<T, E>(result: Result<T, E>): result is Result.Success<T> {
         return result.state === 'success';
     }
 
-    export function isFailure<T, E extends ErrorType>(result: Result<T, E>): result is Result.Failure<E> {
+    export function isFailure<T, E>(result: Result<T, E>): result is Result.Failure<E> {
         return result.state === 'failure';
+    }
+
+    export function from(value: unknown): Result<unknown, unknown> {
+        if (typeof value !== 'object' || value === null)
+            throw new Error('Expected an object');
+        if (!('state' in value))
+            throw new Error('Expected a state property');
+        if (value.state === 'success') {
+            if (!('value' in value))
+                throw new Error('Expected a value property');
+            return success(value.value);
+        }
+        if (value.state === 'failure') {
+            if (!('error' in value))
+                throw new Error('Expected an error property');
+            return failure(value.error);
+        }
+        throw new Error('Expected a state property with value success or failure');
     }
 }

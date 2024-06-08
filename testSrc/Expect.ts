@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import type * as functions from 'firebase-functions';
 import type { Result } from '../src/utils';
 import { assert, AssertionError, expect as chaiExpect } from 'chai';
 

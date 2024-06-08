@@ -83,6 +83,8 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 'off',
     'capitalized-comments': 'off',
     '@typescript-eslint/no-redundant-type-constituents': 'off',
-    'sort-imports': 'off'
+    'sort-imports': 'off',
+    'prefer-destructuring': 'off',
+    'accessor-pairs': 'off',
   }
 }

@@ -24,6 +24,10 @@ module.exports = {
     "@typescript-eslint",
     "import",
   ],
+  ignorePatterns: [
+    ".eslintrc.js",
+    "**/lib/**/*",
+  ],
   rules: {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,

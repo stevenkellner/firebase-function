@@ -1,4 +1,6 @@
-export class UtcDate {
+import type { FirebaseFunction } from '../firebase';
+
+export class UtcDate implements FirebaseFunction.Flattable<string> {
     public constructor(
         public readonly year: number,
         public readonly month: number,
@@ -99,5 +101,9 @@ export class UtcDate {
         else if (this.minute > other.minute)
             return 'greater';
         return 'equal';
+    }
+
+    public get flatten(): string {
+        return this.encoded;
     }
 }

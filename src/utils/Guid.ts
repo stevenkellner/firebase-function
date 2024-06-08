@@ -1,6 +1,7 @@
 import { v4 as generateUUID } from 'uuid';
+import type { FirebaseFunction } from '../firebase';
 
-export class Guid {
+export class Guid implements FirebaseFunction.Flattable<string> {
 
     public constructor(
         public readonly guidString: string
@@ -15,5 +16,9 @@ export class Guid {
 
     public static generate(): Guid {
         return new Guid(generateUUID());
+    }
+
+    public get flatten(): string {
+        return this.guidString;
     }
 }

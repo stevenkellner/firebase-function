@@ -1,3 +1,4 @@
+import { Utf8BytesCoder } from '../bytesCoder';
 import type { IPadding } from './padding';
 
 export abstract class ICrypter {
@@ -20,5 +21,18 @@ export abstract class ICrypter {
     public decrypt(data: Uint8Array): Uint8Array {
         const decryptedData = this.decryptBlocks(data);
         return this.padding.removePadding(decryptedData);
+    }
+
+    public encodeAndEncrypt(value: unknown): Uint8Array {
+        const bytesCoder = new Utf8BytesCoder();
+        const data = bytesCoder.encode(JSON.stringify(value));
+        return this.encrypt(data);
+    }
+
+    public decryptAndDecode<T = unknown>(data: Uint8Array): T {
+        const decryptedData = this.decrypt(data);
+        const bytesCoder = new Utf8BytesCoder();
+        const value = bytesCoder.decode(decryptedData);
+        return JSON.parse(value) as T;
     }
 }

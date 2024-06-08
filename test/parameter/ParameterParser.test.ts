@@ -41,17 +41,6 @@ namespace ObjectClassType {
 describe('ParameterParser', () => {
     const logger = new VoidLogger();
 
-    it('get parameter before parsing', () => {
-        expect(() => {
-            const parameterParser = new ParameterParser<{
-                value: string;
-            }>({
-                value: new ValueParameterBuilder('string')
-            }, logger.nextIndent);
-            parameterParser.parameters;
-        }).to.throw('internal');
-    });
-
     function testParameterParser<Parameters extends Record<string, unknown>>(
         parameterToParse: Record<string, unknown>,
         builders: IParameterBuilders<Parameters>,
@@ -59,8 +48,7 @@ describe('ParameterParser', () => {
     ): void {
         const parameterContainer = new ParameterContainer(parameterToParse, logger.nextIndent);
         const parameterParser = new ParameterParser<Parameters>(builders, logger.nextIndent);
-        parameterParser.parse(parameterContainer);
-        expect(parameterParser.parameters).to.be.deep.equal(expectedParameters);
+        expect(parameterParser.parse(parameterContainer)).to.be.deep.equal(expectedParameters);
     }
 
     it('empty parameter', () => {
