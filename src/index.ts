@@ -7,3 +7,4 @@ export * from './parameter';
 export * from './firestore';
 export * from './messageAuthenticator';
 export * from './firebase';
+export * from './typeBuilder';

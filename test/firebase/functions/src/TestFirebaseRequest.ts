@@ -1,23 +1,21 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 /* eslint-disable require-jsdoc */
-import {FirebaseRequest, GuardParameterBuilder, ILogger, IParameterContainer, ParameterParser, ValueParameterBuilder} from "firebase-function";
-import {Parameters, TestReturnType} from "./TestFirebaseFunction";
+import {ArrayTypeBuilder, FirebaseRequest, Flatten, ILogger, RecordTypeBuilder, ValueTypeBuilder} from "firebase-function";
+import {SubParameter, TestParameters, TestReturnType} from "./TestParametersAndReturnType";
 
-export class TestFirebaseRequest implements FirebaseRequest<Parameters, Parameters, TestReturnType> {
-  public parameters: Parameters;
+export class TestFirebaseRequest implements FirebaseRequest<TestParameters, TestReturnType> {
+  public parametersBuilder = new RecordTypeBuilder<Flatten<TestParameters>, TestParameters>({
+    v1: new ValueTypeBuilder(),
+    v2: new ArrayTypeBuilder(new ValueTypeBuilder()),
+    v3: SubParameter.typeBuilder,
+  });
 
-  public constructor(parameterContainer: IParameterContainer, logger: ILogger) {
+  public constructor(logger: ILogger) {
     logger.log("TestFirebaseFunction.constructor", null, "notice");
-    const parameterParser = new ParameterParser<Parameters>({
-      v1: new ValueParameterBuilder("string"),
-      v2: new ValueParameterBuilder("number"),
-      v3: new GuardParameterBuilder("string", (value): value is "a" | "b" => value === "a" || value === "b"),
-    }, logger.nextIndent);
-    this.parameters = parameterParser.parse(parameterContainer);
   }
 
-  public async execute(): Promise<TestReturnType> {
-    return new TestReturnType(this.parameters.v3 + " " + this.parameters.v1, this.parameters.v2);
+  public async execute(parameters: TestParameters): Promise<TestReturnType> {
+    return new TestReturnType(parameters.v3.v1 + " " + parameters.v1, parameters.v2.reduce((a, b) => a + b, 0));
   }
 }

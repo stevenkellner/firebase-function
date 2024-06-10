@@ -1,6 +1,6 @@
-import type { FirebaseFunction } from '../firebase';
+import type { Flattable } from './Flattable';
 
-export class UtcDate implements FirebaseFunction.Flattable<string> {
+export class UtcDate implements Flattable<string> {
     public constructor(
         public readonly year: number,
         public readonly month: number,

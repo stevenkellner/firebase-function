@@ -1,5 +1,5 @@
 import { connectFunctionsEmulator, httpsCallable, type Functions as FunctionsInstance, getFunctions } from 'firebase/functions';
-import { HexBytesCoder, HMAC, Result, Utf8BytesCoder, type FirebaseFunctions } from '../src';
+import { type Flatten, HexBytesCoder, HMAC, Result, Utf8BytesCoder, type FirebaseFunctions } from '../src';
 import axios from 'axios';
 import type { FirebaseApp } from './FirebaseApp';
 
@@ -35,7 +35,7 @@ export class FirebaseFunctionsCaller<Functions extends FirebaseFunctions> {
     }
 
     public async callFunction(
-        parameters: FirebaseFunctions.FunctionFlattenParameters<Functions>
+        parameters: Flatten<FirebaseFunctions.FunctionParameters<Functions>>
     ): Promise<FirebaseFunctions.FunctionReturnType<Functions>> {
         const macTag = this.createMacTag(parameters, this.options.macKey);
         const callableFunction = httpsCallable(this.functionsInstance, this.name);
@@ -49,7 +49,7 @@ export class FirebaseFunctionsCaller<Functions extends FirebaseFunctions> {
     }
 
     public async callRequest(
-        parameters: FirebaseFunctions.RequestFlattenParameters<Functions>
+        parameters: Flatten<FirebaseFunctions.RequestParameters<Functions>>
     ): Promise<FirebaseFunctions.RequestReturnType<Functions>> {
         const macTag = this.createMacTag(parameters, this.options.macKey);
         const url = `${this.options.requestBaseUrl}/${this.options.region}/${this.name}`;

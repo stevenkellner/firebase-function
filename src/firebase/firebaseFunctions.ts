@@ -4,11 +4,11 @@ import { FirebaseSchedule, type FirebaseScheduleConstructor } from './FirebaseSc
 import { FirebaseRequest, type FirebaseRequestConstructor } from './FirebaseRequest';
 import { mapRecord } from '../utils';
 
-export class FirebaseFunctionConstructorWrapper<Parameters, FlattenParameters, ReturnType> {
+export class FirebaseFunctionConstructorWrapper<Parameters, ReturnType> {
 
     public constructor(
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        public readonly Constructor: FirebaseFunctionConstructor<Parameters, FlattenParameters, ReturnType>
+        public readonly Constructor: FirebaseFunctionConstructor<Parameters, ReturnType>
     ) {}
 }
 
@@ -22,80 +22,68 @@ export class FirebaseScheduleConstructorWrapper {
     ) {}
 }
 
-export class FirebaseRequestConstructorWrapper<Parameters, FlattenParameters, ReturnType> {
+export class FirebaseRequestConstructorWrapper<Parameters, ReturnType> {
 
     public constructor(
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        public readonly Constructor: FirebaseRequestConstructor<Parameters, FlattenParameters, ReturnType>
+        public readonly Constructor: FirebaseRequestConstructor<Parameters, ReturnType>
     ) {}
 }
 
 export type FirebaseFunctions =
-    | FirebaseFunctionConstructorWrapper<unknown, unknown, unknown>
+    | FirebaseFunctionConstructorWrapper<unknown, unknown>
     | FirebaseScheduleConstructorWrapper
-    | FirebaseRequestConstructorWrapper<unknown, unknown, unknown>
+    | FirebaseRequestConstructorWrapper<unknown, unknown>
     | { [key: string]: FirebaseFunctions };
 
 export namespace FirebaseFunctions {
 
     export type IsFunction<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? true :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown> ? true :
             Functions extends FirebaseScheduleConstructorWrapper ? false :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? false :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown> ? false :
                     false;
 
     export type IsSchedule<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? false :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown> ? false :
             Functions extends FirebaseScheduleConstructorWrapper ? true :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? false :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown> ? false :
                     false;
 
     export type IsRequest<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? false :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown> ? false :
             Functions extends FirebaseScheduleConstructorWrapper ? false :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? true :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown> ? true :
                     false;
 
     export type IsRecord<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? false :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown> ? false :
             Functions extends FirebaseScheduleConstructorWrapper ? false :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? false :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown> ? false :
                     true;
 
     export type FunctionParameters<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<infer Parameters, unknown, unknown> ? Parameters :
+        Functions extends FirebaseFunctionConstructorWrapper<infer Parameters, unknown> ? Parameters :
             Functions extends FirebaseScheduleConstructorWrapper ? never :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? never :
-                    never;
-
-    export type FunctionFlattenParameters<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, infer FlattenParameters, unknown> ? FlattenParameters :
-            Functions extends FirebaseScheduleConstructorWrapper ? never :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? never :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown> ? never :
                     never;
 
     export type FunctionReturnType<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, infer ReturnType> ? ReturnType :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, infer ReturnType> ? ReturnType :
             Functions extends FirebaseScheduleConstructorWrapper ? never :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, unknown> ? never :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown> ? never :
                     never;
 
     export type RequestParameters<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? never :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown> ? never :
             Functions extends FirebaseScheduleConstructorWrapper ? never :
-                Functions extends FirebaseRequestConstructorWrapper<infer Parameters, unknown, unknown> ? Parameters :
-                    never;
-
-    export type RequestFlattenParameters<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? never :
-            Functions extends FirebaseScheduleConstructorWrapper ? never :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, infer FlattenParameters, unknown> ? FlattenParameters :
+                Functions extends FirebaseRequestConstructorWrapper<infer Parameters, unknown> ? Parameters :
                     never;
 
     export type RequestReturnType<Functions extends FirebaseFunctions> =
-        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown, unknown> ? never :
+        Functions extends FirebaseFunctionConstructorWrapper<unknown, unknown> ? never :
             Functions extends FirebaseScheduleConstructorWrapper ? never :
-                Functions extends FirebaseRequestConstructorWrapper<unknown, unknown, infer ReturnType> ? ReturnType :
+                Functions extends FirebaseRequestConstructorWrapper<unknown, infer ReturnType> ? ReturnType :
                     never;
 }
 
@@ -107,11 +95,11 @@ export type RunnableFirebaseFunctions =
 
 export class FirebaseFunctionBuilder {
 
-    public function<Parameters, FlattenParameters, ReturnType>(
+    public function<Parameters, ReturnType>(
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Constructor: FirebaseFunctionConstructor<Parameters, FlattenParameters, ReturnType>
-    ): FirebaseFunctionConstructorWrapper<Parameters, FlattenParameters, ReturnType> {
-        return new FirebaseFunctionConstructorWrapper<Parameters, FlattenParameters, ReturnType>(Constructor);
+        Constructor: FirebaseFunctionConstructor<Parameters, ReturnType>
+    ): FirebaseFunctionConstructorWrapper<Parameters, ReturnType> {
+        return new FirebaseFunctionConstructorWrapper<Parameters, ReturnType>(Constructor);
     }
 
     public schedule(
@@ -123,11 +111,11 @@ export class FirebaseFunctionBuilder {
         return new FirebaseScheduleConstructorWrapper(Constructor, schedule, timezone);
     }
 
-    public request<Parameters, FlattenParameters, ReturnType>(
+    public request<Parameters, ReturnType>(
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Constructor: FirebaseRequestConstructor<Parameters, FlattenParameters, ReturnType>
-    ): FirebaseRequestConstructorWrapper<Parameters, FlattenParameters, ReturnType> {
-        return new FirebaseRequestConstructorWrapper<Parameters, FlattenParameters, ReturnType>(Constructor);
+        Constructor: FirebaseRequestConstructor<Parameters, ReturnType>
+    ): FirebaseRequestConstructorWrapper<Parameters, ReturnType> {
+        return new FirebaseRequestConstructorWrapper<Parameters, ReturnType>(Constructor);
     }
 }
 

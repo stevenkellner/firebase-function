@@ -37,8 +37,8 @@ describe('functions', () => {
         const function1 = httpsCallable(functions, 'function1');
         const parameters = {
             v1: 'c',
-            v2: 1,
-            v3: 'a'
+            v2: [0, 1, 2],
+            v3: true
         };
         const result = Result.from((await function1({
             macTag: createMacTag(parameters, new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])),
@@ -46,7 +46,7 @@ describe('functions', () => {
         })).data);
         expect(result).to.be.deep.equal(Result.success({
             v1: 'a c flattened',
-            v2: 11
+            v2: 13
         }));
     });
 
@@ -54,8 +54,8 @@ describe('functions', () => {
         const function1 = httpsCallable(functions, 'function1');
         const parameters = {
             v1: 'c',
-            v2: 1,
-            v3: 'a'
+            v2: [0, 1, 2],
+            v3: true
         };
         const result = Result.from((await function1({
             macTag: '00ff',
@@ -64,21 +64,5 @@ describe('functions', () => {
         expect(result.state).to.be.equal('failure');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect((result.error as any).code).to.be.equal('permission-denied');
-    });
-
-    it('parameters not valid', async () => {
-        const function1 = httpsCallable(functions, 'function1');
-        const parameters = {
-            v1: 'c',
-            v2: 1,
-            v3: 'd'
-        };
-        const result = Result.from((await function1({
-            macTag: createMacTag(parameters, new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])),
-            parameters: parameters
-        })).data);
-        expect(result.state).to.be.equal('failure');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        expect((result.error as any).code).to.be.equal('invalid-argument');
     });
 });

@@ -1,4 +1,5 @@
-import { GuardParameterBuilder, HttpsError, type ILogger, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder, VoidLogger } from '../../src';
+import * as functions from 'firebase-functions';
+import { GuardParameterBuilder, type ILogger, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder, VoidLogger } from '../../src';
 import { expect } from '../../testSrc';
 
 class StringClassType {
@@ -8,7 +9,7 @@ class StringClassType {
 namespace StringClassType {
     export function fromString(value: string, logger: ILogger): StringClassType {
         if (value !== 'v1' && value !== 'v2' && value !== 'v3')
-            throw new HttpsError('internal', '', logger);
+            throw new functions.https.HttpsError('internal', '', logger);
         return new StringClassType(value);
     }
 }
@@ -29,11 +30,11 @@ class ObjectClassType {
 namespace ObjectClassType {
     export function fromObject(value: object | null, logger: ILogger): ObjectClassType {
         if (value === null)
-            throw new HttpsError('internal', '', logger);
+            throw new functions.https.HttpsError('internal', '', logger);
         if (!('v1' in value) || typeof value.v1 !== 'string')
-            throw new HttpsError('internal', '', logger);
+            throw new functions.https.HttpsError('internal', '', logger);
         if (!('v2' in value) || typeof value.v2 !== 'number')
-            throw new HttpsError('internal', '', logger);
+            throw new functions.https.HttpsError('internal', '', logger);
         return new ObjectClassType(value.v1, value.v2);
     }
 }

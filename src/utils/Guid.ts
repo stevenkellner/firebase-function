@@ -1,7 +1,7 @@
 import { v4 as generateUUID } from 'uuid';
-import type { FirebaseFunction } from '../firebase';
+import type { Flattable } from './Flattable';
 
-export class Guid implements FirebaseFunction.Flattable<string> {
+export class Guid implements Flattable<string> {
 
     public constructor(
         public readonly guidString: string

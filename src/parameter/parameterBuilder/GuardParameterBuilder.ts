@@ -1,7 +1,7 @@
+import * as functions from 'firebase-functions';
 import type { BaseType, BaseTypeName } from '../BaseType';
 import type { ILogger } from '../../logger';
 import type { IParameterBuilder } from './IParameterBuilder';
-import { HttpsError } from '../../utils';
 
 export class GuardParameterBuilder<TypeName extends BaseTypeName, T extends BaseType<TypeName>> implements IParameterBuilder<TypeName, T> {
     public constructor(
@@ -16,7 +16,7 @@ export class GuardParameterBuilder<TypeName extends BaseTypeName, T extends Base
     public build(value: BaseType<TypeName>, logger: ILogger): T {
         logger.log('GuardParameterBuilder.build', { typeName: this.typeName, value: value });
         if (!this.typeGuard(value, logger.nextIndent))
-            throw new HttpsError('invalid-argument', 'Invalid parameter, type guard failed.', logger);
+            throw new functions.https.HttpsError('invalid-argument', 'Invalid parameter, type guard failed.', logger);
         return value;
     }
 }
