@@ -3,6 +3,8 @@ import { FirebaseFunction, type FirebaseFunctionConstructor } from './FirebaseFu
 import { FirebaseSchedule, type FirebaseScheduleConstructor } from './FirebaseSchedule';
 import { FirebaseRequest, type FirebaseRequestConstructor } from './FirebaseRequest';
 import { mapRecord } from '../utils';
+import type { SupportedRegion } from 'firebase-functions/v2/options';
+import type { CallableFunction, HttpsFunction } from 'firebase-functions/v2/https';
 
 export class FirebaseFunctionConstructorWrapper<Parameters, ReturnType> {
 
@@ -88,9 +90,9 @@ export namespace FirebaseFunctions {
 }
 
 export type RunnableFirebaseFunctions =
-    | (functions.HttpsFunction & functions.Runnable<unknown>)
+    | CallableFunction<any, any>
     | functions.CloudFunction<unknown>
-    | functions.HttpsFunction
+    | HttpsFunction
     | { [key: string]: RunnableFirebaseFunctions };
 
 export class FirebaseFunctionBuilder {
@@ -129,7 +131,7 @@ export function createFirebaseFunctions<Functions extends FirebaseFunctions>(
 export function provideFirebaseFunctions(
     firebaseFunctions: FirebaseFunctions,
     macKey: Uint8Array,
-    regions: string[] = []
+    regions: SupportedRegion[] = []
 ): RunnableFirebaseFunctions {
     if (firebaseFunctions instanceof FirebaseFunctionConstructorWrapper)
         return FirebaseFunction.create(firebaseFunctions.Constructor, macKey, regions);

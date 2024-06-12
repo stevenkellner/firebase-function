@@ -2,6 +2,8 @@ import * as functions from 'firebase-functions';
 import { Logger, type ILogger } from '../logger';
 import { execute, Flattable, verifyMacTag, type Flatten } from '../utils';
 import type { ITypeBuilder } from '../typeBuilder';
+import { type HttpsFunction, onRequest } from 'firebase-functions/v2/https';
+import type { SupportedRegion } from 'firebase-functions/v2/options';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FirebaseRequest<Parameters, ReturnType> {
@@ -19,9 +21,9 @@ export namespace FirebaseRequest {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         FirebaseRequest: FirebaseRequestConstructor<Parameters, ReturnType>,
         macKey: Uint8Array,
-        regions: string[] = []
-    ): functions.HttpsFunction {
-        return functions.region(...regions).https.onRequest(async (request, response) => {
+        regions: SupportedRegion[] = []
+    ): HttpsFunction {
+        return onRequest({ region: regions }, async (request, response) => {
             const result = await execute(async () => {
 
                 const data = request.body as unknown as {

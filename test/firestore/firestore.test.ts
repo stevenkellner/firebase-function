@@ -1,7 +1,7 @@
 import { FirestoreCollection, type FirestoreDocument, FirestorePath } from '../../src';
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 export type FirestoreScheme = FirestoreCollection<{
     asdf: FirestoreDocument<{
@@ -75,13 +75,13 @@ describe('Firestore', () => {
 
     it('add a document', async () => {
         const data = await addDocument();
-        expect(await baseCollection.getDocument('ouja').getValues()).to.be.deep.equal(data);
+        expect((await baseCollection.getDocument('ouja').snapshot()).data).to.be.deep.equal(data);
     });
 
     it('remove a document', async () => {
         await addDocument();
         await baseCollection.removeDocument('ouja');
-        await expect(async () => baseCollection.getDocument('ouja').getValues()).to.awaitThrow();
+        expect((await baseCollection.getDocument('ouja').snapshot()).exists).to.be.equal(false);
     });
 
     it('update documnent values', async () => {
@@ -92,7 +92,7 @@ describe('Firestore', () => {
             v3: false
         };
         await baseCollection.getDocument('ouja').setValues(newData);
-        expect(await baseCollection.getDocument('ouja').getValues()).to.be.deep.equal({
+        expect((await baseCollection.getDocument('ouja').snapshot()).data).to.be.deep.equal({
             ...data,
             ...newData
         });
@@ -100,6 +100,6 @@ describe('Firestore', () => {
 
     it('add document to subcollection', async () => {
         await baseCollection.getDocument('asdf').getSubCollection('pipo').addDocument('piou', { njd: true });
-        expect(await baseCollection.getDocument('asdf').getSubCollection('pipo').getDocument('piou').getValues()).to.be.deep.equal({ njd: true });
+        expect((await baseCollection.getDocument('asdf').getSubCollection('pipo').getDocument('piou').snapshot()).data).to.be.deep.equal({ njd: true });
     });
 });

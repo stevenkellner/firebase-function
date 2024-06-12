@@ -1,5 +1,5 @@
 import { HexBytesCoder, HMAC, Result, Utf8BytesCoder } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 import * as axios from 'axios';
 
 describe('functions', () => {

@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import { initializeApp } from 'firebase/app';
 import { connectFunctionsEmulator, type Functions, getFunctions, httpsCallable } from 'firebase/functions';
 import { HexBytesCoder, HMAC, Result, Utf8BytesCoder } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('functions', () => {
 

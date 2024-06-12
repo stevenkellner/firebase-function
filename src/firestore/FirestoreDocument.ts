@@ -1,6 +1,7 @@
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreCollection } from './FirestoreCollection';
 import type { FirestorePath } from './FirestorePath';
+import { FirestoreSnapshot } from './FirestoreSnapshot';
 
 type FirestoreValueTypeWithoutArray =
     | boolean
@@ -34,16 +35,15 @@ export class FirestoreDocument<
         await this.firestore.doc(this.path.fullPath).update(values);
     }
 
-    public async getValues(): Promise<Values> {
-        const documentSnapshot = await this.firestore.doc(this.path.fullPath).get() as FirebaseFirestore.DocumentSnapshot<Values>;
-        if (!documentSnapshot.exists)
-            throw new Error('Document does not exist');
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return documentSnapshot.data()!;
+    public async snapshot(): Promise<FirestoreSnapshot<Values>> {
+        const snapshot = await this.firestore.doc(this.path.fullPath).get() as FirebaseFirestore.DocumentSnapshot<Values>;
+        return new FirestoreSnapshot(snapshot);
     }
 }
 
 export namespace FirestoreDocument {
 
     export type ValuesOf<Document extends FirestoreDocument<any, any>> = Document extends FirestoreDocument<infer Values, any> ? Values : never;
+
+    export type SubCollectionsOf<Document extends FirestoreDocument<any, any>> = Document extends FirestoreDocument<any, infer SubCollections> ? SubCollections : never;
 }
