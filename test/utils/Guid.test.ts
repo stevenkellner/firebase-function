@@ -1,5 +1,5 @@
 import { Guid } from '../../src/utils/Guid';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('Guid', () => {
 

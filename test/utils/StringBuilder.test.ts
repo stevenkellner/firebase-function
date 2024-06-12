@@ -1,5 +1,5 @@
 import { StringBuilder } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('StringBuilder', () => {
     it('empty', () => {
