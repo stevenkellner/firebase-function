@@ -86,5 +86,7 @@ module.exports = {
     'sort-imports': 'off',
     'prefer-destructuring': 'off',
     'accessor-pairs': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
   }
 }

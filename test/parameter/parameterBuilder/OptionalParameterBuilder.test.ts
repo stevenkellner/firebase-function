@@ -1,5 +1,5 @@
 import { OptionalParameterBuilder, ValueParameterBuilder, VoidLogger } from '../../../src';
-import { expect } from '../../../testSrc';
+import { expect } from '../../../src/testSrc';
 
 describe('OptionalParameterBuilder', () => {
     const logger = new VoidLogger();

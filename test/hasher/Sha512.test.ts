@@ -1,5 +1,5 @@
 import { Sha512 } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('Sha512', () => {
     it('hash', () => {

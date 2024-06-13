@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { AES, CBCMode, CTRMode, ECBMode, OFBMode, xor } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 type TestableAES = AES & {
     encryptBlocks(data: Uint8Array): Uint8Array;

@@ -1,5 +1,5 @@
 import { HexBytesCoder } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('HexBytesCoder', () => {
     const bytesCoder = new HexBytesCoder();

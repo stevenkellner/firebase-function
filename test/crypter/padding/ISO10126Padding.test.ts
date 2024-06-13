@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { ISO10126Padding } from '../../../src';
-import { expect } from '../../../testSrc';
+import { expect } from '../../../src/testSrc';
 
 describe('ISO10126Padding', () => {
     const padding = new ISO10126Padding();

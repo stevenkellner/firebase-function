@@ -1,5 +1,5 @@
 import { type ILogger, VoidLogger } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('VoidLogger', () => {
     it('log', () => {

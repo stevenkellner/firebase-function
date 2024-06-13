@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import { HexBytesCoder, Utf8BytesCoder } from '../bytesCoder';
 import { HMAC } from '../messageAuthenticator';
 import { Result } from './Result';
+import type { FunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
 
 export function verifyMacTag(tag: string, parameters: unknown, key: Uint8Array): boolean {
     const messageAuthenticater = new HMAC(key);
@@ -12,10 +13,27 @@ export function verifyMacTag(tag: string, parameters: unknown, key: Uint8Array):
     return messageAuthenticater.verify(encodedParameters, rawMacTag);
 }
 
+function isFirebaseErrorCode(code: string): code is FunctionsErrorCode {
+    return [
+        'ok', 'cancelled', 'unknown', 'invalid-argument', 'deadline-exceeded', 'not-found', 'already-exists',
+        'permission-denied', 'resource-exhausted', 'failed-precondition', 'aborted', 'out-of-range', 'unimplemented',
+        'internal', 'unavailable', 'data-loss', 'unauthenticated'
+    ].includes(code);
+}
+
 function convertToHttpsError(error: unknown): functions.https.HttpsError {
-    if (error instanceof functions.https.HttpsError)
-        return error;
-    return new functions.https.HttpsError('unknown', 'Unknown error occured', error);
+    let code: FunctionsErrorCode = 'unknown';
+    let message: string = 'Unknown error occured';
+    let details: unknown = null;
+    if (typeof error === 'object' && error !== null) {
+        if ('code' in error && typeof error.code === 'string' && isFirebaseErrorCode(error.code))
+            code = error.code;
+        if ('message' in error && typeof error.message === 'string')
+            message = error.message;
+        if ('details' in error)
+            details = error.details;
+    }
+    return new functions.https.HttpsError(code, message, details);
 }
 
 export async function execute<T>(

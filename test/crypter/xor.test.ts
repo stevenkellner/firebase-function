@@ -1,5 +1,5 @@
 import { xor } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('xor', () => {
     it('not same length', () => {

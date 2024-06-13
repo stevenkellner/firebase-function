@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { BitPadding } from '../../../src';
-import { expect } from '../../../testSrc';
+import { expect } from '../../../src/testSrc';
 
 describe('BitPadding', () => {
     const padding = new BitPadding();

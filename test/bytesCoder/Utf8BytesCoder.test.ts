@@ -1,5 +1,5 @@
 import { Utf8BytesCoder } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('Utf8BytesCoder', () => {
     const bytesCoder = new Utf8BytesCoder();

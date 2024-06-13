@@ -1,5 +1,5 @@
 import { Base64BytesCoder } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 describe('Base64BytesCoder', () => {
     const bytesCoder = new Base64BytesCoder();

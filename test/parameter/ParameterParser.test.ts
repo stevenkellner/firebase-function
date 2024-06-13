@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { GuardParameterBuilder, type ILogger, type IParameterBuilders, OptionalParameterBuilder, ParameterBuilder, ParameterContainer, ParameterParser, ValueParameterBuilder, VoidLogger } from '../../src';
-import { expect } from '../../testSrc';
+import { expect } from '../../src/testSrc';
 
 class StringClassType {
     public constructor(public value: 'v1' | 'v2' | 'v3') {}

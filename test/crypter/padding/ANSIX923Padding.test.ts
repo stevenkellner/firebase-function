@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { ASNIX923Padding } from '../../../src';
-import { expect } from '../../../testSrc';
+import { expect } from '../../../src/testSrc';
 
 describe('ASNIX923Padding', () => {
     const padding = new ASNIX923Padding();

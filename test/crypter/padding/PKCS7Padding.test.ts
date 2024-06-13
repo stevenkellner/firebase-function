@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { PKCS7Padding } from '../../../src';
-import { expect } from '../../../testSrc';
+import { expect } from '../../../src/testSrc';
 
 describe('PKCS7Padding', () => {
     const padding = new PKCS7Padding();
