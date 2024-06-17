@@ -1,4 +1,4 @@
-import { FirestoreCollection, type FirestoreDocument, FirestorePath } from '../../src';
+import { FirestoreCollection, type FirestoreDocument, FirestorePath, Flattable } from '../../src';
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
 import { expect } from '../../src/testSrc';
@@ -69,37 +69,40 @@ describe('Firestore', () => {
             },
             v8: [true, { v9: 2 }, null]
         };
-        await baseCollection.addDocument('ouja', data);
+        await baseCollection.document('ouja').set(data);
         return data;
     }
 
     it('add a document', async () => {
         const data = await addDocument();
-        expect((await baseCollection.getDocument('ouja').snapshot()).data).to.be.deep.equal(data);
+        expect((await baseCollection.document('ouja').snapshot()).data).to.be.deep.equal(Flattable.flatten(data));
     });
 
     it('remove a document', async () => {
         await addDocument();
-        await baseCollection.removeDocument('ouja');
-        expect((await baseCollection.getDocument('ouja').snapshot()).exists).to.be.equal(false);
+        await baseCollection.document('ouja').remove();
+        expect((await baseCollection.document('ouja').snapshot()).exists).to.be.equal(false);
     });
 
     it('update documnent values', async () => {
-        const data = await addDocument();
-        const newData: Partial<FirestoreDocument.ValuesOf<FirestoreCollection.DocumentsOf<FirestoreScheme>['ouja']>> = {
+        await addDocument();
+        const newData: FirestoreDocument.ValuesOf<FirestoreCollection.DocumentsOf<FirestoreScheme>['ouja']> = {
             v1: 'string2',
             v2: 2,
-            v3: false
+            v3: false,
+            v4: null,
+            v5: new Uint8Array([4, 5, 6, 7]),
+            v6: {
+                v7: ['d', 'e']
+            },
+            v8: [false, { v9: 0 }, null]
         };
-        await baseCollection.getDocument('ouja').setValues(newData);
-        expect((await baseCollection.getDocument('ouja').snapshot()).data).to.be.deep.equal({
-            ...data,
-            ...newData
-        });
+        await baseCollection.document('ouja').set(newData);
+        expect((await baseCollection.document('ouja').snapshot()).data).to.be.deep.equal(Flattable.flatten(newData));
     });
 
     it('add document to subcollection', async () => {
-        await baseCollection.getDocument('asdf').getSubCollection('pipo').addDocument('piou', { njd: true });
-        expect((await baseCollection.getDocument('asdf').getSubCollection('pipo').getDocument('piou').snapshot()).data).to.be.deep.equal({ njd: true });
+        await baseCollection.document('asdf').collection('pipo').document('piou').set({ njd: true });
+        expect((await baseCollection.document('asdf').collection('pipo').document('piou').snapshot()).data).to.be.deep.equal({ njd: true });
     });
 });

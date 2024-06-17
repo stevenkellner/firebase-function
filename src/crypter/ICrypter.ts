@@ -25,7 +25,8 @@ export abstract class ICrypter {
 
     public encodeAndEncrypt(value: unknown): Uint8Array {
         const bytesCoder = new Utf8BytesCoder();
-        const data = bytesCoder.encode(JSON.stringify(value));
+        const jsonString = value === undefined ? '' : JSON.stringify(value);
+        const data = bytesCoder.encode(jsonString);
         return this.encrypt(data);
     }
 
@@ -33,6 +34,6 @@ export abstract class ICrypter {
         const decryptedData = this.decrypt(data);
         const bytesCoder = new Utf8BytesCoder();
         const value = bytesCoder.decode(decryptedData);
-        return JSON.parse(value) as T;
+        return (value === '' ? undefined : JSON.parse(value)) as T;
     }
 }

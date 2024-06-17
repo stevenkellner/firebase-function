@@ -124,13 +124,18 @@ export class ExpectTo<T> {
         return chaiExpect(this._value).to.throw(expected, message);
     }
 
-    public async awaitThrow(): Promise<void> {
+    public async awaitThrow(expected?: functions.https.FunctionsErrorCode): Promise<void> {
         const executeValue = this._value as () => Promise<unknown>;
         await executeValue()
             .then(() => chaiExpect.fail('Expected to throw an error.'))
             .catch(error => {
                 if (error instanceof AssertionError)
                     throw error as Error;
+                if (expected !== undefined) {
+                    chaiExpect(error).to.have.ownProperty('httpErrorCode');
+                    chaiExpect(error).to.have.ownProperty('code');
+                    chaiExpect((error as { code: unknown }).code).to.be.equal(expected);
+                }
             });
     }
 }

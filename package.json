@@ -1,6 +1,6 @@
 {
   "name": "firebase-function",
-  "version": "1.4.92",
+  "version": "1.4.112",
   "description": "Manages backend api with firebase functions.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,8 +13,8 @@
     "testAll:coverage": "nyc npm run testAll",
     "prepare": "npm run build",
     "prepublishOnly": "npm run testAllWithEmulators:windows && npm run lint",
-    "preversion": "npm run lint && npm version patch",
-    "emulators:start": "cd test/firebase && firebase emulators:start",
+    "preversion": "npm run lint",
+    "emulators:start": "cd test/firebase/functions && npm run build && cd .. && firebase emulators:start",
     "emulators:waitForStart": "ts-node test/waitForEmulators.ts",
     "emulators:end": "npx kill-port 8080 9000",
     "testAllWithEmulators:windows": "start /B npm run emulators:start && npm run emulators:waitForStart && npm run testAll && npm run emulators:end",

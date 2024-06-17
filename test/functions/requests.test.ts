@@ -7,7 +7,8 @@ describe('functions', () => {
     function createMacTag(parameters: unknown, key: Uint8Array): string {
         const messageAuthenticater = new HMAC(key);
         const parametersBytesCoder = new Utf8BytesCoder();
-        const encodedParameters = parametersBytesCoder.encode(JSON.stringify(parameters));
+        const jsonString = parameters === undefined ? '' : JSON.stringify(parameters);
+        const encodedParameters = parametersBytesCoder.encode(jsonString);
         const rawTag = messageAuthenticater.sign(encodedParameters);
         const macTagByteCoder = new HexBytesCoder();
         return macTagByteCoder.decode(rawTag);

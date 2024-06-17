@@ -1,5 +1,5 @@
 import type { FirebaseApp } from './FirebaseApp';
-import { type Auth as AuthInstance, createUserWithEmailAndPassword, signInWithEmailAndPassword, type UserCredential } from 'firebase/auth';
+import { type Auth as AuthInstance, createUserWithEmailAndPassword, signInWithEmailAndPassword, type UserCredential, signOut } from 'firebase/auth';
 
 export class FirebaseAuthenticator {
 
@@ -8,11 +8,16 @@ export class FirebaseAuthenticator {
         private readonly authInstance: AuthInstance
     ) {}
 
-    public async createUser(email: string, password: string): Promise<UserCredential> {
-        return createUserWithEmailAndPassword(this.authInstance, email, password);
+    public async signIn(email: string, password: string): Promise<UserCredential> {
+        try {
+            return await createUserWithEmailAndPassword(this.authInstance, email, password);
+        } catch {
+            return await signInWithEmailAndPassword(this.authInstance, email, password);
+
+        }
     }
 
-    public async signIn(email: string, password: string): Promise<UserCredential> {
-        return signInWithEmailAndPassword(this.authInstance, email, password);
+    public async signOut(): Promise<void> {
+        await signOut(this.authInstance);
     }
 }

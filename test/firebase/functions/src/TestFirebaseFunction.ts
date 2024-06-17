@@ -1,19 +1,18 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 /* eslint-disable require-jsdoc */
-import {AuthData} from "firebase-functions/lib/common/providers/tasks";
-import {ArrayTypeBuilder, FirebaseFunction, Flatten, ILogger, RecordTypeBuilder, ValueTypeBuilder} from "firebase-function";
+import {ArrayTypeBuilder, FirebaseFunction, Flatten, ILogger, ObjectTypeBuilder, ValueTypeBuilder} from "firebase-function";
 import {SubParameter, TestParameters, TestReturnType} from "./TestParametersAndReturnType";
 
 
 export class TestFirebaseFunction implements FirebaseFunction<TestParameters, TestReturnType> {
-  public parametersBuilder = new RecordTypeBuilder<Flatten<TestParameters>, TestParameters>({
+  public parametersBuilder = new ObjectTypeBuilder<Flatten<TestParameters>, TestParameters>({
     v1: new ValueTypeBuilder(),
     v2: new ArrayTypeBuilder(new ValueTypeBuilder()),
     v3: SubParameter.typeBuilder,
   });
 
-  public constructor(auth: AuthData | null, logger: ILogger) {
+  public constructor(userId: string | null, logger: ILogger) {
     logger.log("TestFirebaseFunction.constructor", null, "notice");
   }
 

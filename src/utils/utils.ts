@@ -9,7 +9,8 @@ export function verifyMacTag(tag: string, parameters: unknown, key: Uint8Array):
     const macTagByteCoder = new HexBytesCoder();
     const rawMacTag = macTagByteCoder.encode(tag);
     const parametersBytesCoder = new Utf8BytesCoder();
-    const encodedParameters = parametersBytesCoder.encode(JSON.stringify(parameters));
+    const jsonString = parameters === undefined ? '' : JSON.stringify(parameters);
+    const encodedParameters = parametersBytesCoder.encode(jsonString);
     return messageAuthenticater.verify(encodedParameters, rawMacTag);
 }
 
@@ -24,16 +25,13 @@ function isFirebaseErrorCode(code: string): code is FunctionsErrorCode {
 function convertToHttpsError(error: unknown): functions.https.HttpsError {
     let code: FunctionsErrorCode = 'unknown';
     let message: string = 'Unknown error occured';
-    let details: unknown = null;
     if (typeof error === 'object' && error !== null) {
         if ('code' in error && typeof error.code === 'string' && isFirebaseErrorCode(error.code))
             code = error.code;
         if ('message' in error && typeof error.message === 'string')
             message = error.message;
-        if ('details' in error)
-            details = error.details;
     }
-    return new functions.https.HttpsError(code, message, details);
+    return new functions.https.HttpsError(code, message, error);
 }
 
 export async function execute<T>(

@@ -1,10 +1,9 @@
 import { httpsCallable, type Functions as FunctionsInstance } from 'firebase/functions';
-import axios from 'axios';
 import type { FirebaseApp } from './FirebaseApp';
 import { Utf8BytesCoder, HexBytesCoder } from '../bytesCoder';
 import type { FirebaseFunctions } from '../firebase';
 import { HMAC } from '../messageAuthenticator';
-import { type Flatten, Result } from '../utils';
+import { Flattable, type Flatten, Result } from '../utils';
 
 export class FirebaseFunctionsCaller<Functions extends FirebaseFunctions> {
 
@@ -31,34 +30,38 @@ export class FirebaseFunctionsCaller<Functions extends FirebaseFunctions> {
     }
 
     public async callFunction(
-        parameters: Flatten<FirebaseFunctions.FunctionParameters<Functions>>
-    ): Promise<FirebaseFunctions.FunctionReturnType<Functions>> {
+        parameters: FirebaseFunctions.FunctionParameters<Functions>
+    ): Promise<Flatten<FirebaseFunctions.FunctionReturnType<Functions>>> {
         if (this.name === null)
             throw new Error('The function name must be defined');
-        const macTag = this.createMacTag(parameters, this.options.macKey);
+        const flattenParameters = Flattable.flatten(parameters);
+        const macTag = this.createMacTag(flattenParameters, this.options.macKey);
         const callableFunction = httpsCallable(this.functionsInstance, this.name);
         const response = await callableFunction({
             verboseLogger: true,
             macTag: macTag,
-            parameters: parameters
+            parameters: flattenParameters
         });
-        const result = Result.from(response.data) as Result<FirebaseFunctions.FunctionReturnType<Functions>, unknown>;
+        const result = Result.from(response.data) as Result<Flatten<FirebaseFunctions.FunctionReturnType<Functions>>, unknown>;
         return result.get();
     }
 
+    /*
     public async callRequest(
-        parameters: Flatten<FirebaseFunctions.RequestParameters<Functions>>
-    ): Promise<FirebaseFunctions.RequestReturnType<Functions>> {
+        parameters: FirebaseFunctions.RequestParameters<Functions>
+    ): Promise<Flatten<FirebaseFunctions.RequestReturnType<Functions>s>> {
         if (this.name === null)
             throw new Error('The function name must be defined');
-        const macTag = this.createMacTag(parameters, this.options.macKey);
+        const flattenParameters = Flattable.flatten(parameters);
+        const macTag = this.createMacTag(flattenParameters, this.options.macKey);
         const url = `${this.options.requestBaseUrl}/${this.options.region}/${this.name}`;
         const response = await axios.post(url, {
             verboseLogger: true,
             macTag: macTag,
-            parameters: parameters
+            parameters: flattenParameters
         });
-        const result = Result.from(response.data) as Result<FirebaseFunctions.RequestReturnType<Functions>, unknown>;
+        const result = Result.from(response.data) as Result<Flatten<FirebaseFunctions.RequestReturnType<Functions>>, unknown>;
         return result.get();
     }
+        */
 }

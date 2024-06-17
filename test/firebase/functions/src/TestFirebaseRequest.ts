@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 /* eslint-disable require-jsdoc */
-import {ArrayTypeBuilder, FirebaseRequest, Flatten, ILogger, RecordTypeBuilder, ValueTypeBuilder} from "firebase-function";
+import {ArrayTypeBuilder, FirebaseRequest, Flatten, ILogger, ObjectTypeBuilder, ValueTypeBuilder} from "firebase-function";
 import {SubParameter, TestParameters, TestReturnType} from "./TestParametersAndReturnType";
 
 export class TestFirebaseRequest implements FirebaseRequest<TestParameters, TestReturnType> {
-  public parametersBuilder = new RecordTypeBuilder<Flatten<TestParameters>, TestParameters>({
+  public parametersBuilder = new ObjectTypeBuilder<Flatten<TestParameters>, TestParameters>({
     v1: new ValueTypeBuilder(),
     v2: new ArrayTypeBuilder(new ValueTypeBuilder()),
     v3: SubParameter.typeBuilder,
