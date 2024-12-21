@@ -1,85 +1,46 @@
 {
-  "name": "@stevenkellner/firebase-function",
-  "version": "1.4.121",
-  "description": "Manages backend api with firebase functions.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "rmdir /s /q lib && tsc",
-    "lint": "eslint --ext .js,.ts .",
-    "test": "mocha --reporter spec -r ts-node/register --timeout 3600000 --reporter-option maxDiffSize=0 --exclude test/firebase/**",
-    "testAll": "npm run test test/**/*.test.ts",
-    "test:coverage": "nyc npm run test",
-    "testAll:coverage": "nyc npm run testAll",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run testAllWithEmulators:windows && npm run lint",
-    "preversion": "npm run lint",
-    "emulators:start": "cd test/firebase/functions && npm run build && cd .. && firebase emulators:start",
-    "emulators:waitForStart": "ts-node test/waitForEmulators.ts",
-    "emulators:end": "npx kill-port 8080 9000",
-    "testAllWithEmulators:windows": "start /B npm run emulators:start && npm run emulators:waitForStart && npm run testAll && npm run emulators:end",
-    "testAllWithEmulators:unix": "npm run emulators:start & && npm run emulators:waitForStart && npm run testAll && npm run emulators:end"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:stevenkellner/firebase-function.git"
-  },
-  "author": "Steven Kellner",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/stevenkellner/firebase-function/issues"
-  },
-  "homepage": "https://github.com/stevenkellner/firebase-function",
-  "dependencies": {
-    "aes-ts": "^0.0.0-alpha.0",
-    "cross-fetch": "^3.1.6",
-    "crypto": "^1.0.1",
-    "dom-parser": "^0.1.6",
-    "dotenv": "^16.4.5",
-    "firebase": "^9.23.0",
-    "flatted": "^3.2.7",
-    "js-base64": "^3.7.5",
-    "sha512-crypt-ts": "^0.1.27",
-    "tcp-port-used": "^1.0.2",
-    "uuid": "^9.0.1",
-    "axios": "^1.7.2",
-    "firebase-admin": "^12.1.1",
-    "firebase-functions": "^5.0.0"
-  },
-  "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
-    "@types/chai": "^4.3.5",
-    "@types/dom-parser": "^0.1.1",
-    "@types/mocha": "^10.0.1",
-    "@types/tcp-port-used": "^1.0.4",
-    "@types/uuid": "^9.0.4",
-    "@typescript-eslint/eslint-plugin": "^5.59.5",
-    "@typescript-eslint/parser": "^5.59.5",
-    "chai": "^4.3.7",
-    "eslint": "^8.40.0",
-    "kill-port": "^2.0.1",
-    "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
-    "psaux": "^0.4.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
-  },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "check-coverage": true,
-    "all": true,
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [],
-    "reporter": [
-      "html",
-      "lcov",
-      "text"
-    ],
-    "report-dir": "coverage"
-  }
+    "name": "@stevenkellner/firebase-function",
+    "version": "1.4.121",
+    "description": "Manages backend api with firebase functions.",
+    "author": "Steven Kellner",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "rmdir /s /q lib && tsc",
+        "lint": "eslint .",
+        "test": "mocha",
+        "test:coverage": "nyc npm run test",
+        "coverage:report": "npx http-server -o ./coverage",
+        "prepublishOnly": "npm run build && npm run lint && npm run test"
+    },
+    "devDependencies": {
+        "@istanbuljs/nyc-config-typescript": "^1.0.2",
+        "@types/mocha": "^10.0.10",
+        "@types/tcp-port-used": "^1.0.4",
+        "@types/uuid": "^10.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.18.1",
+        "@typescript-eslint/parser": "^8.18.1",
+        "eslint": "^9.17.0",
+        "kill-port": "^2.0.1",
+        "mocha": "^11.0.1",
+        "nyc": "^17.1.0",
+        "psaux": "^0.4.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2",
+        "@assertive-ts/core": "^2.1.0",
+        "@eslint/js": "^9.17.0",
+        "@stylistic/eslint-plugin": "^2.12.1",
+        "@types/node": "^22.10.2",
+        "globals": "^15.14.0",
+        "http-server": "^14.1.1",
+        "ts-mockito": "^2.6.1",
+        "typescript-eslint": "^8.18.1"
+    },
+    "dependencies": {
+        "@stevenkellner/typescript-common-functionality": "^1.0.2",
+        "firebase": "^11.1.0",
+        "firebase-admin": "^13.0.2",
+        "firebase-functions": "^6.2.0"
+    }
 }
