@@ -4,4 +4,6 @@ export * from './Result';
 export * from './UtcDate';
 export * from './Guid';
 export * from './Flattable';
+export * from './Tagged';
+export * from './Dictionary';
 export * from './utils';

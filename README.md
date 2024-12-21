@@ -1,6 +1,6 @@
 # Firebase Function
 
-Used to manage a backend api with firebase functions by creating a single firebase function for an api functionallity, these functions also handles security be encrypting / decrypting the parameters and return type. Also allows easy, secure and type-save access to the firebase realtime-database.  
+Used to manage a backend api with firebase functions by creating a single firebase function for an api functionallity. Also allows easy, secure and type-save access to the firebase firestore.
 
 ## Table of Contents
 
@@ -93,7 +93,7 @@ At the end deploy your functions as always by running `firebase deploy --only fu
 
 ## Function Parameters
 
-The firebase function can have multiple parameters of different types: 
+The firebase function can have multiple parameters of different types:
 
 - `boolean` A boolean value: `true` or `false`.
 - `string` Represents textual values like `"Hello, World!"`
@@ -115,7 +115,7 @@ export type MyFunctionType = FunctionType<{
 interface Address {
     city: string;
     street: string;
-} 
+}
 ```
 
 Now you have to implement the `parameterParser` in the function constructor:
@@ -250,14 +250,14 @@ const httpsCallableResult = await callableFunction({
     },
     parameters: crypter.encodeEncrypt(parameters)
 });
-const result = await crypter.decryptDecode(httpsCallableResult.data);        
+const result = await crypter.decryptDecode(httpsCallableResult.data);
 ```
 
-For now it's only possible to call the firebase functions with typescript / javascript and swift as this are the only languages I have implemented the crypter. If you would like to use a different language, feel free to implement the crypter yourself. For that see the crypter in `/src/crypter/Crypter.ts`. 
+For now it's only possible to call the firebase functions with typescript / javascript and swift as this are the only languages I have implemented the crypter. If you would like to use a different language, feel free to implement the crypter yourself. For that see the crypter in `/src/crypter/Crypter.ts`.
 
 # Realtime Database
 
-This package allows easy, secure and type-save access to the firebase realtime-database. 
+This package allows easy, secure and type-save access to the firebase realtime-database.
 
 ## Define a Scheme
 
@@ -268,7 +268,7 @@ import { type CryptedScheme, type DatabaseSchemeType } from 'firebase-function';
 
 export type DatabaseScheme = DatabaseSchemeType<{
     myValue: string;
-    myOtherData: { 
+    myOtherData: {
         value1: boolean;
         value2: number | null;
     };

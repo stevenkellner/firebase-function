@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 /* eslint-disable require-jsdoc */
-import {ArrayTypeBuilder, FirebaseFunction, Flatten, ILogger, ObjectTypeBuilder, ValueTypeBuilder} from "firebase-function";
+import {ArrayTypeBuilder, FirebaseFunction, Flatten, ILogger, ObjectTypeBuilder, ValueTypeBuilder, AuthUser} from "firebase-function";
 import {SubParameter, TestParameters, TestReturnType} from "./TestParametersAndReturnType";
 
 
@@ -12,7 +12,7 @@ export class TestFirebaseFunction implements FirebaseFunction<TestParameters, Te
     v3: SubParameter.typeBuilder,
   });
 
-  public constructor(userId: string | null, logger: ILogger) {
+  public constructor(user: AuthUser | null, logger: ILogger) {
     logger.log("TestFirebaseFunction.constructor", null, "notice");
   }
 

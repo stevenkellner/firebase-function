@@ -85,7 +85,7 @@ export namespace Result {
         return result.state === 'failure';
     }
 
-    export function from(value: unknown): Result<unknown, unknown> {
+    export function from<T = unknown, E = unknown>(value: unknown): Result<T, E> {
         if (typeof value !== 'object' || value === null)
             throw new Error('Expected an object');
         if (!('state' in value))
@@ -93,12 +93,12 @@ export namespace Result {
         if (value.state === 'success') {
             if (!('value' in value))
                 throw new Error('Expected a value property');
-            return success(value.value);
+            return success(value.value as T);
         }
         if (value.state === 'failure') {
             if (!('error' in value))
                 throw new Error('Expected an error property');
-            return failure(value.error);
+            return failure(value.error as E);
         }
         throw new Error('Expected a state property with value success or failure');
     }

@@ -15,13 +15,16 @@ export interface FirebaseFunction<Parameters, ReturnType> {
     execute(parameters: Parameters): Promise<ReturnType>;
 }
 
-export type FirebaseFunctionConstructor<Parameters, ReturnType> = new (userId: string | null, logger: ILogger) => FirebaseFunction<Parameters, ReturnType>;
+export interface AuthUser {
+    id: string;
+    rawUid: string;
+}
+
+export type FirebaseFunctionConstructor<Parameters, ReturnType> = new (user: AuthUser | null, logger: ILogger) => FirebaseFunction<Parameters, ReturnType>;
 
 export namespace FirebaseFunction {
 
-    function hashUserId(auth: AuthData | undefined): string | null {
-        if (auth === undefined)
-            return null;
+    function hashUserId(auth: AuthData): string {
         const uidCoder = new Utf8BytesCoder();
         const hasher = new Sha512();
         const userIdCoder = new HexBytesCoder();
@@ -51,7 +54,8 @@ export namespace FirebaseFunction {
                 if (!verified)
                     throw new functions.https.HttpsError('permission-denied', 'Invalid MAC tag');
 
-                const firebaseFunction = new FirebaseFunction(hashUserId(request.auth), logger.nextIndent);
+                const user = request.auth ? { id: hashUserId(request.auth), rawUid: request.auth.uid } : null;
+                const firebaseFunction = new FirebaseFunction(user, logger.nextIndent);
                 const parameters = firebaseFunction.parametersBuilder.build(request.data.parameters, logger.nextIndent);
                 const returnValue = await firebaseFunction.execute(parameters);
                 return Flattable.flatten(returnValue);

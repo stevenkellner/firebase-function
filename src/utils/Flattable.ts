@@ -4,7 +4,7 @@ export interface Flattable<Flatten> {
 }
 
 export type Flatten<T> =
-    T extends Flattable<infer U> ? U :
+    T extends Flattable<infer U> ? Flatten<U> :
         T extends undefined | null | boolean | number | bigint | string ? T :
             T extends [infer U, ...(infer V)] ? [Flatten<U>, ...Flatten<V>] :
                 T extends (infer U)[] ? Flatten<U>[] :
@@ -19,7 +19,7 @@ export namespace Flattable {
         value: T
     ): Flatten<T> {
         if (typeof value === 'object' && value !== null && 'flatten' in value)
-            return (value as Flattable<Flatten<T>>).flatten;
+            return flatten(value.flatten) as Flatten<T>;
         if (typeof value === 'undefined' || value === null || typeof value === 'boolean' || typeof value === 'number' || typeof value === 'bigint' || typeof value === 'string')
             return value as Flatten<T>;
         if (Array.isArray(value))

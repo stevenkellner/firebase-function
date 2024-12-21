@@ -42,7 +42,7 @@ export class FirebaseFunctionsCaller<Functions extends FirebaseFunctions> {
             macTag: macTag,
             parameters: flattenParameters
         });
-        const result = Result.from(response.data) as Result<Flatten<FirebaseFunctions.FunctionReturnType<Functions>>, unknown>;
+        const result = Result.from<Flatten<FirebaseFunctions.FunctionReturnType<Functions>>>(response.data);
         return result.get();
     }
 
