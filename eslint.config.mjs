@@ -102,6 +102,7 @@ export default [
             '@typescript-eslint/no-inferrable-types': 'off',
             'capitalized-comments': 'off',
             '@typescript-eslint/no-redundant-type-constituents': 'off',
+            '@typescript-eslint/prefer-destructuring': 'off',
             'sort-imports': 'off',
             'prefer-destructuring': 'off',
             'accessor-pairs': 'off',
@@ -123,7 +124,8 @@ export default [
             'id-length': 'off',
             '@typescript-eslint/no-confusing-void-expression': 'off',
             'no-inline-comments': 'off',
-            'func-style': 'off'
+            'func-style': 'off',
+            '@typescript-eslint/no-unsafe-type-assertion': 'off'
         }
     }
 ];

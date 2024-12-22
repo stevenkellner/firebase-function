@@ -1,9 +1,8 @@
-import { Flattable } from './../utils/Flattable';
+import { Flattable, type Flatten } from '@stevenkellner/typescript-common-functionality';
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreCollection } from './FirestoreCollection';
 import type { FirestorePath } from './FirestorePath';
 import { FirestoreSnapshot } from './FirestoreSnapshot';
-import type { Flatten } from '../utils';
 
 export class FirestoreDocument<
     Values extends Record<string, any>,
@@ -15,9 +14,7 @@ export class FirestoreDocument<
         private readonly path: FirestorePath
     ) {}
 
-    public collection<Key extends keyof SubCollections & string>(
-        key: Key
-    ): SubCollections[Key] {
+    public collection<Key extends keyof SubCollections & string>(key: Key): SubCollections[Key] {
         return new FirestoreCollection(this.firestore, this.path.appending(key)) as SubCollections[Key];
     }
 
@@ -27,7 +24,6 @@ export class FirestoreDocument<
     }
 
     public async set(values: Values): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         await this.firestore.doc(this.path.fullPath).set(Flattable.flatten(values) as any);
     }
 

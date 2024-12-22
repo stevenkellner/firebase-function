@@ -1,6 +1,7 @@
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreDocument } from './FirestoreDocument';
 import type { FirestorePath } from './FirestorePath';
+
 export class FirestoreCollection<
     Documents extends Record<string, FirestoreDocument<any, any>>
 > {
@@ -10,9 +11,7 @@ export class FirestoreCollection<
         private readonly path: FirestorePath
     ) {}
 
-    public document<Key extends keyof Documents & string>(
-        key: Key
-    ): Documents[Key] {
+    public document<Key extends keyof Documents & string>(key: Key): Documents[Key] {
         return new FirestoreDocument(this.firestore, this.path.appending(key)) as Documents[Key];
     }
 }

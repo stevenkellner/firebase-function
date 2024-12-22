@@ -1,4 +1,4 @@
-import type { Flatten } from '../utils';
+import type { Flatten } from '@stevenkellner/typescript-common-functionality';
 
 export class FirestoreSnapshot<Values> {
 
