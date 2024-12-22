@@ -7,12 +7,14 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build": "rmdir /s /q lib && tsc",
+        "build": "tsc",
+        "rebuild": "tsc --build --force",
         "lint": "eslint .",
         "test": "mocha",
         "test:coverage": "nyc npm run test",
         "coverage:report": "npx http-server -o ./coverage",
-        "prepublishOnly": "npm run build && npm run lint && npm run test"
+        "upgrade": "ncu --upgrade --install always",
+        "release": "npm run rebuild && npm run test && npm run lint && npm version patch && git push --follow-tags"
     },
     "devDependencies": {
         "@assertive-ts/core": "^2.1.0",
@@ -38,7 +40,8 @@
         "typescript-eslint": "^8.18.1"
     },
     "dependencies": {
-        "@stevenkellner/typescript-common-functionality": "^1.0.3",
+        "@stevenkellner/typescript-common-functionality": "^1.0.35",
+        "dotenv": "^16.4.7",
         "firebase": "^11.1.0",
         "firebase-admin": "^13.0.2",
         "firebase-functions": "^6.2.0"

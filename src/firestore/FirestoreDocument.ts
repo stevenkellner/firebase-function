@@ -1,7 +1,7 @@
 import { Flattable, type Flatten } from '@stevenkellner/typescript-common-functionality';
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreCollection } from './FirestoreCollection';
-import type { FirestorePath } from './FirestorePath';
+import { FirestorePath } from './FirestorePath';
 import { FirestoreSnapshot } from './FirestoreSnapshot';
 
 export class FirestoreDocument<
@@ -33,6 +33,10 @@ export class FirestoreDocument<
 }
 
 export namespace FirestoreDocument {
+
+    export function base<SubCollections extends Record<string, FirestoreCollection<any>>>(firestore: Firestore): FirestoreDocument<never, SubCollections> {
+        return new FirestoreDocument(firestore, new FirestorePath());
+    }
 
     export type ValuesOf<Document extends FirestoreDocument<any, any>> = Document extends FirestoreDocument<infer Values, any> ? Values : never;
 

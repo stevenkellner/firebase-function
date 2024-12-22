@@ -2,5 +2,4 @@
 /lib/
 /.nyc_output/
 /coverage/
-/package-lock.json
 /test/.env.test
