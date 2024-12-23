@@ -50,11 +50,12 @@ describe('Firestore', () => {
             }),
             databaseURL: process.env.FIREBASE_DATABASE_URL
         });
+        process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
         baseDocument = FirestoreDocument.base(getFirestore());
     });
 
     afterEach(async () => {
-        await baseDocument.remove();
+        await baseDocument.collection('baseCollection').remove();
     });
 
     async function addDocument(): Promise<Doc4Values> {
@@ -75,7 +76,13 @@ describe('Firestore', () => {
         const data = await addDocument();
         const snapshot = await baseDocument.collection('baseCollection').document('doc4').snapshot();
         expect(snapshot.exists).toBeEqual(true);
-        expect(snapshot.data).toBeEqual(data);
+        expect({
+            ...snapshot.data,
+            v5: snapshot.data.v5.buffer
+        }).toBeEqual({
+            ...data,
+            v5: data.v5.buffer
+        });
     });
 
     it('should remove a document', async () => {
@@ -99,7 +106,13 @@ describe('Firestore', () => {
         await baseDocument.collection('baseCollection').document('doc4').set(newData);
         const snapshot = await baseDocument.collection('baseCollection').document('doc4').snapshot();
         expect(snapshot.exists).toBeEqual(true);
-        expect(snapshot.data).toBeEqual(newData);
+        expect({
+            ...snapshot.data,
+            v5: snapshot.data.v5.buffer
+        }).toBeEqual({
+            ...newData,
+            v5: newData.v5.buffer
+        });
     });
 
     it('should add document to subcollection', async () => {
@@ -112,5 +125,12 @@ describe('Firestore', () => {
         await baseDocument.collection('baseCollection').document('doc1').collection('col1').document('doc2').set({ v10: true });
         const snapshot = await baseDocument.collection('baseCollection').document('doc1').collection('col1').document('doc2').snapshot();
         expect(snapshot.data).toBeEqual({ v10: true });
+    });
+
+    it('should remove collection', async () => {
+        await addDocument();
+        await baseDocument.collection('baseCollection').remove();
+        const snapshot = await baseDocument.collection('baseCollection').document('doc4').snapshot();
+        expect(snapshot.exists).toBeEqual(false);
     });
 });
