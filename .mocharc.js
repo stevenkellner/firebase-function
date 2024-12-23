@@ -7,6 +7,9 @@ module.exports = {
     spec: [
         'test/**/*.test.ts'
     ],
+    exclude: [
+        'test/firebaseProject/*'
+    ],
     slow: 75,
     timeout: 0,
     ui: 'bdd',
