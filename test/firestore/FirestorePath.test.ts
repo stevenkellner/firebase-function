@@ -1,5 +1,5 @@
 import { expect } from '@assertive-ts/core';
-import { FirestorePath } from '../../src';
+import { FirestorePath } from '../../src/admin';
 
 describe('FirestorePath', () => {
     let path: FirestorePath;

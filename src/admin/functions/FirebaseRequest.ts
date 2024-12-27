@@ -1,15 +1,18 @@
-import { Flattable, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
-import * as functions from 'firebase-functions';
+import { Flattable, Logger, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 import { type HttpsFunction, onRequest } from 'firebase-functions/v2/https';
 import type { SupportedRegion } from 'firebase-functions/v2/options';
 import { catchErrorToResult } from './catchErrorToResult';
 import { verifyMacTag } from './verifyMacTag';
+import { FunctionsLogger } from '../logger';
+import { FunctionsError } from './FunctionsError';
 
-export interface FirebaseRequest<Parameters, ReturnType> {
+export abstract class FirebaseRequest<Parameters, ReturnType> {
 
-    parametersBuilder: ITypeBuilder<Flatten<Parameters>, Parameters>;
+    protected logger = new Logger(new FunctionsLogger());
 
-    execute(parameters: Parameters): Promise<ReturnType>;
+    public abstract parametersBuilder: ITypeBuilder<Flatten<Parameters>, Parameters>;
+
+    public abstract execute(parameters: Parameters): Promise<ReturnType>;
 }
 
 export namespace FirebaseRequest {
@@ -40,7 +43,7 @@ export namespace FirebaseRequest {
 
                 const verified = verifyMacTag(data.macTag, data.parameters, macKey);
                 if (!verified)
-                    throw new functions.https.HttpsError('permission-denied', 'Invalid MAC tag');
+                    throw new FunctionsError('failed-precondition', 'Invalid MAC tag');
 
                 const firebaseRequest = new FirebaseRequest();
                 const parameters = firebaseRequest.parametersBuilder.build(data.parameters);

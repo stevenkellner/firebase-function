@@ -1,10 +1,14 @@
 import type * as functions from 'firebase-functions';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import type { SupportedRegion } from 'firebase-functions/v2/options';
+import { FunctionsLogger } from '../logger';
+import { Logger } from '@stevenkellner/typescript-common-functionality';
 
-export interface FirebaseSchedule {
+export abstract class FirebaseSchedule {
 
-    execute(): Promise<void>;
+    protected logger = new Logger(new FunctionsLogger());
+
+    public abstract execute(): Promise<void>;
 }
 
 export namespace FirebaseSchedule {

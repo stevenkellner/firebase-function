@@ -1,19 +1,15 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+import { createFirebaseFunctions, provideFirebaseFunctions } from "../../../../lib/admin";
+import { TestFirebaseFunction } from "./FirebaseFunction";
+import { TestFirebaseRequest } from "./FirebaseRequest";
+import { TestFirebaseSchedule } from "./FirebaseSchedule";
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+const firebaseFunctions = createFirebaseFunctions(builder => ({
+    function1: builder.function(TestFirebaseFunction),
+    requests: {
+        request1: builder.request(TestFirebaseRequest)
+    },
+    schedule1: builder.schedule(TestFirebaseSchedule, "0 0 1 1 *", "europe/berlin")
+}));
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-export const helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
-});
+const macKey = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f]);
+export = provideFirebaseFunctions(firebaseFunctions, macKey, ["europe-west1"]);

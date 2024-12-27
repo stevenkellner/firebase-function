@@ -8,7 +8,8 @@ module.exports = {
         'test/**/*.test.ts'
     ],
     exclude: [
-        'test/firebaseProject/*'
+        'test/firebaseProject/*.ts',
+        'test/firebaseProject/**/*.ts'
     ],
     slow: 75,
     timeout: 0,

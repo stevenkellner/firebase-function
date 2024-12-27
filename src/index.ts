@@ -1,2 +1,1 @@
-export * from './firestore';
-export * from './functions';
+export default 1;

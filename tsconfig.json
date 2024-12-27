@@ -109,7 +109,12 @@
     },
     "include": [
         "index.ts",
+        "admin/index.ts",
         "src/**/*.ts",
         "test/**/*.ts"
+    ],
+    "exclude": [
+        "test/firebaseProject/*.ts",
+        "test/firebaseProject/**/*.ts"
     ]
 }

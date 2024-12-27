@@ -7,7 +7,6 @@ import { mapRecord } from '@stevenkellner/typescript-common-functionality';
 
 export class FirebaseFunctionBuilder {
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public function<Parameters, ReturnType>(
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Constructor: FirebaseFunction.Constructor<Parameters, ReturnType>
@@ -15,7 +14,6 @@ export class FirebaseFunctionBuilder {
         return new FirebaseFunction.ConstructorWrapper<Parameters, ReturnType>(Constructor);
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public schedule(
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Constructor: FirebaseSchedule.Constructor,
@@ -25,7 +23,6 @@ export class FirebaseFunctionBuilder {
         return new FirebaseSchedule.ConstructorWrapper(Constructor, schedule, timezone);
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public request<Parameters, ReturnType>(
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Constructor: FirebaseRequest.Constructor<Parameters, ReturnType>

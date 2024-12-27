@@ -1,5 +1,6 @@
 {
     "name": "functions",
+    "main": "lib/index.js",
     "scripts": {
         "lint": "eslint --ext .js,.ts .",
         "build": "tsc",
@@ -14,19 +15,21 @@
     "engines": {
         "node": "22"
     },
-    "main": "lib/index.js",
-    "dependencies": {
-        "firebase-admin": "^12.6.0",
-        "firebase-functions": "^6.0.1"
-    },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.12.0",
-        "@typescript-eslint/parser": "^5.12.0",
-        "eslint": "^8.9.0",
+        "@typescript-eslint/eslint-plugin": "^8.18.2",
+        "@typescript-eslint/parser": "^8.18.2",
+        "eslint": "^9.17.0",
         "eslint-config-google": "^0.14.0",
-        "eslint-plugin-import": "^2.25.4",
-        "firebase-functions-test": "^3.1.0",
-        "typescript": "^4.9.0"
+        "eslint-plugin-import": "^2.31.0",
+        "firebase-functions-test": "^3.4.0",
+        "npm-check-updates": "^17.1.12",
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "@stevenkellner/firebase-function": "file:../../..",
+        "@stevenkellner/typescript-common-functionality": "^1.0.45",
+        "firebase-admin": "^13.0.2",
+        "firebase-functions": "^6.2.0"
     },
     "private": true
 }

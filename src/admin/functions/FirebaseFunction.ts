@@ -1,15 +1,19 @@
 import type { CallableRequest } from 'firebase-functions/lib/common/providers/https';
 import type { SupportedRegion } from 'firebase-functions/v2/options';
 import { type CallableFunction, onCall } from 'firebase-functions/v2/https';
-import { Flattable, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
+import { Flattable, Logger, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 import { catchErrorToResult } from './catchErrorToResult';
 import { verifyMacTag } from './verifyMacTag';
+import { FunctionsLogger } from '../logger';
+import { FunctionsError } from './FunctionsError';
 
-export interface FirebaseFunction<Parameters, ReturnType> {
+export abstract class FirebaseFunction<Parameters, ReturnType> {
 
-    parametersBuilder: ITypeBuilder<Flatten<Parameters>, Parameters>;
+    protected logger = new Logger(new FunctionsLogger());
 
-    execute(parameters: Parameters): Promise<ReturnType>;
+    public abstract parametersBuilder: ITypeBuilder<Flatten<Parameters>, Parameters>;
+
+    public abstract execute(parameters: Parameters): Promise<ReturnType>;
 }
 
 export namespace FirebaseFunction {
@@ -38,15 +42,14 @@ export namespace FirebaseFunction {
 
                 const verified = verifyMacTag(request.data.macTag, request.data.parameters, macKey);
                 if (!verified)
-                    throw new Error('Invalid MAC tag');
+                    throw new FunctionsError('failed-precondition', 'Invalid MAC tag');
 
                 const userId = request.auth !== undefined ? request.auth.uid : null;
                 const firebaseFunction = new FirebaseFunction(userId);
                 const parameters = firebaseFunction.parametersBuilder.build(request.data.parameters);
-                const returnValue = await firebaseFunction.execute(parameters);
-                return Flattable.flatten(returnValue);
+                return firebaseFunction.execute(parameters);
             });
-            return result;
+            return Flattable.flatten(result);
         });
     }
 }
