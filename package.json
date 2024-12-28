@@ -1,6 +1,6 @@
 {
     "name": "@stevenkellner/firebase-function",
-    "version": "1.4.121",
+    "version": "1.4.122",
     "description": "Manages backend api with firebase functions.",
     "author": "Steven Kellner",
     "license": "MIT",
