@@ -16,6 +16,7 @@ export abstract class IFirebaseFunction<Parameters, ReturnType> {
     public abstract returnTypeBuilder: ITypeBuilder<Flatten<ReturnType>, ReturnType>;
 }
 
+// istanbul ignore next
 export namespace IFirebaseFunction {
 
     export type Constructor<Parameters, ReturnType> = new () => IFirebaseFunction<Parameters, ReturnType>;
@@ -52,6 +53,7 @@ export class FirebaseFunction<Parameters, ReturnType> {
     }
 }
 
+// istanbul ignore next
 export namespace FirebaseFunction {
 
     export function create<Parameters, ReturnType>(

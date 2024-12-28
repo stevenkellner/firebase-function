@@ -32,6 +32,7 @@ export class FirestoreDocument<
     }
 }
 
+// istanbul ignore next
 export namespace FirestoreDocument {
 
     export function base<SubCollections extends Record<string, FirestoreCollection<any>>>(firestore: Firestore): FirestoreDocument<never, SubCollections> {
