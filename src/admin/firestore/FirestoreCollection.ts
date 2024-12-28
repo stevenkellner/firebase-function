@@ -1,6 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreDocument } from './FirestoreDocument';
-import type { FirestorePath } from './FirestorePath';
+import type { FirestorePath } from '../../shared/firestore/FirestorePath';
 
 export class FirestoreCollection<
     Documents extends Record<string, FirestoreDocument<any, any>>

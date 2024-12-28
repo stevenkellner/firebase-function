@@ -1,7 +1,7 @@
 import { Flattable, type Flatten } from '@stevenkellner/typescript-common-functionality';
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreCollection } from './FirestoreCollection';
-import { FirestorePath } from './FirestorePath';
+import { FirestorePath } from '../../shared/firestore/FirestorePath';
 import { FirestoreSnapshot } from './FirestoreSnapshot';
 
 export class FirestoreDocument<

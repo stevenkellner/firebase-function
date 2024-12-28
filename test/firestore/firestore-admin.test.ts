@@ -36,7 +36,7 @@ export type FirestoreScheme = FirestoreDocument<never, {
 type Doc4Values = FirestoreDocument.ValuesOf<FirestoreCollection.DocumentsOf<FirestoreDocument.SubCollectionsOf<FirestoreScheme>['baseCollection']>['doc4']>;
 
 /* eslint-disable @stylistic/newline-per-chained-call */
-describe('Firestore', () => {
+describe('Firestore admin', () => {
 
     let baseDocument: FirestoreScheme;
 

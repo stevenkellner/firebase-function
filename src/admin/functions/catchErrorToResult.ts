@@ -1,5 +1,5 @@
 import { Result } from '@stevenkellner/typescript-common-functionality';
-import { FunctionsError, FunctionsErrorCode } from './FunctionsError';
+import { FunctionsError, FunctionsErrorCode } from '../../shared/functions/FunctionsError';
 
 function convertToHttpsError(error: unknown): FunctionsError {
     if (error instanceof FunctionsError)

@@ -1,4 +1,4 @@
-import type { Flattable } from '@stevenkellner/typescript-common-functionality';
+import type { Flattable, ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 import type { FunctionsErrorCode as FirebaseFunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
 
 export type FunctionsErrorCode = FirebaseFunctionsErrorCode;
@@ -35,7 +35,7 @@ export class FunctionsError extends Error implements Flattable<FunctionsError.Fl
     public constructor(
         public readonly code: FunctionsErrorCode,
         public readonly message: string,
-        public readonly details?: string
+        public readonly details: string | null = null
     ) {
         super(message);
     }
@@ -45,7 +45,7 @@ export class FunctionsError extends Error implements Flattable<FunctionsError.Fl
             name: this.name,
             code: this.code,
             message: this.message,
-            details: this.details ?? null
+            details: this.details
         };
     }
 }
@@ -58,4 +58,11 @@ export namespace FunctionsError {
         message: string;
         details: string | null;
     };
+
+    export class TypeBuilder implements ITypeBuilder<FunctionsError.Flatten, FunctionsError> {
+
+        public build(flatten: FunctionsError.Flatten): FunctionsError {
+            return new FunctionsError(flatten.code, flatten.message, flatten.details);
+        }
+    }
 }

@@ -5,7 +5,7 @@ import { Flattable, Logger, type Flatten, type ITypeBuilder } from '@stevenkelln
 import { catchErrorToResult } from './catchErrorToResult';
 import { verifyMacTag } from './verifyMacTag';
 import { FunctionsLogger } from '../logger';
-import { FunctionsError } from './FunctionsError';
+import { FunctionsError } from '../../shared/functions/FunctionsError';
 
 export abstract class FirebaseFunction<Parameters, ReturnType> {
 

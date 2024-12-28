@@ -4,7 +4,7 @@ import type { SupportedRegion } from 'firebase-functions/v2/options';
 import { catchErrorToResult } from './catchErrorToResult';
 import { verifyMacTag } from './verifyMacTag';
 import { FunctionsLogger } from '../logger';
-import { FunctionsError } from './FunctionsError';
+import { FunctionsError } from '../../shared/functions/FunctionsError';
 
 export abstract class FirebaseRequest<Parameters, ReturnType> {
 
@@ -47,10 +47,9 @@ export namespace FirebaseRequest {
 
                 const firebaseRequest = new FirebaseRequest();
                 const parameters = firebaseRequest.parametersBuilder.build(data.parameters);
-                const returnValue = await firebaseRequest.execute(parameters);
-                return Flattable.flatten(returnValue);
+                return firebaseRequest.execute(parameters);
             });
-            response.send(result);
+            response.send(Flattable.flatten(result));
         });
     }
 }
