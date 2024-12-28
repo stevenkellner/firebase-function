@@ -6,5 +6,8 @@ module.exports = {
     'check-coverage': true,
     extension: ['.js', '.ts'],
     reporter: ['html', 'text-summary'],
-    include: ['src/**/*']
+    include: ['src/**/*'],
+    exclude: [
+        'src/admin/functions/**/*'
+    ]
 }

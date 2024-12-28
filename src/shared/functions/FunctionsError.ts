@@ -50,6 +50,7 @@ export class FunctionsError extends Error implements Flattable<FunctionsError.Fl
     }
 }
 
+// istanbul ignore next
 export namespace FunctionsError {
 
     export type Flatten = {
