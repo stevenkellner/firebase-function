@@ -9,13 +9,4 @@ async function waitForEmulators(): Promise<void> {
     });
 }
 
-async function waitForEmulatorsMaxTimeout(timeout: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-        waitForEmulators()
-            .then(resolve)
-            .catch(reject);
-        setTimeout(reject, timeout);
-    });
-}
-
-void waitForEmulatorsMaxTimeout(30000);
+void waitForEmulators();
