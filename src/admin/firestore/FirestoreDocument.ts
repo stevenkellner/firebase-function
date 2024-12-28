@@ -1,4 +1,4 @@
-import { Flattable, type Flatten } from '@stevenkellner/typescript-common-functionality';
+import { Flattable } from '@stevenkellner/typescript-common-functionality';
 import type { Firestore } from 'firebase-admin/firestore';
 import { FirestoreCollection } from './FirestoreCollection';
 import { FirestorePath } from '../../shared/firestore/FirestorePath';
@@ -19,7 +19,7 @@ export class FirestoreDocument<
     }
 
     public async snapshot(): Promise<FirestoreSnapshot<Values>> {
-        const snapshot = await this.firestore.doc(this.path.fullPath).get() as FirebaseFirestore.DocumentSnapshot<Flatten<Values>>;
+        const snapshot = await this.firestore.doc(this.path.fullPath).get() as FirebaseFirestore.DocumentSnapshot<Flattable.Flatten<Values>>;
         return new FirestoreSnapshot(snapshot);
     }
 

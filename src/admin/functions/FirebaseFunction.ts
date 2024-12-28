@@ -1,7 +1,7 @@
 import type { CallableRequest } from 'firebase-functions/lib/common/providers/https';
 import type { SupportedRegion } from 'firebase-functions/v2/options';
 import { type CallableFunction, onCall } from 'firebase-functions/v2/https';
-import { Flattable, Logger, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
+import { Flattable, Logger, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 import { catchErrorToResult } from './catchErrorToResult';
 import { verifyMacTag } from './verifyMacTag';
 import { FunctionsLogger } from '../logger';
@@ -11,7 +11,7 @@ export abstract class FirebaseFunction<Parameters, ReturnType> {
 
     protected logger = new Logger(new FunctionsLogger());
 
-    public abstract parametersBuilder: ITypeBuilder<Flatten<Parameters>, Parameters>;
+    public abstract parametersBuilder: ITypeBuilder<Flattable.Flatten<Parameters>, Parameters>;
 
     public abstract execute(parameters: Parameters): Promise<ReturnType>;
 }
@@ -36,7 +36,7 @@ export namespace FirebaseFunction {
     ): CallableFunction<any, any> {
         return onCall({ region: regions }, async (request: CallableRequest<{
             macTag: string;
-            parameters: Flatten<Parameters>;
+            parameters: Flattable.Flatten<Parameters>;
         }>) => {
             const result = await catchErrorToResult(async () => {
 

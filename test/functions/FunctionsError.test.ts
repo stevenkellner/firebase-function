@@ -30,8 +30,7 @@ describe('FunctionsError', () => {
             message: 'Permission denied',
             details: 'Details about the error'
         };
-        const builder = new FunctionsError.TypeBuilder();
-        const error = builder.build(flattened);
+        const error = FunctionsError.builder.build(flattened);
         expect(error).toBeInstanceOf(FunctionsError);
         expect(error.name).toBeEqual('FunctionsError');
         expect(error.code).toBeEqual('permission-denied');

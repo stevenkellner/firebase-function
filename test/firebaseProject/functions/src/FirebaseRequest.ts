@@ -1,11 +1,11 @@
-import { ArrayTypeBuilder, Flatten, ObjectTypeBuilder, ValueTypeBuilder } from "@stevenkellner/typescript-common-functionality";
+import { ArrayTypeBuilder, Flattable, ObjectTypeBuilder, ValueTypeBuilder } from "@stevenkellner/typescript-common-functionality";
 import { FirebaseRequest } from "../../../../lib/admin";
 import { SubParameter, TestParameters } from "./Parameters";
 import { TestReturnType } from "./ReturnType";
 
 export class TestFirebaseRequest extends FirebaseRequest<TestParameters, TestReturnType> {
 
-    public parametersBuilder = new ObjectTypeBuilder<Flatten<TestParameters>, TestParameters>({
+    public parametersBuilder = new ObjectTypeBuilder<Flattable.Flatten<TestParameters>, TestParameters>({
         v1: new ValueTypeBuilder(),
         v2: new ArrayTypeBuilder(new ValueTypeBuilder()),
         v3: SubParameter.typeBuilder,

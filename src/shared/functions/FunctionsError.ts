@@ -66,4 +66,6 @@ export namespace FunctionsError {
             return new FunctionsError(flatten.code, flatten.message, flatten.details);
         }
     }
+
+    export const builder = new TypeBuilder();
 }

@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "@stevenkellner/firebase-function": "file:../../..",
-        "@stevenkellner/typescript-common-functionality": "^1.0.48",
+        "@stevenkellner/typescript-common-functionality": "^1.0.49",
         "firebase-admin": "^13.0.2",
         "firebase-functions": "^6.2.0"
     },

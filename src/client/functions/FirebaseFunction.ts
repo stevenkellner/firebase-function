@@ -1,19 +1,19 @@
-import { Result, Flattable, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
+import { Result, Flattable, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 import { type HttpsCallable, httpsCallable, type Functions } from 'firebase/functions';
 import { createMacTag } from './createMacTag';
 import { FunctionsError } from '../../shared/functions';
 
 type FunctionCallable<Parameters, ReturnType> = HttpsCallable<{
     macTag: string;
-    parameters: Flatten<Parameters>;
-}, Flatten<Result<ReturnType, FunctionsError>>>;
+    parameters: Flattable.Flatten<Parameters>;
+}, Result.Flatten<ReturnType, FunctionsError>>;
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export abstract class IFirebaseFunction<Parameters, ReturnType> {
 
     protected parameters: Parameters = null as unknown as Parameters;
 
-    public abstract returnTypeBuilder: ITypeBuilder<Flatten<ReturnType>, ReturnType>;
+    public abstract returnTypeBuilder: ITypeBuilder<Flattable.Flatten<ReturnType>, ReturnType>;
 }
 
 // istanbul ignore next
@@ -36,7 +36,7 @@ export class FirebaseFunction<Parameters, ReturnType> {
         private readonly functions: Functions,
         private readonly name: string,
         private readonly macKey: Uint8Array,
-        private readonly returnTypeBuilder: ITypeBuilder<Flatten<ReturnType>, ReturnType>
+        private readonly returnTypeBuilder: ITypeBuilder<Flattable.Flatten<ReturnType>, ReturnType>
     ) {}
 
     public async execute(parameters: Parameters): Promise<ReturnType> {
@@ -47,8 +47,8 @@ export class FirebaseFunction<Parameters, ReturnType> {
             macTag: macTag,
             parameters: flattenParameters
         });
-        const resultTypeBuilder = new Result.TypeBuilder(this.returnTypeBuilder, new FunctionsError.TypeBuilder());
-        const result = resultTypeBuilder.build(Result.from(flattenResult.data));
+        const resultBuilder = Result.builder(this.returnTypeBuilder, FunctionsError.builder);
+        const result = resultBuilder.build(flattenResult.data);
         return result.get();
     }
 }

@@ -1,4 +1,4 @@
-import { Flattable, Logger, type Flatten, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
+import { Flattable, Logger, type ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 import { type HttpsFunction, onRequest } from 'firebase-functions/v2/https';
 import type { SupportedRegion } from 'firebase-functions/v2/options';
 import { catchErrorToResult } from './catchErrorToResult';
@@ -10,7 +10,7 @@ export abstract class FirebaseRequest<Parameters, ReturnType> {
 
     protected logger = new Logger(new FunctionsLogger());
 
-    public abstract parametersBuilder: ITypeBuilder<Flatten<Parameters>, Parameters>;
+    public abstract parametersBuilder: ITypeBuilder<Flattable.Flatten<Parameters>, Parameters>;
 
     public abstract execute(parameters: Parameters): Promise<ReturnType>;
 }
@@ -38,7 +38,7 @@ export namespace FirebaseRequest {
 
                 const data = request.body as unknown as {
                     macTag: string;
-                    parameters: Flatten<Parameters>;
+                    parameters: Flattable.Flatten<Parameters>;
                 };
 
                 const verified = verifyMacTag(data.macTag, data.parameters, macKey);
