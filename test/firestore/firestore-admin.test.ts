@@ -43,6 +43,9 @@ describe('Firestore admin', () => {
 
     before(() => {
         configDotenv({ path: 'test/.env.test' });
+        if (process.env.FIREBASE_PRIVATE_KEY === undefined)
+            throw new Error('FIREBASE_PRIVATE_KEY is not set');
+        console.log(BytesCoder.toHex(new Sha512().hash(BytesCoder.fromUtf8(process.env.FIREBASE_PRIVATE_KEY))));
         initializeApp({
             credential: cert({
                 projectId: process.env.FIREBASE_PROJECT_ID,
@@ -53,9 +56,6 @@ describe('Firestore admin', () => {
         });
         process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
         baseDocument = FirestoreDocument.base(getFirestore());
-        if (process.env.FIREBASE_PRIVATE_KEY === undefined)
-            throw new Error('FIREBASE_PRIVATE_KEY is not set');
-        console.log(BytesCoder.toHex(new Sha512().hash(BytesCoder.fromUtf8(process.env.FIREBASE_PRIVATE_KEY))));
     });
 
     afterEach(async () => {
