@@ -1,7 +1,7 @@
 {
     "name": "@stevenkellner/firebase-function",
     "version": "1.4.124",
-    "description": "Manages backend api with firebase functions.",
+    "description": "A TypeScript library designed to simplify the creation and deployment of Firebase functions. It provides a structured and type-safe way to define Firebase functions, requests, and schedules.",
     "author": "Steven Kellner",
     "license": "MIT",
     "main": "lib/index.js",
