@@ -3,6 +3,7 @@ import { type FirestoreCollection, FirestoreDocument } from '../../src/admin';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { configDotenv } from 'dotenv';
 import { getFirestore } from 'firebase-admin/firestore';
+import { Sha512, BytesCoder } from '@stevenkellner/typescript-common-functionality';
 
 export type FirestoreScheme = FirestoreDocument<never, {
     baseCollection: FirestoreCollection<{
@@ -52,6 +53,9 @@ describe('Firestore admin', () => {
         });
         process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
         baseDocument = FirestoreDocument.base(getFirestore());
+        if (process.env.FIREBASE_PRIVATE_KEY === undefined)
+            throw new Error('FIREBASE_PRIVATE_KEY is not set');
+        console.log(BytesCoder.toHex(new Sha512().hash(BytesCoder.fromUtf8(process.env.FIREBASE_PRIVATE_KEY))));
     });
 
     afterEach(async () => {

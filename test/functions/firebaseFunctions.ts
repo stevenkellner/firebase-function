@@ -112,7 +112,7 @@ export class FirebaseFunctions {
     public firebaseFunctionsWithInvalidMacKey!: typeof this.firebaseFunctions;
 
     public setup(): void {
-        configDotenv({ path: 'test/.env.testd' });
+        configDotenv({ path: 'test/.env.test' });
         initializeApp({
             apiKey: process.env.FIREBASE_API_KEY,
             authDomain: process.env.FIREBASE_AUTH_DOMAIN,
