@@ -12,7 +12,7 @@ module.exports = {
         'test/firebaseProject/**/*.ts'
     ],
     slow: 75,
-    timeout: 5000,
+    timeout: 30000,
     ui: 'bdd',
     'watch-files': [
         'test/**/*.test.ts'

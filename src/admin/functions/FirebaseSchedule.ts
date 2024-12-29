@@ -8,6 +8,10 @@ export abstract class FirebaseSchedule {
 
     protected logger = new Logger(new FunctionsLogger());
 
+    protected constructor(scheduleName: string) {
+        this.logger.notice(`${scheduleName}.constructor`);
+    }
+
     public abstract execute(): Promise<void>;
 }
 

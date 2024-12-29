@@ -11,14 +11,20 @@ export abstract class FirebaseFunction<Parameters, ReturnType> {
 
     protected logger = new Logger(new FunctionsLogger());
 
+    public userId: string | null = null;
+
     public abstract parametersBuilder: ITypeBuilder<Flattable.Flatten<Parameters>, Parameters>;
+
+    protected constructor(functionName: string) {
+        this.logger.notice(`${functionName}.constructor`);
+    }
 
     public abstract execute(parameters: Parameters): Promise<ReturnType>;
 }
 
 export namespace FirebaseFunction {
 
-    export type Constructor<Parameters, ReturnType> = new (userId: string | null) => FirebaseFunction<Parameters, ReturnType>;
+    export type Constructor<Parameters, ReturnType> = new () => FirebaseFunction<Parameters, ReturnType>;
 
     export class ConstructorWrapper<Parameters, ReturnType> {
 
@@ -45,7 +51,8 @@ export namespace FirebaseFunction {
                     throw new FunctionsError('failed-precondition', 'Invalid MAC tag');
 
                 const userId = request.auth !== undefined ? request.auth.uid : null;
-                const firebaseFunction = new FirebaseFunction(userId);
+                const firebaseFunction = new FirebaseFunction();
+                firebaseFunction.userId = userId;
                 const parameters = firebaseFunction.parametersBuilder.build(request.data.parameters);
                 return firebaseFunction.execute(parameters);
             });

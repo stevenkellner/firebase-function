@@ -12,8 +12,7 @@ export class TestFirebaseRequest extends FirebaseRequest<TestParameters, TestRet
     });
 
     public constructor() {
-        super();
-        this.logger.notice("TestFirebaseFunction.constructor");
+        super("TestFirebaseFunction");
     }
 
     public async execute(parameters: TestParameters): Promise<TestReturnType> {

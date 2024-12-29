@@ -3,8 +3,7 @@ import { FirebaseSchedule } from "../../../../lib/admin";
 export class TestFirebaseSchedule extends FirebaseSchedule {
 
     public constructor() {
-        super();
-        this.logger.notice("TestFirebaseSchedule.constructor");
+        super("TestFirebaseSchedule");
     }
 
     public async execute(): Promise<void> {

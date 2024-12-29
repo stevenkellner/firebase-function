@@ -11,9 +11,8 @@ export class TestFirebaseFunction extends FirebaseFunction<TestParameters, TestR
         v3: SubParameter.typeBuilder,
     });
 
-    public constructor(userId: string | null) {
-        super();
-        this.logger.notice("TestFirebaseFunction.constructor");
+    public constructor() {
+        super("TestFirebaseFunction");
     }
 
     public async execute(parameters: TestParameters): Promise<TestReturnType> {

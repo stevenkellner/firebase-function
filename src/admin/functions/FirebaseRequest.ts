@@ -12,6 +12,10 @@ export abstract class FirebaseRequest<Parameters, ReturnType> {
 
     public abstract parametersBuilder: ITypeBuilder<Flattable.Flatten<Parameters>, Parameters>;
 
+    protected constructor(requestName: string) {
+        this.logger.notice(`${requestName}.constructor`);
+    }
+
     public abstract execute(parameters: Parameters): Promise<ReturnType>;
 }
 
