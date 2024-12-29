@@ -39,7 +39,7 @@ export class FirebaseFunction<Parameters, ReturnType> {
         private readonly returnTypeBuilder: ITypeBuilder<Flattable.Flatten<ReturnType>, ReturnType>
     ) {}
 
-    public async execute(parameters: Parameters): Promise<ReturnType> {
+    public async executeWithResult(parameters: Parameters): Promise<Result<ReturnType, FunctionsError>> {
         const _function: FunctionCallable<Parameters, ReturnType> = httpsCallable(this.functions, this.name);
         const flattenParameters = Flattable.flatten(parameters);
         const macTag = createMacTag(flattenParameters, this.macKey);
@@ -48,7 +48,11 @@ export class FirebaseFunction<Parameters, ReturnType> {
             parameters: flattenParameters
         });
         const resultBuilder = Result.builder(this.returnTypeBuilder, FunctionsError.builder);
-        const result = resultBuilder.build(flattenResult.data);
+        return resultBuilder.build(flattenResult.data);
+    }
+
+    public async execute(parameters: Parameters): Promise<ReturnType> {
+        const result = await this.executeWithResult(parameters);
         return result.get();
     }
 }
