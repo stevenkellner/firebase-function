@@ -24,6 +24,10 @@ export abstract class FirebaseFunction<Parameters, ReturnType> {
 
 export namespace FirebaseFunction {
 
+    export type Parameters<Function extends FirebaseFunction<any, any>> = Function extends FirebaseFunction<infer Parameters, any> ? Parameters : never;
+
+    export type ReturnType<Function extends FirebaseFunction<any, any>> = Function extends FirebaseFunction<any, infer ReturnType> ? ReturnType : never;
+
     export type Constructor<Parameters, ReturnType> = new () => FirebaseFunction<Parameters, ReturnType>;
 
     export class ConstructorWrapper<Parameters, ReturnType> {

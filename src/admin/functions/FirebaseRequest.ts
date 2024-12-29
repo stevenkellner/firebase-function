@@ -21,6 +21,10 @@ export abstract class FirebaseRequest<Parameters, ReturnType> {
 
 export namespace FirebaseRequest {
 
+    export type Parameters<Function extends FirebaseRequest<any, any>> = Function extends FirebaseRequest<infer Parameters, any> ? Parameters : never;
+
+    export type ReturnType<Function extends FirebaseRequest<any, any>> = Function extends FirebaseRequest<any, infer ReturnType> ? ReturnType : never;
+
     export type Constructor<Parameters, ReturnType> = new () => FirebaseRequest<Parameters, ReturnType>;
 
     export class ConstructorWrapper<Parameters, ReturnType> {
