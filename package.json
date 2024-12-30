@@ -7,6 +7,7 @@
     "main": "lib/admin/index.js",
     "types": "lib/admin/index.d.ts",
     "exports": {
+        ".": "./lib/admin/index.js",
         "./admin": "./lib/admin/index.js",
         "./client": "./lib/client/index.js"
     },
