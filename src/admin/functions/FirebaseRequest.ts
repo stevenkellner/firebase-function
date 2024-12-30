@@ -21,10 +21,6 @@ export abstract class FirebaseRequest<Parameters, ReturnType> {
 
 export namespace FirebaseRequest {
 
-    export type Parameters<Function extends FirebaseRequest<any, any>> = Function extends FirebaseRequest<infer Parameters, any> ? Parameters : never;
-
-    export type ReturnType<Function extends FirebaseRequest<any, any>> = Function extends FirebaseRequest<any, infer ReturnType> ? ReturnType : never;
-
     export type Constructor<Parameters, ReturnType> = new () => FirebaseRequest<Parameters, ReturnType>;
 
     export class ConstructorWrapper<Parameters, ReturnType> {
@@ -34,6 +30,16 @@ export namespace FirebaseRequest {
             public readonly Constructor: FirebaseRequest.Constructor<Parameters, ReturnType>
         ) {}
     }
+
+    export type Parameters<Request extends FirebaseRequest<any, any> | Constructor<any, any> | ConstructorWrapper<any, any>> =
+        Request extends FirebaseRequest<infer Parameters, any> ? Parameters :
+            Request extends Constructor<infer Parameters, any> ? Parameters :
+                Request extends ConstructorWrapper<infer Parameters, any> ? Parameters : never;
+
+    export type ReturnType<Request extends FirebaseRequest<any, any> | Constructor<any, any> | ConstructorWrapper<any, any> > =
+        Request extends FirebaseRequest<any, infer ReturnType> ? ReturnType :
+            Request extends Constructor<any, infer ReturnType> ? ReturnType :
+                Request extends ConstructorWrapper<any, infer ReturnType> ? ReturnType : never;
 
     export function create<Parameters, ReturnType>(
         // eslint-disable-next-line @typescript-eslint/naming-convention
