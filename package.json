@@ -4,8 +4,12 @@
     "description": "A TypeScript library designed to simplify the creation and deployment of Firebase functions. It provides a structured and type-safe way to define Firebase functions, requests, and schedules.",
     "author": "Steven Kellner",
     "license": "MIT",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/admin/index.js",
+    "types": "lib/admin/index.d.ts",
+    "exports": {
+        "./admin": "./lib/admin/index.js",
+        "./client": "./lib/client/index.js"
+    },
     "scripts": {
         "build": "tsc",
         "rebuild": "tsc --build --force",
