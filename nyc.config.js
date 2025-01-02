@@ -8,6 +8,6 @@ module.exports = {
     reporter: ['html', 'text-summary'],
     include: ['src/**/*'],
     exclude: [
-        'src/admin/functions/**/*'
+        'example/**/*'
     ]
 }

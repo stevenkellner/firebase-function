@@ -4,18 +4,13 @@
     "description": "A TypeScript library designed to simplify the creation and deployment of Firebase functions. It provides a structured and type-safe way to define Firebase functions, requests, and schedules.",
     "author": "Steven Kellner",
     "license": "MIT",
-    "main": "lib/admin/index.js",
-    "types": "lib/admin/index.d.ts",
-    "exports": {
-        ".": "./lib/admin/index.js",
-        "./admin": "./lib/admin/index.js",
-        "./client": "./lib/client/index.js"
-    },
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "build": "tsc",
         "rebuild": "tsc --build --force",
         "lint": "eslint .",
-        "emulator:start": "npm run rebuild && cd test/firebaseProject/functions && npm run rebuild && cd .. && firebase emulators:start --inspect-functions",
+        "emulator:start": "npm run rebuild && cd example/functions && npm run rebuild && cd .. && firebase emulators:start --inspect-functions",
         "emulator:wait": "ts-node test/waitForEmulator.ts",
         "emulator:end": "kill-port 5001 8080",
         "test": "concurrently \"npm run emulator:start || true\" \"npm run emulator:wait && mocha && npm run emulator:end\"",

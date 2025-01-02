@@ -1,5 +1,5 @@
 import { expect } from '@assertive-ts/core';
-import { FunctionsError, FunctionsErrorCode } from '../../src/shared/functions/FunctionsError';
+import { FunctionsError, FunctionsErrorCode } from '../../src/functions/FunctionsError';
 
 describe('FunctionsError', () => {
 

@@ -1,5 +1,5 @@
 import { expect } from '@assertive-ts/core';
-import { type FirestoreCollection, FirestoreDocument } from '../../src/admin';
+import { type FirestoreCollection, FirestoreDocument } from '../../src';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { configDotenv } from 'dotenv';
 import { getFirestore } from 'firebase-admin/firestore';

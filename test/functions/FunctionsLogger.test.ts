@@ -1,5 +1,5 @@
 import { expect } from '@assertive-ts/core';
-import { FunctionsLogger } from '../../src/admin/logger/FunctionsLogger';
+import { FunctionsLogger } from '../../src/logger/FunctionsLogger';
 import * as logger from 'firebase-functions/logger';
 import { capture, spy } from 'ts-mockito';
 

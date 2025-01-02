@@ -15,8 +15,7 @@ export default [
             "eslint.config.mjs",
             ".mocharc.js",
             "nyc.config.js",
-            "coverage/*",
-            "test/firebaseProject/*"
+            "coverage/*"
         ]
     },
     {
@@ -106,6 +105,7 @@ export default [
             'sort-imports': 'off',
             'prefer-destructuring': 'off',
             '@typescript-eslint/consistent-return': 'off',
+            '@typescript-eslint/naming-convention': 'off',
             'accessor-pairs': 'off',
             '@typescript-eslint/no-unsafe-return': 'off',
             'default-case': 'off',
