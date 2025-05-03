@@ -128,7 +128,8 @@ export default [
             '@typescript-eslint/no-confusing-void-expression': 'off',
             'no-inline-comments': 'off',
             'func-style': 'off',
-            '@typescript-eslint/no-unsafe-type-assertion': 'off'
+            '@typescript-eslint/no-unsafe-type-assertion': 'off',
+            '@stylistic/type-generic-spacing': 'off'
         }
     }
 ];
