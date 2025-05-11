@@ -1,9 +1,9 @@
-import { createFirebaseFunctionCreators } from '../../../src';
+import { FirebaseFunctionsContext } from '../../../src';
 import { MyFirebaseFunction } from './MyFirebaseFunction';
 import { MyFirebaseRequest } from './MyFirebaseRequest';
 import { MyFirebaseSchedule } from './MyFirebaseSchedule';
 
-export const firebaseFunctionCreators = createFirebaseFunctionCreators(builder => ({
+export const firebaseFunctionsContext = FirebaseFunctionsContext.build(builder => ({
     function1: builder.function(MyFirebaseFunction),
     requests: {
         request1: builder.request(MyFirebaseRequest)

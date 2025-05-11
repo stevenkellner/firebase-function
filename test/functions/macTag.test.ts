@@ -1,5 +1,5 @@
 import { expect } from '@assertive-ts/core';
-import { MacTag } from '../../src/functions/MacTag';
+import { MacTag } from '../../src/functions/utils/MacTag';
 
 describe('MAC Tag Functions', () => {
 

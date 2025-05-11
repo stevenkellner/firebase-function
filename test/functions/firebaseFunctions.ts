@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { configDotenv } from 'dotenv';
-import { firebaseFunctionCreators } from '../../example/functions/src/firebaseFunctionCreators';
+import { firebaseFunctionsContext } from '../../example/functions/src/firebaseFunctionsContext';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { createClientFirebaseFunctions } from '../../src';
+import { createCallableClientFirebaseFunctions } from '../../src';
 
 configDotenv({ path: 'test/.env.test' });
 initializeApp({
@@ -17,6 +17,6 @@ initializeApp({
 const functions = getFunctions(undefined, 'europe-west1');
 connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 
-export function createFirebaseFunctions(macKey: Uint8Array): ReturnType<typeof createClientFirebaseFunctions<typeof firebaseFunctionCreators>> {
-    return createClientFirebaseFunctions(firebaseFunctionCreators, functions, `http://127.0.0.1:5001/${process.env.FIREBASE_PROJECT_ID}`, 'europe-west1', macKey);
+export function createFirebaseFunctions(macKey: Uint8Array): ReturnType<typeof createCallableClientFirebaseFunctions<typeof firebaseFunctionsContext>> {
+    return createCallableClientFirebaseFunctions(firebaseFunctionsContext, functions, `http://127.0.0.1:5001/${process.env.FIREBASE_PROJECT_ID}`, 'europe-west1', macKey);
 }
