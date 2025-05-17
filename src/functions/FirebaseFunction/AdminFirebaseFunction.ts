@@ -1,15 +1,16 @@
 import type { SupportedRegion } from 'firebase-functions/v2/options';
-import type { FirebaseFunction } from './FirebaseFunction';
 import type { AuthData, CallableRequest } from 'firebase-functions/lib/common/providers/https';
-import { type CallableFunction, onCall } from 'firebase-functions/v2/https';
-import { Flattable } from '@stevenkellner/typescript-common-functionality';
+import type { onCall as firebaseOnCall, CallableFunction } from 'firebase-functions/v2/https';
+import { Flattable, type Result } from '@stevenkellner/typescript-common-functionality';
+import type { FirebaseFunction } from './FirebaseFunction';
 import { convertErrorToResult, FunctionsError, MacTag } from '../utils';
 
 export class AdminFirebaseFunction<Parameters, ReturnType> {
 
     public constructor(
         private readonly FirebaseFunction: FirebaseFunction.Constructor<Parameters, ReturnType>,
-        private readonly macKey: Uint8Array
+        private readonly macKey: Uint8Array,
+        private readonly onCall: typeof firebaseOnCall<FirebaseFunction.ParametersData<Parameters>, Promise<Flattable.Flatten<Result<ReturnType, FunctionsError>>>>
     ) {}
 
     private async execute(auth: AuthData | undefined, data: FirebaseFunction.ParametersData<Parameters>): Promise<ReturnType> {
@@ -25,7 +26,7 @@ export class AdminFirebaseFunction<Parameters, ReturnType> {
     }
 
     public runnable(regions: SupportedRegion[]): CallableFunction<any, any> {
-        return onCall({ region: regions }, async (request: CallableRequest<FirebaseFunction.ParametersData<Parameters>>) => {
+        return this.onCall({ region: regions }, async (request: CallableRequest<FirebaseFunction.ParametersData<Parameters>>) => {
             const result = await convertErrorToResult(async () => this.execute(request.auth, request.data));
             return Flattable.flatten(result);
         });
