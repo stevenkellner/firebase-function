@@ -20,7 +20,7 @@
         "release": "npm run rebuild && npm run lint && npm version patch && git push --follow-tags"
     },
     "dependencies": {
-        "@stevenkellner/typescript-common-functionality": "^1.0.54",
+        "@stevenkellner/typescript-common-functionality": "^1.0.55",
         "axios": "^1.9.0",
         "dotenv": "^16.5.0",
         "firebase": "^11.7.3",
