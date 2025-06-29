@@ -12,6 +12,11 @@ export type FirestoreScheme = FirestoreDocument<never, {
                     v10: boolean;
                 }>;
             }>;
+            col3: FirestoreCollection<{
+                [key: string]: FirestoreDocument<{
+                    v11: string;
+                }>;
+            }>;
         }>;
         doc3: FirestoreDocument<never, {
             col2: FirestoreCollection<{
@@ -132,5 +137,14 @@ describe('Firestore admin', () => {
         await baseDocument.collection('baseCollection').remove();
         const snapshot = await baseDocument.collection('baseCollection').document('doc4').snapshot();
         expect(snapshot.exists).toBeEqual(false);
+    });
+
+    it('should get document snapshots', async () => {
+        await baseDocument.collection('baseCollection').document('doc1').collection('col3').document('d1').set({ v11: 'value1' });
+        await baseDocument.collection('baseCollection').document('doc1').collection('col3').document('d2').set({ v11: 'value2' });
+        await baseDocument.collection('baseCollection').document('doc1').collection('col3').document('d3').set({ v11: 'value3' });
+        const snapshots = await baseDocument.collection('baseCollection').document('doc1').collection('col3').documentSnapshots();
+        expect(snapshots.length).toBeEqual(3);
+        expect(snapshots.map(s => s.data.v11)).toHaveSameMembers(['value1', 'value2', 'value3']);
     });
 });
