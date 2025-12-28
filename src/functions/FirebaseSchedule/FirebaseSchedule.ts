@@ -1,9 +1,14 @@
-export abstract class FirebaseSchedule {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface FirebaseSchedule {}
 
-    public abstract execute(): Promise<void>;
+export interface FirebaseExecutableSchedule extends FirebaseSchedule {
+
+    execute(): Promise<void>;
 }
 
 export namespace FirebaseSchedule {
 
     export type Constructor = new () => FirebaseSchedule;
+
+    export type ExecutableConstructor = new () => FirebaseExecutableSchedule;
 }

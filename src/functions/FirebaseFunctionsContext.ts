@@ -19,9 +19,7 @@ export class FirebaseRequestContext<Parameters, ReturnType> {
 export class FirebaseScheduleContext {
 
     public constructor(
-        public readonly Constructor: FirebaseSchedule.Constructor,
-        public readonly schedule: string,
-        public readonly timezone: string
+        public readonly Constructor: FirebaseSchedule.Constructor
     ) {}
 }
 
@@ -48,11 +46,9 @@ export namespace FirebaseFunctionsContext {
         }
 
         public schedule(
-            Constructor: FirebaseSchedule.Constructor,
-            schedule: string,
-            timezone: string
+            Constructor: FirebaseSchedule.Constructor
         ): FirebaseScheduleContext {
-            return new FirebaseScheduleContext(Constructor, schedule, timezone);
+            return new FirebaseScheduleContext(Constructor);
         }
     }
 

@@ -3,16 +3,17 @@ import { AdminFirebaseRequest } from './FirebaseRequest';
 import { AdminFirebaseSchedule } from './FirebaseSchedule';
 import type { SupportedRegion } from 'firebase-functions/v2/options';
 import { mapRecord } from '@stevenkellner/typescript-common-functionality';
-import { FirebaseFunctionContext, FirebaseRequestContext, FirebaseScheduleContext, type FirebaseFunctionsContext } from './FirebaseFunctionsContext';
 import type { onCall, onRequest } from 'firebase-functions/v2/https';
 import type { onSchedule } from 'firebase-functions/v2/scheduler';
+import { type FirebaseFunctionsExecutableContext, FirebaseFunctionExecutableContext, FirebaseRequestExecutableContext, FirebaseScheduleExecutableContext } from './FirebaseFunctionsExecutableContext';
+import type { FirebaseFunctionsContext } from './FirebaseFunctionsContext';
 
 export type RunnableFirebaseFunctions =
     ReturnType<(AdminFirebaseFunction<any, any> | AdminFirebaseRequest<any, any> | AdminFirebaseSchedule)['runnable']>
     | { [key: string]: RunnableFirebaseFunctions };
 
 export function provideFirebaseFunctions(
-    context: FirebaseFunctionsContext,
+    context: FirebaseFunctionsExecutableContext<FirebaseFunctionsContext>,
     macKey: Uint8Array,
     firebaseHandlers: {
         onCall: typeof onCall;
@@ -21,11 +22,11 @@ export function provideFirebaseFunctions(
     },
     regions: SupportedRegion[] = []
 ): RunnableFirebaseFunctions {
-    if (context instanceof FirebaseFunctionContext)
+    if (context instanceof FirebaseFunctionExecutableContext)
         return new AdminFirebaseFunction(context.Constructor, macKey, firebaseHandlers.onCall).runnable(regions);
-    if (context instanceof FirebaseRequestContext)
+    if (context instanceof FirebaseRequestExecutableContext)
         return new AdminFirebaseRequest(context.Constructor, macKey, firebaseHandlers.onRequest).runnable(regions);
-    if (context instanceof FirebaseScheduleContext)
+    if (context instanceof FirebaseScheduleExecutableContext)
         return new AdminFirebaseSchedule(context.Constructor, context.schedule, context.timezone, firebaseHandlers.onSchedule).runnable(regions.length !== 0 ? regions[0] : null);
     return mapRecord(context, creator => provideFirebaseFunctions(creator, macKey, firebaseHandlers, regions));
 }

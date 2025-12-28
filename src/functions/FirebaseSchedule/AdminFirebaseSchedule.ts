@@ -6,7 +6,7 @@ import type { FirebaseSchedule } from './FirebaseSchedule';
 export class AdminFirebaseSchedule {
 
     public constructor(
-        private readonly FirebaseSchedule: FirebaseSchedule.Constructor,
+        private readonly FirebaseSchedule: FirebaseSchedule.ExecutableConstructor,
         private readonly schedule: string,
         private readonly timezone: string,
         private readonly onSchedule: typeof firebaseOnSchedule

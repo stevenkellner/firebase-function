@@ -1,2 +1,2 @@
-export * from './FirebaseSchedule';
+export type * from './FirebaseSchedule';
 export * from './AdminFirebaseSchedule';

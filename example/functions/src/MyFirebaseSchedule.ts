@@ -1,6 +1,9 @@
-import { FirebaseSchedule } from '../../../src';
+import type { FirebaseSchedule, FirebaseExecutableSchedule } from '../../../src';
 
-export class MyFirebaseSchedule extends FirebaseSchedule {
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+export class MyFirebaseSchedule implements FirebaseSchedule {}
+
+export class MyFirebaseExecutableSchedule extends MyFirebaseSchedule implements FirebaseExecutableSchedule {
 
     public async execute(): Promise<void> {}
 }

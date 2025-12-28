@@ -1,9 +1,9 @@
 import { ObjectTypeBuilder, ValueTypeBuilder } from '@stevenkellner/typescript-common-functionality';
-import { FirebaseRequest } from '../../../src';
+import type { ExecutableFirebaseRequest, FirebaseRequest } from '../../../src';
 import { MySubParameter, type MyParameters } from './types/MyParameters';
 import { MyReturnType } from './types/MyReturnType';
 
-export class MyFirebaseRequest extends FirebaseRequest<MyParameters, MyReturnType> {
+export class MyFirebaseRequest implements FirebaseRequest<MyParameters, MyReturnType> {
 
     public parametersBuilder = new ObjectTypeBuilder<MyParameters.Flatten, MyParameters>({
         v1: new ValueTypeBuilder(),
@@ -12,6 +12,9 @@ export class MyFirebaseRequest extends FirebaseRequest<MyParameters, MyReturnTyp
     });
 
     public returnTypeBuilder = MyReturnType.typeBuilder;
+}
+
+export class MyFirebaseExecutableRequest extends MyFirebaseRequest implements ExecutableFirebaseRequest<MyParameters, MyReturnType> {
 
     // eslint-disable-next-line @typescript-eslint/require-await
     public async execute(parameters: MyParameters): Promise<MyReturnType> {

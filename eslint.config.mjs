@@ -34,7 +34,7 @@ export default [
     },
     pluginJs.configs.all,
     ...tseslint.configs.all,
-    stylistic.configs["all-flat"],
+    stylistic.configs["all"],
     stylistic.configs.customize({
         indent: 4,
         quotes: 'single',
@@ -47,6 +47,7 @@ export default [
             '@typescript-eslint/consistent-indexed-object-style': 'off',
             'function-call-argument-newline': ['error', 'consistent'],
             'no-undefined': 'off',
+            'typescript-eslint/consistent-type-imports': 'off',
             '@typescript-eslint/no-invalid-void-type': 'off',
             'no-void': 'off',
             'newline-per-chained-call': 'off',
@@ -130,7 +131,8 @@ export default [
             'no-inline-comments': 'off',
             'func-style': 'off',
             '@typescript-eslint/no-unsafe-type-assertion': 'off',
-            '@stylistic/type-generic-spacing': 'off'
+            '@stylistic/type-generic-spacing': 'off',
+            '@stylistic/operator-linebreak': 'off',
         }
     }
 ];

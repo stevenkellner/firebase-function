@@ -1,5 +1,5 @@
+import type { FunctionsErrorCode as FirebaseFunctionsErrorCode } from './../../../node_modules/firebase-functions/lib/common/providers/https';
 import type { Flattable, ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
-import type { FunctionsErrorCode as FirebaseFunctionsErrorCode } from 'firebase-functions/lib/common/providers/https';
 
 export type FunctionsErrorCode = FirebaseFunctionsErrorCode;
 

@@ -7,7 +7,7 @@ import { Flattable } from '@stevenkellner/typescript-common-functionality';
 export class AdminFirebaseRequest<Parameters, ReturnType> {
 
     public constructor(
-        private readonly FirebaseRequest: FirebaseRequest.Constructor<Parameters, ReturnType>,
+        private readonly FirebaseRequest: FirebaseRequest.ExecutableConstructor<Parameters, ReturnType>,
         private readonly macKey: Uint8Array,
         private readonly onRequest: typeof firebaseOnRequest
     ) {}

@@ -1,19 +1,22 @@
 import type { Flattable, ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
 
-export abstract class FirebaseFunction<Parameters, ReturnType> {
+export interface FirebaseFunction<Parameters, ReturnType> {
 
-    public abstract readonly parametersBuilder: ITypeBuilder<Flattable.Flatten<Parameters>, Parameters>;
+    readonly parametersBuilder: ITypeBuilder<Flattable.Flatten<Parameters>, Parameters>;
 
-    public abstract readonly returnTypeBuilder: ITypeBuilder<Flattable.Flatten<ReturnType>, ReturnType>;
+    readonly returnTypeBuilder: ITypeBuilder<Flattable.Flatten<ReturnType>, ReturnType>;
+}
 
-    public userId: string | null = null;
+export interface ExecutableFirebaseFunction<Parameters, ReturnType> extends FirebaseFunction<Parameters, ReturnType> {
 
-    public abstract execute(parameters: Parameters): Promise<ReturnType>;
+    execute(userId: string | null, parameters: Parameters): Promise<ReturnType>;
 }
 
 export namespace FirebaseFunction {
 
     export type Constructor<Parameters, ReturnType> = new () => FirebaseFunction<Parameters, ReturnType>;
+
+    export type ExecutableConstructor<Parameters, ReturnType> = new () => ExecutableFirebaseFunction<Parameters, ReturnType>;
 
     export type Parameters<Function extends FirebaseFunction<any, any> | Constructor<any, any>> =
         Function extends FirebaseFunction<infer Parameters, any> ? Parameters :
