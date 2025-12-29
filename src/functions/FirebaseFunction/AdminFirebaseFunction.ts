@@ -3,7 +3,7 @@ import type { SupportedRegion } from 'firebase-functions/v2/options';
 import type { onCall as firebaseOnCall, CallableFunction, CallableRequest } from 'firebase-functions/v2/https';
 import { Flattable, type Result } from '@stevenkellner/typescript-common-functionality';
 import type { FirebaseFunction } from './FirebaseFunction';
-import { convertErrorToResult, FunctionsError, MacTag } from '../utils';
+import { convertErrorToResult, FunctionsError, MacTag, UserAuthId } from '../utils';
 
 export class AdminFirebaseFunction<Parameters, ReturnType> {
 
@@ -19,9 +19,9 @@ export class AdminFirebaseFunction<Parameters, ReturnType> {
             throw new FunctionsError('failed-precondition', 'Invalid MAC tag');
 
         const firebaseFunction = new this.FirebaseFunction();
-        const userId = auth !== undefined ? auth.uid : null;
+        const userAuthId = auth !== undefined ? UserAuthId.builder.build(auth.uid) : null;
         const parameters = firebaseFunction.parametersBuilder.build(data.parameters);
-        return firebaseFunction.execute(userId, parameters);
+        return firebaseFunction.execute(userAuthId, parameters);
     }
 
     public runnable(regions: SupportedRegion[]): CallableFunction<any, any> {

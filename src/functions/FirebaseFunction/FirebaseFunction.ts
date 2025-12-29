@@ -1,4 +1,5 @@
 import type { Flattable, ITypeBuilder } from '@stevenkellner/typescript-common-functionality';
+import type { UserAuthId } from '../..';
 
 export interface FirebaseFunction<Parameters, ReturnType> {
 
@@ -9,7 +10,7 @@ export interface FirebaseFunction<Parameters, ReturnType> {
 
 export interface ExecutableFirebaseFunction<Parameters, ReturnType> extends FirebaseFunction<Parameters, ReturnType> {
 
-    execute(userId: string | null, parameters: Parameters): Promise<ReturnType>;
+    execute(userAuthId: UserAuthId | null, parameters: Parameters): Promise<ReturnType>;
 }
 
 export namespace FirebaseFunction {
