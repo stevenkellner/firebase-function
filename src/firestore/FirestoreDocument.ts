@@ -30,6 +30,10 @@ export class FirestoreDocument<
     public async remove(): Promise<void> {
         await this.firestore.doc(this.path.fullPath).delete();
     }
+
+    public get fullPath(): string {
+        return this.path.fullPath;
+    }
 }
 
 // istanbul ignore next

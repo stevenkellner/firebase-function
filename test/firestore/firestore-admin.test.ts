@@ -1,5 +1,5 @@
 import { expect } from '@assertive-ts/core';
-import { type FirestoreCollection, FirestoreDocument } from '../../src';
+import { type FirestoreCollection, FirestoreDocument, FirestoreBatch } from '../../src';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { configDotenv } from 'dotenv';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -146,5 +146,44 @@ describe('Firestore admin', () => {
         const snapshots = await baseDocument.collection('baseCollection').document('doc1').collection('col3').documentSnapshots();
         expect(snapshots.length).toBeEqual(3);
         expect(snapshots.map(s => s.data.v11)).toHaveSameMembers(['value1', 'value2', 'value3']);
+    });
+
+    it('should set and remove using batch', async () => {
+        const docToAdd = baseDocument.collection('baseCollection').document('doc1').collection('col1').document('doc2');
+        const docToRemove = baseDocument.collection('baseCollection').document('doc1').collection('col3').document('doc1');
+        const docToUpdate = baseDocument.collection('baseCollection').document('doc3').collection('col2').document('doc4');
+
+        await docToRemove.set({ v11: 'to be removed' });
+        await docToUpdate.set({
+            v1: {
+                abc: 'old',
+                def: 123
+            }
+        });
+
+        const batch = new FirestoreBatch(getFirestore());
+        batch.set(docToAdd, { v10: false });
+        batch.remove(docToRemove);
+        batch.set(docToUpdate, {
+            v1: {
+                abc: 'new',
+                def: 456
+            }
+        });
+        await batch.commit();
+
+        const snapshotAdded = await docToAdd.snapshot();
+        expect(snapshotAdded.data).toBeEqual({ v10: false });
+
+        const snapshotRemoved = await docToRemove.snapshot();
+        expect(snapshotRemoved.exists).toBeEqual(false);
+
+        const snapshotUpdated = await docToUpdate.snapshot();
+        expect(snapshotUpdated.data).toBeEqual({
+            v1: {
+                abc: 'new',
+                def: 456
+            }
+        });
     });
 });
