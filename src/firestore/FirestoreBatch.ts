@@ -27,6 +27,18 @@ export class FirestoreBatch {
         this.batch.delete(this.firestore.doc(document.fullPath));
     }
 
+    public async removeAllSubCollections<
+        Values extends Record<string, any>,
+        SubCollections extends Record<string, FirestoreCollection<any>>
+    >(document: FirestoreDocument<Values, SubCollections>): Promise<void> {
+        const collections = await this.firestore.doc(document.fullPath).listCollections();
+        await Promise.all(collections.map(async collection => {
+            const documents = await collection.listDocuments();
+            for (const document of documents)
+                this.batch.delete(document);
+        }));
+    }
+
     public async commit(): Promise<void> {
         await this.batch.commit();
     }

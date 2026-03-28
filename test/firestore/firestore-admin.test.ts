@@ -186,4 +186,24 @@ describe('Firestore admin', () => {
             }
         });
     });
+
+    it('should remove all subcollections using batch', async () => {
+        const doc = baseDocument.collection('baseCollection').document('doc1');
+        await doc.collection('col1').document('doc2').set({ v10: false });
+        await doc.collection('col3').document('d1').set({ v11: 'value1' });
+        await doc.collection('col3').document('d2').set({ v11: 'value2' });
+
+        const batch = new FirestoreBatch(getFirestore());
+        await batch.removeAllSubCollections(doc);
+        await batch.commit();
+
+        const snapshotCol1Doc2 = await doc.collection('col1').document('doc2').snapshot();
+        expect(snapshotCol1Doc2.exists).toBeEqual(false);
+
+        const snapshotCol3Doc1 = await doc.collection('col3').document('d1').snapshot();
+        expect(snapshotCol3Doc1.exists).toBeEqual(false);
+
+        const snapshotCol3Doc2 = await doc.collection('col3').document('d2').snapshot();
+        expect(snapshotCol3Doc2.exists).toBeEqual(false);
+    });
 });
